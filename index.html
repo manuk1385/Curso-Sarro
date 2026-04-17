@@ -1,3 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" href="saul.png">
+<meta charset="UTF-8">
+<title>Curso Aspe</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#f5f7fb;
+}
+
+/* LOGIN */
+
+#login, #registro{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
+width:300px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-bottom:10px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+width:100%;
+padding:10px;
+border:none;
+background:#2563eb;
+color:white;
+border-radius:6px;
+cursor:pointer;
+margin-top:5px;
+}
+
+.link{
+text-align:center;
+margin-top:10px;
+cursor:pointer;
+color:#2563eb;
+}
+
+/* PANEL */
+
+.topbar{
+height:60px;
+background:#0f172a;
+color:white;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 20px;
+}
+
+.panel{
+display:none;
+}
+
+.container{
+display:flex;
+min-height:calc(100vh - 60px);
+}
+
+.sidebar{
+width:260px;
+background:#0f172a;
+color:white;
+padding:20px;
+height:calc(100vh - 60px);
+overflow-y:auto;
+}
+
+.logo{
+width:120px;
+margin-bottom:20px;
+}
+
+.titulo-menu{
+cursor:pointer;
+padding:10px;
+background:#1e293b;
+border-radius:6px;
+margin-bottom:5px;
+}
+
+.material-lista{
+max-height:0;
+overflow:hidden;
+transition:0.3s;
+}
+
+.abierto{
+max-height:2000px;
+}
+
+.item{
+padding:10px;
+margin-bottom:5px;
+border-left:3px solid #334155;
+display:flex;
+align-items:center;
+gap:10px;
+cursor:pointer;
+}
+
+.item:hover{
+background:#334155;
+}
+
+.circulo{
+width:10px;
+height:10px;
+border-radius:50%;
+background:white;
+}
+
+.completo{
+background:#22c55e;
+}
+
+.main{
+flex:1;
+padding:30px;
+}
+
+.video{
+background:black;
+height:300px;
+border-radius:10px;
+margin-bottom:20px;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+}
+
+.progreso{
+height:15px;
+background:#ddd;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+.barra{
+height:100%;
+background:#22c55e;
+width:0%;
+border-radius:10px;
+}
+
+.botones{
+display:flex;
+gap:10px;
+}
+
+.logout{
+background:red;
+padding:6px 12px;
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
 @media (max-width: 768px){
 
 body{
@@ -96,3 +276,378 @@ padding:10px;
 }
 
 }
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
+<div id="login">
+<div class="card">
+<h2>Iniciar sesión</h2>
+<input id="user" placeholder="Usuario">
+<input id="pass" type="password" placeholder="Contraseña">
+<button onclick="login()">Entrar</button>
+<div class="link" onclick="mostrarRegistro()">Registrarse</div>
+</div>
+</div>
+
+<!-- REGISTRO -->
+
+<div id="registro" style="display:none;">
+<div class="card">
+<h2>Registrarse</h2>
+<input id="newUser" placeholder="Usuario">
+<input id="newPass" type="password" placeholder="Contraseña">
+<button onclick="registrar()">Crear cuenta</button>
+<div class="link" onclick="mostrarLogin()">Ya tengo cuenta</div>
+</div>
+</div>
+
+<!-- PANEL -->
+
+<div class="panel" id="panel">
+
+<div class="topbar">
+<div>Usuario: <span id="usuario"></span></div>
+<button class="logout" onclick="logout()">Cerrar sesión</button>
+</div>
+
+<div class="container">
+
+<div class="sidebar">
+
+<img src="saul.png" class="logo">
+
+<div class="titulo-menu" onclick="toggleMenu()">📚 Material</div>
+<div class="material-lista" id="listaMaterial"></div>
+
+<div class="titulo-menu" onclick="togglePDF()">📄 PDF</div>
+<div class="material-lista" id="listaPDF"></div>
+
+</div>
+
+<div class="main">
+
+<h2 id="titulo">Selecciona material</h2>
+
+<div class="progreso">
+<div class="barra" id="barra"></div>
+</div>
+
+<div class="video" id="video">Contenido</div>
+
+<p id="texto">Aquí aparecerá el contenido.</p>
+
+<div class="botones">
+<button onclick="anterior()">⬅</button>
+<button onclick="hecho()">✔ Hecho</button>
+<button onclick="siguiente()">➡</button>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<script>
+/* =========================
+   DATOS (SIEMPRE ARRIBA)
+========================= */
+
+let materiales = [
+"01 - Introducción",
+"02 - Diferencias",
+"03 - Detección",
+"04 - Componentes 1",
+"05 - Componentes 2",
+"06 - Componentes 3",
+"07 - Componentes 4",
+"08 - Componentes 5",
+"09 - Componentes 6",
+"10 - Tipos",
+"11 - Fallas",
+"12 - Diagnóstico",
+"13 - Final"
+];
+
+let videos = [
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/01-Introduccion.general.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/02-Diferencia.entre.calefon.tradicional.y.ionizado.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/03-Proceso.de.deteccion.de.llama.ionizada.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/04-Componentes-1.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/05-Componentes-2.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/06-Componentes-3.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/07-Componentes-4.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/08-Componentes-5.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/09-Componentes-6.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/10-Tipos.de.calefones.ionizados.y.como.funcionan.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/11-Fallas.y.mantenimiento.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/12-Resumen.de.sintomas.diagnosticos.y.soluciones.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/13-Final.mp4"
+];
+    
+let pdfs = [
+"Pdf.pdf",                 
+"Pdf1.pdf",
+"Pdf2.pdf",
+"Pdf3.pdf",
+"Pdf4.pdf",
+"Pdf5.pdf",
+"Pdf6.pdf",
+"Pdf7.pdf",
+"Pdf8.pdf",
+"Pdf9.pdf"
+];
+
+/* =========================
+   VARIABLES
+========================= */
+
+let usuarioActual = "";
+let actual = 0;
+let completados = [];
+
+/* =========================
+   LOGIN
+========================= */
+
+function login(){
+
+let user = document.getElementById("user").value;
+let pass = document.getElementById("pass").value;
+
+let usuarios = JSON.parse(localStorage.getItem("usuarios")) || {};
+
+if(usuarios[user] === pass){
+localStorage.setItem("usuarioActivo", user);
+usuarioActual = user;
+mostrarPanel();
+}else{
+alert("Datos incorrectos");
+}
+
+}
+
+/* =========================
+   REGISTRO
+========================= */
+
+function registrar(){
+
+let user = document.getElementById("newUser").value;
+let pass = document.getElementById("newPass").value;
+
+let usuarios = JSON.parse(localStorage.getItem("usuarios")) || {};
+
+if(usuarios[user]){
+alert("Usuario ya existe");
+return;
+}
+
+usuarios[user] = pass;
+localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+alert("Cuenta creada");
+mostrarLogin();
+
+}
+
+/* =========================
+   VISTAS
+========================= */
+
+function mostrarRegistro(){
+document.getElementById("login").style.display="none";
+document.getElementById("registro").style.display="flex";
+}
+
+function mostrarLogin(){
+document.getElementById("registro").style.display="none";
+document.getElementById("login").style.display="flex";
+}
+
+/* =========================
+   PANEL
+========================= */
+
+function mostrarPanel(){
+
+usuarioActual = localStorage.getItem("usuarioActivo");
+
+document.getElementById("login").style.display="none";
+document.getElementById("registro").style.display="none";
+document.getElementById("panel").style.display="block";
+
+document.getElementById("usuario").innerText = usuarioActual;
+
+cargarProgreso();
+cargarMaterial(0);
+ 
+// carga primer video
+
+}
+
+/* =========================
+   LOGOUT
+========================= */
+
+function logout(){
+localStorage.removeItem("usuarioActivo");
+location.reload();
+}
+
+/* =========================
+   PROGRESO
+========================= */
+
+function cargarProgreso(){
+
+let key = "progreso_" + usuarioActual;
+completados = JSON.parse(localStorage.getItem(key)) || [];
+
+actualizarUI();
+
+}
+
+function guardarProgreso(){
+
+let key = "progreso_" + usuarioActual;
+localStorage.setItem(key, JSON.stringify(completados));
+
+}
+
+/* =========================
+   CARGAR MATERIAL (VIDEO)
+========================= */
+
+function cargarMaterial(i){
+
+actual = i;
+
+document.getElementById("titulo").innerText = materiales[i];
+
+document.getElementById("video").innerHTML = `
+<video width="100%" height="100%" controls controlsList="nodownload">
+    <source src="${videos[i]}?raw=true">
+</video>
+`;
+
+}
+
+/* =========================
+   BOTONES
+========================= */
+
+function siguiente(){
+if(actual < materiales.length-1) cargarMaterial(actual+1);
+}
+
+function anterior(){
+if(actual>0) cargarMaterial(actual-1);
+}
+
+/* =========================
+   HECHO
+========================= */
+
+function hecho(){
+
+let index = completados.indexOf(actual);
+
+if(index===-1){
+completados.push(actual);
+}else{
+completados.splice(index,1);
+}
+
+guardarProgreso();
+actualizarUI();
+
+}
+
+/* =========================
+   UI
+========================= */
+
+function actualizarUI(){
+
+materiales.forEach((_,i)=>{
+let c = document.getElementById("c"+i);
+if(!c) return;
+
+if(completados.includes(i)){
+c.classList.add("completo");
+}else{
+c.classList.remove("completo");
+}
+});
+
+let p = (completados.length/materiales.length)*100;
+document.getElementById("barra").style.width = p+"%";
+
+}
+
+/* =========================
+   TOGGLES
+========================= */
+
+function toggleMenu(){
+document.getElementById("listaMaterial").classList.toggle("abierto");
+document.getElementById("listaPDF").classList.remove("abierto");
+}
+
+function togglePDF(){
+document.getElementById("listaPDF").classList.toggle("abierto");
+document.getElementById("listaMaterial").classList.remove("abierto");
+}
+
+/* =========================
+   INICIO (IMPORTANTE)
+========================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+let contenedor = document.getElementById("listaMaterial");
+let contPDF = document.getElementById("listaPDF");
+
+// MATERIAL
+materiales.forEach((mat,i)=>{
+    let div = document.createElement("div");
+    div.className="item";
+    div.onclick=()=>cargarMaterial(i);
+
+    let circulo = document.createElement("div");
+    circulo.className="circulo";
+    circulo.id="c"+i;
+
+    div.appendChild(circulo);
+    div.append(mat);
+
+    contenedor.appendChild(div);
+});
+
+// PDF
+pdfs.forEach((pdf,i)=>{
+    let div = document.createElement("div");
+    div.className="item pdf-item";
+
+    div.innerHTML = `📄 ${pdf.replace(".pdf","")}`;
+
+    div.onclick = () => {
+        window.open(pdfs[i], "_blank"); // abre en otra pestaña
+    };
+
+    contPDF.appendChild(div);
+});
+// AUTO LOGIN
+if(localStorage.getItem("usuarioActivo")){
+    mostrarPanel();
+}
+});
+</script>
+
+</body>
+
+</html>
