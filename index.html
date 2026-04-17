@@ -180,58 +180,114 @@ cursor:pointer;
 
 @media (max-width: 768px){
 
+body{
+font-size:15px;
+}
+
+/* layout general */
 .container{
 flex-direction:column;
 }
 
-/* sidebar arriba */
+/* topbar más limpia */
+.topbar{
+height:auto;
+padding:10px;
+flex-direction:row;
+justify-content:space-between;
+font-size:13px;
+}
+
+/* sidebar pasa arriba tipo app */
 .sidebar{
 width:100%;
 height:auto;
-position:relative;
+padding:10px;
 display:flex;
 flex-direction:column;
-align-items:stretch;
+gap:10px;
 }
 
-/* topbar más cómoda */
-.topbar{
-flex-direction:row;
+/* logo más chico */
+.logo{
+width:70px;
+margin:auto;
+}
+
+/* menú más moderno */
+.titulo-menu{
 font-size:14px;
+padding:12px;
+text-align:center;
 }
 
-/* main ocupa todo */
+/* lista más fluida */
+.material-lista{
+max-height:none;
+overflow:visible;
+}
+
+/* items más táctiles */
+.item{
+padding:14px;
+font-size:14px;
+border-radius:8px;
+}
+
+/* contenido principal */
 .main{
 padding:15px;
 }
 
-/* video responsive */
-.video{
-height:200px;
+/* título */
+#titulo{
+font-size:18px;
+margin-bottom:10px;
 }
 
-/* botones más grandes */
+/* video MUCHO más importante */
+.video{
+height:220px;
+border-radius:12px;
+}
+
+/* barra progreso */
+.progreso{
+height:12px;
+}
+
+/* botones tipo app */
 .botones{
 flex-direction:column;
+gap:10px;
 }
 
 .botones button{
-font-size:16px;
-padding:12px;
+padding:14px;
+font-size:15px;
+border-radius:10px;
 }
 
-/* items más cómodos */
-.item{
+/* login más moderno */
+.card{
+width:90%;
+padding:20px;
+}
+
+input{
+padding:12px;
 font-size:14px;
 }
 
-/* login card full width */
-.card{
-width:90%;
+button{
+padding:12px;
+font-size:15px;
 }
 
-.logo{
-width:90px;
+/* logout más usable */
+.logout{
+padding:8px 12px;
+font-size:13px;
 }
 
 }
