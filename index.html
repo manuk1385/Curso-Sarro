@@ -3,8 +3,38 @@
 <head>
     <link rel="icon" href="saul.png">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Curso Aspe</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Iniciar Sesión Seguro | Acceso con Contraseña Protegida</title>
+<meta name="description" content="Página de inicio de sesión segura con opción para mostrar u ocultar contraseña. Acceso rápido, moderno y protegido para usuarios.">
+<meta name="keywords" content="login, iniciar sesión, contraseña, mostrar contraseña, acceso seguro, formulario login, seguridad web">
+<meta name="author" content="Tu Sitio Web">
+<meta name="robots" content="index, follow">
+<meta name="language" content="Spanish">
+<meta name="theme-color" content="#0f172a">
+
+<link rel="canonical" href="https://tusitio.com/login">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Iniciar Sesión Seguro | Acceso Protegido">
+<meta property="og:description" content="Accede con seguridad usando nuestro formulario moderno con opción para ver u ocultar contraseña.">
+<meta property="og:url" content="https://tusitio.com/login">
+<meta property="og:site_name" content="Tu Sitio Web">
+<meta property="og:locale" content="es_ES">
+<meta property="og:image" content="https://tusitio.com/img/login-preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Pantalla de inicio de sesión segura">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Iniciar Sesión Seguro">
+<meta name="twitter:description" content="Formulario de acceso seguro con opción de mostrar contraseña.">
+<meta name="twitter:image" content="https://tusitio.com/img/login-preview.jpg">
 <style>
 
 body{
@@ -276,6 +306,27 @@ padding:10px;
 }
 
 }
+
+.input-group{
+position:relative;
+}
+
+.input-group input{
+width:100%;
+padding-right:40px;
+}
+
+.input-group input{
+padding-right:10px;
+}
+.toggle{
+position:absolute;
+right:10px;
+top:50%;
+transform:translateY(-50%);
+cursor:pointer;
+font-size:18px;
+}
 </style>
 </head>
 
@@ -287,7 +338,10 @@ padding:10px;
 <div class="card">
 <h2>Iniciar sesión</h2>
 <input id="user" placeholder="Usuario">
-<input id="pass" type="password" placeholder="Contraseña">
+<div class="input-group">
+    <input id="pass" type="password" placeholder="Contraseña">
+    <span class="toggle" onclick="togglePass('pass', this)">👁</span>
+</div>
 <button onclick="login()">Entrar</button>
 <div class="link" onclick="mostrarRegistro()">Registrarse</div>
 </div>
@@ -299,7 +353,10 @@ padding:10px;
 <div class="card">
 <h2>Registrarse</h2>
 <input id="newUser" placeholder="Usuario">
-<input id="newPass" type="password" placeholder="Contraseña">
+<div class="input-group">
+    <input id="newPass" type="password" placeholder="Contraseña">
+    <span class="toggle" onclick="togglePass('newPass', this)">👁</span>
+</div>
 <button onclick="registrar()">Crear cuenta</button>
 <div class="link" onclick="mostrarLogin()">Ya tengo cuenta</div>
 </div>
@@ -646,6 +703,19 @@ if(localStorage.getItem("usuarioActivo")){
     mostrarPanel();
 }
 });
+
+function togglePass(id, el){
+let input = document.getElementById(id);
+
+if(input.type === "password"){
+    input.type = "text";
+    el.innerText = "🙈";
+}else{
+    input.type = "password";
+    el.innerText = "👁";
+}
+}
+
 </script>
 
 </body>
