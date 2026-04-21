@@ -345,33 +345,44 @@ font-size:18px;
 
 <body>
 
-<!-- LOGIN -->
+<!-- LOGIN  -->
 
 <div id="login">
 <div class="card">
 <h2>Iniciar sesión</h2>
-<input id="user" placeholder="Usuario">
+
+<input id="user" placeholder="Número de teléfono">
+
 <div class="input-group">
-    <input id="pass" type="password" placeholder="Contraseña">
-    <span class="toggle" onclick="togglePass('pass', this)">👁</span>
+<input id="pass" type="password" placeholder="Número de teléfono">
+<span class="toggle" onclick="togglePass('pass', this)">👁</span>
 </div>
+
 <button onclick="login()">Entrar</button>
+
 <div class="link" onclick="mostrarRegistro()">Registrarse</div>
+
 </div>
 </div>
 
 <!-- REGISTRO -->
 
+
 <div id="registro" style="display:none;">
 <div class="card">
 <h2>Registrarse</h2>
-<input id="newUser" placeholder="Usuario">
+
+<input id="newUser" placeholder="Número de teléfono">
+
 <div class="input-group">
-    <input id="newPass" type="password" placeholder="Contraseña">
-    <span class="toggle" onclick="togglePass('newPass', this)">👁</span>
+<input id="newPass" type="password" placeholder="Número de teléfono">
+<span class="toggle" onclick="togglePass('newPass', this)">👁</span>
 </div>
+
 <button onclick="registrar()">Crear cuenta</button>
+
 <div class="link" onclick="mostrarLogin()">Ya tengo cuenta</div>
+
 </div>
 </div>
 
@@ -438,7 +449,8 @@ let materiales = [
 "09 - Componentes 6",
 "10 - Tipos",
 "11 - Fallas",
-"12 - Final"
+"12 - Diagnóstico",
+"13 - Final"
 ];
 
 let videos = [
@@ -453,6 +465,7 @@ let videos = [
 "https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/09-Componentes-6.mp4",
 "https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/10-Tipos.de.calefones.ionizados.y.como.funcionan.mp4",
 "https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/11-Fallas.y.mantenimiento.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/12-Resumen.de.sintomas.diagnosticos.y.soluciones.mp4",
 "https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/13-Final.mp4"
 ];
     
@@ -481,16 +494,17 @@ let completados = [];
    LOGIN
 ========================= */
 
+
 function login(){
 
-let user = document.getElementById("user").value;
-let pass = document.getElementById("pass").value;
+let telefono = document.getElementById("user").value.trim();
+let pass = document.getElementById("pass").value.trim();
 
 let usuarios = JSON.parse(localStorage.getItem("usuarios")) || {};
 
-if(usuarios[user] === pass){
-localStorage.setItem("usuarioActivo", user);
-usuarioActual = user;
+if(usuarios[telefono] === pass){
+localStorage.setItem("usuarioActivo", telefono);
+usuarioActual = telefono;
 mostrarPanel();
 }else{
 alert("Datos incorrectos");
@@ -502,26 +516,37 @@ alert("Datos incorrectos");
    REGISTRO
 ========================= */
 
+
 function registrar(){
 
-let user = document.getElementById("newUser").value;
-let pass = document.getElementById("newPass").value;
+let telefono = document.getElementById("newUser").value.trim();
+let pass = document.getElementById("newPass").value.trim();
 
-let usuarios = JSON.parse(localStorage.getItem("usuarios")) || {};
-
-if(usuarios[user]){
-alert("Usuario ya existe");
+if(telefono === "" || pass === ""){
+alert("Completá los campos");
 return;
 }
 
-usuarios[user] = pass;
+if(telefono !== pass){
+alert("El número y la contraseña deben ser iguales");
+return;
+}
+
+let usuarios = JSON.parse(localStorage.getItem("usuarios")) || {};
+
+if(usuarios[telefono]){
+alert("Ese número ya está registrado");
+return;
+}
+
+usuarios[telefono] = pass;
+
 localStorage.setItem("usuarios", JSON.stringify(usuarios));
 
 alert("Cuenta creada");
 mostrarLogin();
 
 }
-
 /* =========================
    VISTAS
 ========================= */
@@ -715,15 +740,16 @@ if(localStorage.getItem("usuarioActivo")){
 }
 });
 
+
 function togglePass(id, el){
 let input = document.getElementById(id);
 
 if(input.type === "password"){
-    input.type = "text";
-    el.innerText = "🙈";
+input.type = "text";
+el.innerText = "🙈";
 }else{
-    input.type = "password";
-    el.innerText = "👁";
+input.type = "password";
+el.innerText = "👁";
 }
 }
 
