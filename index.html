@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LN6HBQEZBX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-LN6HBQEZBX');
+</script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const supabaseUrl = "https://nzecuovatcavltrwufah.supabase.co";
+
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56ZWN1b3ZhdGNhdmx0cnd1ZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5MDEwMTAsImV4cCI6MjA5MjQ3NzAxMH0.n6nvAuKb4GP-lOGHbeM91ibKt9M9oIxEz9oSCZD24uY";
+
+const supabaseClient = supabase.createClient(
+supabaseUrl,
+supabaseKey
+);
+
+</script>
+    
+    <link rel="icon" href="saul.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curso Aspe</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Iniciar Sesión Seguro | Acceso con Contraseña Protegida</title>
+<meta name="description" content="Página de inicio de sesión segura con opción para mostrar u ocultar contraseña. Acceso rápido, moderno y protegido para usuarios.">
+<meta name="keywords" content="login, iniciar sesión, contraseña, mostrar contraseña, acceso seguro, formulario login, seguridad web">
+<meta name="author" content="Tu Sitio Web">
+<meta name="robots" content="index, follow">
+<meta name="language" content="Spanish">
+<meta name="theme-color" content="#0f172a">
+
+<link rel="canonical" href="https://tusitio.com/login">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Iniciar Sesión Seguro | Acceso Protegido">
+<meta property="og:description" content="Accede con seguridad usando nuestro formulario moderno con opción para ver u ocultar contraseña.">
+<meta property="og:url" content="https://tusitio.com/login">
+<meta property="og:site_name" content="Tu Sitio Web">
+<meta property="og:locale" content="es_ES">
+<meta property="og:image" content="https://tusitio.com/img/login-preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Pantalla de inicio de sesión segura">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Iniciar Sesión Seguro">
+<meta name="twitter:description" content="Formulario de acceso seguro con opción de mostrar contraseña.">
+<meta name="twitter:image" content="https://tusitio.com/img/login-preview.jpg">
+
+    
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#f5f7fb;
+}
+
+/* LOGIN */
+
+#login, #registro{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
+width:300px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-bottom:10px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+width:100%;
+padding:10px;
+border:none;
+background:#2563eb;
+color:white;
+border-radius:6px;
+cursor:pointer;
+margin-top:5px;
+}
+
+.link{
+text-align:center;
+margin-top:10px;
+cursor:pointer;
+color:#2563eb;
+}
+
+/* PANEL */
+
+.topbar{
+height:60px;
+background:#0f172a;
+color:white;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 20px;
+}
+
+.panel{
+display:none;
+}
+
+.container{
+display:flex;
+min-height:calc(100vh - 60px);
+}
+
+.sidebar{
+width:260px;
+background:#0f172a;
+color:white;
+padding:20px;
+height:calc(100vh - 60px);
+overflow-y:auto;
+}
+
+.logo{
+width:120px;
+margin-bottom:20px;
+}
+
+.titulo-menu{
+cursor:pointer;
+padding:10px;
+background:#1e293b;
+border-radius:6px;
+margin-bottom:5px;
+}
+
+.material-lista{
+max-height:0;
+overflow:hidden;
+transition:0.3s;
+}
+
+.abierto{
+max-height:2000px;
+}
+
+.item{
+padding:10px;
+margin-bottom:5px;
+border-left:3px solid #334155;
+display:flex;
+align-items:center;
+gap:10px;
+cursor:pointer;
+}
+
+.item:hover{
+background:#334155;
+}
+
+.circulo{
+width:10px;
+height:10px;
+border-radius:50%;
+background:white;
+}
+
+.completo{
+background:#22c55e;
+}
+
+.main{
+flex:1;
+padding:30px;
+}
+
+.video{
+background:black;
+height:300px;
+border-radius:10px;
+margin-bottom:20px;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+}
+
+.progreso{
+height:15px;
+background:#ddd;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+.barra{
+height:100%;
+background:#22c55e;
+width:0%;
+border-radius:10px;
+}
+
+.botones{
+display:flex;
+gap:10px;
+}
+
+.logout{
+background:red;
+padding:6px 12px;
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+@media (max-width: 768px){
+
+/* LOGIN ocupa toda la pantalla */
+.card{
+width:95%;
+padding:25px;
+border-radius:14px;
+}
+
+.card h2{
+font-size:22px;
+margin-bottom:15px;
+}
+
+input{
+padding:14px;
+font-size:16px;
+}
+
+button{
+padding:14px;
+font-size:16px;
+}
+
+/* TOPBAR */
+.topbar{
+padding:12px;
+font-size:15px;
+}
+
+.container{
+flex-direction: column;
+}
+
+/* sidebar arriba */
+.sidebar{
+width:100%;
+height:auto;
+}
+
+/* contenido abajo ocupando todo */
+.main{
+width:100%;
+background:#fff;
+border-radius:20px 20px 0 0;
+margin-top:10px;
+}
+
+/* centra el contenido tipo app */
+.main{
+max-width:600px;
+margin-left:auto;
+margin-right:auto;
+}
+
+/* evita que quede corrido */
+body{
+overflow-x:hidden;
+}
+
+.logo{
+width:90px;
+margin:auto;
+}
+
+/* ITEMS más grandes */
+.item{
+padding:16px;
+font-size:16px;
+border-radius:10px;
+}
+
+
+/* TÍTULO */
+#titulo{
+font-size:22px;
+margin-bottom:15px;
+}
+
+/* VIDEO 🔥 protagonista */
+.video{
+height:260px;
+border-radius:14px;
+}
+
+/* TEXTO */
+#texto{
+font-size:16px;
+}
+
+/* PROGRESO */
+.progreso{
+height:14px;
+}
+
+/* BOTONES tipo app */
+.botones{
+flex-direction:column;
+gap:12px;
+}
+
+.botones button{
+padding:16px;
+font-size:16px;
+border-radius:12px;
+}
+
+/* LOGOUT */
+.logout{
+font-size:14px;
+padding:10px;
+}
+
+}
+
+.input-group{
+position:relative;
+}
+
+
+.input-group input{
+   width:100%;
+padding-right:10px;
+}
+.toggle{
+position:absolute;
+right:10px;
+top:50%;
+transform:translateY(-50%);
+cursor:pointer;
+font-size:18px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN  -->
+
+<div id="login">
+<div class="card">
+<h2>Iniciar sesión</h2>
+
+<input id="user" placeholder="Número de teléfono">
+
+<div class="input-group">
+<input id="pass" type="password" placeholder="Contraseña">
+<span class="toggle" onclick="togglePass('pass', this)">👁</span>
+</div>
+
+<button onclick="login()">Entrar</button>
+
+<div class="link" onclick="mostrarRegistro()">Registrarse</div>
+
+</div>
+</div>
+
+<!-- REGISTRO -->
+
+
+<div id="registro" style="display:none;">
+<div class="card">
+<h2>Registrarse</h2>
+
+<input id="newUser" placeholder="Número de teléfono">
+
+<div class="input-group">
+<input id="newPass" type="password" placeholder="Contraseña">
+<span class="toggle" onclick="togglePass('newPass', this)">👁</span>
+</div>
+
+<button onclick="registrar()">Crear cuenta</button>
+
+<div class="link" onclick="mostrarLogin()">Ya tengo cuenta</div>
+
+</div>
+</div>
+
+<!-- PANEL -->
+
+<div class="panel" id="panel">
+
+<div class="topbar">
+<div>Usuario: <span id="usuario"></span></div>
+<button class="logout" onclick="logout()">Cerrar sesión</button>
+</div>
+
+<div class="container">
+
+<div class="sidebar">
+
+<img src="saul.png" class="logo">
+
+<div class="titulo-menu" onclick="toggleMenu()">📚 Material</div>
+<div class="material-lista" id="listaMaterial"></div>
+
+<div class="titulo-menu" onclick="togglePDF()">📄 PDF</div>
+<div class="material-lista" id="listaPDF"></div>
+
+</div>
+
+<div class="main">
+
+<h2 id="titulo">Selecciona material</h2>
+
+<div class="progreso">
+<div class="barra" id="barra"></div>
+</div>
+
+<div class="video" id="video">Contenido</div>
+
+<p id="texto">Aquí aparecerá el contenido.</p>
+
+<div class="botones">
+<button onclick="anterior()">⬅</button>
+<button onclick="hecho()">✔ Hecho</button>
+<button onclick="siguiente()">➡</button>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<script>
+/* =========================
+   DATOS (SIEMPRE ARRIBA)
+========================= */
+
+let materiales = [
+"01 - Introducción",
+"02 - Diferencias",
+"03 - Detección",
+"04 - Componentes 1",
+"05 - Componentes 2",
+"06 - Componentes 3",
+"07 - Componentes 4",
+"08 - Componentes 5",
+"09 - Componentes 6",
+"10 - Tipos",
+"11 - Fallas",
+"12 - Diagnóstico",
+"13 - Final"
+];
+
+let videos = [
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/01-Introduccion.general.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/02-Diferencia.entre.calefon.tradicional.y.ionizado.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/03-Proceso.de.deteccion.de.llama.ionizada.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/04-Componentes-1.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/05-Componentes-2.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/06-Componentes-3.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/07-Componentes-4.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/08-Componentes-5.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/09-Componentes-6.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/10-Tipos.de.calefones.ionizados.y.como.funcionan.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/11-Fallas.y.mantenimiento.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/12-Resumen.de.sintomas.diagnosticos.y.soluciones.mp4",
+"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/13-Final.mp4"
+];
+    
+let pdfs = [
+"Pdf.pdf",                 
+"Pdf1.pdf",
+"Pdf2.pdf",
+"Pdf3.pdf",
+"Pdf4.pdf",
+"Pdf5.pdf",
+"Pdf6.pdf",
+"Pdf7.pdf",
+"Pdf8.pdf",
+"Pdf9.pdf"
+];
+
+/* =========================
+   VARIABLES
+========================= */
+
+let usuarioActual = "";
+let actual = 0;
+let completados = [];
+
+function obtenerDeviceID(){
+
+let id = localStorage.getItem("device_id");
+
+if(!id){
+
+id = crypto.randomUUID();
+
+localStorage.setItem("device_id", id);
+
+}
+
+return id;
+
+}
+
+/* =========================
+   LOGIN
+========================= */
+
+async function login(){
+
+let telefono = document.getElementById("user").value.trim();
+
+let pass = document.getElementById("pass").value.trim();
+
+if(telefono === ""){
+alert("Ingresá tu teléfono");
+return;
+}
+
+if(pass !== "CHIMANGOARCUCCI"){
+alert("Contraseña incorrecta");
+return;
+}
+
+const { data, error } = await supabaseClient
+.from("usuarios")
+.select("*")
+.eq("telefono", telefono)
+.maybeSingle();
+
+if(error || !data){
+alert("Usuario no encontrado");
+return;
+}
+
+localStorage.setItem("usuarioActivo", telefono);
+
+usuarioActual = telefono;
+
+mostrarPanel();
+}
+
+
+/* =========================
+   REGISTRO
+========================= */
+
+async function registrar(){
+
+let telefono = document.getElementById("newUser").value.trim();
+
+let pass = document.getElementById("newPass").value.trim();
+
+if(telefono === "" || pass === ""){
+alert("Completá los campos");
+return;
+}
+
+/* CONTRASEÑA FIJA */
+
+if(pass !== "CHIMANGOARCUCCI"){
+alert("La contraseña es incorrecta");
+return;
+}
+
+/* VERIFICA SI EXISTE */
+
+const { data: existe } = await supabaseClient
+.from("usuarios")
+.select("*")
+.eq("telefono", telefono)
+.maybeSingle();
+
+if(existe){
+alert("Ese usuario ya existe");
+return;
+}
+
+/* CREA USUARIO */
+
+const token = crypto.randomUUID();
+
+const { error } = await supabaseClient
+.from("usuarios")
+.insert([
+{
+telefono: telefono,
+password: pass,
+token: token,
+activo: true,
+device_id: null,
+progreso:[]
+}
+]);
+
+if(error){
+console.log(error);
+alert("Error al crear cuenta");
+return;
+}
+
+const linkAcceso = "https://curso.sarrocero.com.ar/?token=" + token;
+
+alert(
+"Cuenta creada correctamente\n\n" +
+"LINK DE ACCESO:\n" +
+linkAcceso
+);
+
+mostrarLogin();
+
+}
+
+/* =========================
+   VISTAS
+========================= */
+
+function mostrarRegistro(){
+document.getElementById("login").style.display="none";
+document.getElementById("registro").style.display="flex";
+}
+
+function mostrarLogin(){
+document.getElementById("registro").style.display="none";
+document.getElementById("login").style.display="flex";
+}
+
+/* =========================
+   PANEL
+========================= */
+
+async function mostrarPanel(){
+
+
+document.getElementById("login").style.display="none";
+document.getElementById("registro").style.display="none";
+document.getElementById("panel").style.display="block";
+
+document.getElementById("usuario").innerText = usuarioActual;
+
+await cargarProgreso();
+cargarMaterial(0);
+ 
+// carga primer video
+
+}
+
+/* =========================
+   LOGOUT
+========================= */
+
+function logout(){
+localStorage.removeItem("usuarioActivo");
+location.reload();
+}
+
+/* =========================
+   PROGRESO
+========================= */
+
+async function cargarProgreso(){
+
+const { data } = await supabaseClient
+.from("usuarios")
+.select("progreso")
+.eq("telefono", usuarioActual)
+.maybeSingle();
+
+completados = data?.progreso || [];
+
+actualizarUI();
+
+}
+
+async function guardarProgreso(){
+
+await supabaseClient
+.from("usuarios")
+.update({
+progreso: completados
+})
+.eq("telefono", usuarioActual);
+
+}
+
+/* =========================
+   CARGAR MATERIAL (VIDEO)
+========================= */
+
+function cargarMaterial(i){
+
+actual = i;
+
+document.getElementById("titulo").innerText = materiales[i];
+
+document.getElementById("video").innerHTML = `
+<video width="100%" height="100%" controls controlsList="nodownload">
+    <source src="${videos[i]}?raw=true">
+</video>
+`;
+
+}
+
+/* =========================
+   BOTONES
+========================= */
+
+function siguiente(){
+if(actual < materiales.length-1) cargarMaterial(actual+1);
+}
+
+function anterior(){
+if(actual>0) cargarMaterial(actual-1);
+}
+
+/* =========================
+   HECHO
+========================= */
+
+function hecho(){
+
+let index = completados.indexOf(actual);
+
+if(index===-1){
+completados.push(actual);
+}else{
+completados.splice(index,1);
+}
+
+guardarProgreso();
+actualizarUI();
+
+}
+
+/* =========================
+   UI
+========================= */
+
+function actualizarUI(){
+
+materiales.forEach((_,i)=>{
+let c = document.getElementById("c"+i);
+if(!c) return;
+
+if(completados.includes(i)){
+c.classList.add("completo");
+}else{
+c.classList.remove("completo");
+}
+});
+
+let p = (completados.length/materiales.length)*100;
+document.getElementById("barra").style.width = p+"%";
+
+}
+
+/* =========================
+   TOGGLES
+========================= */
+
+function toggleMenu(){
+document.getElementById("listaMaterial").classList.toggle("abierto");
+document.getElementById("listaPDF").classList.remove("abierto");
+}
+
+function togglePDF(){
+document.getElementById("listaPDF").classList.toggle("abierto");
+document.getElementById("listaMaterial").classList.remove("abierto");
+}
+
+async function accesoAutomatico(){
+
+const params = new URLSearchParams(window.location.search);
+
+const token = params.get("token");
+
+if(!token) return;
+
+const deviceID = obtenerDeviceID();
+
+const { data } = await supabaseClient
+.from("usuarios")
+.select("*")
+.eq("token", token)
+.eq("activo", true)
+.maybeSingle();
+
+if(!data){
+
+document.body.innerHTML = "Acceso inválido";
+
+return;
+
+}
+
+/* PRIMER INGRESO */
+
+if(!data.device_id){
+
+await supabaseClient
+.from("usuarios")
+.update({
+device_id: deviceID
+})
+.eq("token", token);
+
+}
+
+/* OTRO DISPOSITIVO */
+
+else if(data.device_id !== deviceID){
+
+document.body.innerHTML =
+"Este acceso pertenece a otro dispositivo";
+
+return;
+
+}
+
+usuarioActual = data.telefono;
+
+mostrarPanel();
+
+}
+/* =========================
+   INICIO (IMPORTANTE)
+========================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+let contenedor = document.getElementById("listaMaterial");
+let contPDF = document.getElementById("listaPDF");
+
+// MATERIAL
+materiales.forEach((mat,i)=>{
+    let div = document.createElement("div");
+    div.className="item";
+    div.onclick=()=>cargarMaterial(i);
+
+    let circulo = document.createElement("div");
+    circulo.className="circulo";
+    circulo.id="c"+i;
+
+    div.appendChild(circulo);
+    div.append(mat);
+
+    contenedor.appendChild(div);
+});
+
+// PDF
+pdfs.forEach((pdf,i)=>{
+    let div = document.createElement("div");
+    div.className="item pdf-item";
+
+    div.innerHTML = `📄 ${pdf.replace(".pdf","")}`;
+
+    div.onclick = () => {
+        window.open(pdfs[i], "_blank"); // abre en otra pestaña
+    };
+
+    contPDF.appendChild(div);
+});
+accesoAutomatico();
+
+if(localStorage.getItem("usuarioActivo")){
+
+usuarioActual = localStorage.getItem("usuarioActivo");
+
+mostrarPanel();
+
+}
+
+});
+
+
+
+function togglePass(id, el){
+let input = document.getElementById(id);
+
+if(input.type === "password"){
+input.type = "text";
+el.innerText = "🙈";
+}else{
+input.type = "password";
+el.innerText = "👁";
+}
+}
+
+</script>
+
+</body>
+
+</html>
