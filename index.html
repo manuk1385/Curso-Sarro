@@ -208,6 +208,9 @@ padding:10px;
 background:#1e293b;
 border-radius:6px;
 margin-bottom:5px;
+display:flex;
+align-items:center;
+gap:10px;
 }
 
 .material-lista{
@@ -602,6 +605,11 @@ font-weight:bold;
 <div class="titulo-menu" onclick="toggleMenu()">📚 Material</div>
 <div class="material-lista" id="listaMaterial"></div>
 
+<div class="titulo-menu" onclick="mostrarOrbisEurotrend()">
+    <div class="circulo" id="c_orbis"></div>
+    🔥 Orbis Eurotrend
+</div>
+
 <div class="titulo-menu" onclick="togglePDF()">📄 PDF</div>
 <div class="material-lista" id="listaPDF"></div>
 
@@ -677,6 +685,10 @@ let pdfs = [
 "Pdf8.pdf",
 "Pdf9.pdf"
 ];
+
+/* VIDEO NUEVO ORBIS EUROTREND */
+const ORBIS_ID = "orbis_eurotrend";
+const ORBIS_VIDEO_URL = "https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/videonuevo.mov";
 
 /* =========================
    VARIABLES
@@ -902,15 +914,39 @@ document.getElementById("video").innerHTML = `
 }
 
 /* =========================
+   ORBIS EUROTREND
+========================= */
+
+function mostrarOrbisEurotrend(){
+
+actual = ORBIS_ID;
+
+document.getElementById("listaMaterial").classList.remove("abierto");
+document.getElementById("listaPDF").classList.remove("abierto");
+
+document.getElementById("titulo").innerText = "🔥 Orbis Eurotrend";
+
+document.getElementById("video").innerHTML = `
+<video controls controlsList="nodownload" playsinline webkit-playsinline preload="metadata">
+    <source src="${ORBIS_VIDEO_URL}" type="video/quicktime">
+    Tu navegador no puede reproducir este video. Probá convertirlo a MP4 si no se ve.
+</video>
+`;
+
+document.getElementById("texto").innerText = "Video especial Orbis Eurotrend.";
+
+}
+
+/* =========================
    BOTONES
 ========================= */
 
 function siguiente(){
-if(actual < materiales.length-1) cargarMaterial(actual+1);
+if(typeof actual === "number" && actual < materiales.length-1) cargarMaterial(actual+1);
 }
 
 function anterior(){
-if(actual>0) cargarMaterial(actual-1);
+if(typeof actual === "number" && actual>0) cargarMaterial(actual-1);
 }
 
 /* =========================
@@ -949,7 +985,19 @@ c.classList.remove("completo");
 }
 });
 
-let p = (completados.length/materiales.length)*100;
+/* círculo verde de Orbis Eurotrend */
+let cOrbis = document.getElementById("c_orbis");
+if(cOrbis){
+    if(completados.includes(ORBIS_ID)){
+        cOrbis.classList.add("completo");
+    }else{
+        cOrbis.classList.remove("completo");
+    }
+}
+
+/* total = videos del curso + 1 video Orbis */
+let totalContenido = materiales.length + 1;
+let p = (completados.length / totalContenido) * 100;
 document.getElementById("barra").style.width = p+"%";
 
 }
