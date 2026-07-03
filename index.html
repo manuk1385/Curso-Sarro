@@ -758,7 +758,7 @@ font-weight:bold;
 
 <div class="titulo-menu" onclick="togglePDF()">📄 PDF</div>
 <div class="material-lista" id="listaPDF"></div>
-<div class="titulo-menu" onclick="mostrarAIAspe()"><img src="aspe-logo.jpeg" class="aspe-menu-logo" alt="ASPE"> Guía virtual</div>
+<div class="titulo-menu" onclick="mostrarAIAspe()"><img src="saul.png" class="aspe-menu-logo" alt="ASPE"> Guía virtual</div>
 
 </div>
 
@@ -1658,7 +1658,16 @@ Contexto de conversación:
 ${guiaContexto() || "Sin contexto previo."}
 
 Reglas:
-- Respondé como ChatGPT, claro, útil y con bastante explicación.
+- Respondé como ChatGPT, claro, útil, específico y con bastante explicación.
+- Para cada pregunta, no des solo orientación general: tenés que dar una guía práctica con pasos concretos, qué revisar primero, qué síntomas comparar, qué valores o señales esperar si aplica, qué puede estar fallando y cómo seguir el diagnóstico.
+- Cuando pregunten cómo medir, probar o usar tester/multímetro, explicá pasos exactos: dónde va cable negro, dónde va cable rojo, qué escala usar, dónde apoyar puntas, qué valores son buenos/malos y cómo interpretar la medición en un calefón ionizado.
+- Si la consulta es sobre placa, explicá cómo diferenciar placa dañada de falla de pila/fuente, sensor, electrodo, cableado, conector, humedad, display o módulo.
+- Si la consulta es sobre chispa/encendido, separá entre: no hace nada, hace chispa débil, hace chispa pero no prende, prende y se apaga.
+- Si la consulta es sobre ionización, explicá qué revisaría: electrodo/sensor, cable, posición, suciedad, masa, conectores y señal hacia la placa.
+- Si la consulta es sobre display/código, pedí código exacto, marca/modelo y síntomas, pero igual explicá causas probables.
+- Si el usuario no dice marca/modelo, respondé igual de forma general y al final pedí marca, modelo y síntoma exacto.
+- Siempre incluí una sección tipo: Qué puede estar pasando, Qué revisar, Cómo probarlo, Qué significan los resultados, Para seguir.
+- Siempre terminá con una pregunta concreta para continuar el diagnóstico.
 - Si el usuario pregunta "pila", "tester", "placa", "chispa", "sensor", "display", "cableado" o "conector", asumí que habla de calefón ionizado.
 - Se usa mucho tester/multímetro en este curso: explicá cómo razonar mediciones de forma educativa y segura.
 - Enfocate en placa, módulo, pilas/fuente, chispa, sensor/electrodo de ionización, display, micro switch, sensores, continuidad, conectores y cableado.
@@ -1704,94 +1713,240 @@ Reglas:
     if(t.includes("pila") || t.includes("pilas") || t.includes("bateria") || t.includes("batería") || t.includes("tester") || t.includes("multimetro") || t.includes("multímetro")){
       return `Guía virtual:
 
-Tu consulta entra en la parte eléctrica/electrónica del calefón ionizado, especialmente en alimentación del encendido.
+Sí, esa consulta corresponde al diagnóstico eléctrico/electrónico de un calefón ionizado, porque la pila o batería alimenta el módulo de encendido, la chispa y parte de la secuencia de arranque.
 
-Para probar con tester la carga de la pila, pensalo así: la pila alimenta el módulo de encendido, la chispa y la primera secuencia del calefón. Si está baja, floja, mal colocada o con contactos sulfatados, el calefón puede no hacer chispa, hacer chispa débil, prender y apagarse o no responder.
+Cómo medir una pila con tester/multímetro:
 
-Orientación con tester/multímetro:
-1. Usá medición de tensión continua, normalmente V DC o V⎓.
-2. Medí la pila fuera del equipo para ver si tiene tensión.
-3. Revisá la polaridad: positivo con positivo y negativo con negativo.
-4. Mirá el portapilas: resortes, chapitas, sulfato, óxido o falso contacto.
-5. Si mide bien afuera pero falla colocada, puede haber mal contacto en el portapilas.
-6. Si la chispa suena débil o intermitente, la pila puede caer cuando el módulo intenta trabajar.
+1. Colocá el cable negro en la entrada COM del tester.
+2. Colocá el cable rojo en la entrada VΩ, VΩmA o donde el tester marque medición de voltaje.
+3. Girá la perilla a voltaje continuo. Puede aparecer como V⎓, DCV, VDC o una V con una línea recta y una línea punteada.
+4. Si el tester no es automático, elegí una escala mayor al voltaje de la pila:
+   - Para pila de 1,5 V, usá escala 2 V si existe. Si no, usá 20 V.
+   - Para batería de 9 V, usá escala 20 V.
+   - Para portapilas de 3 V, usá escala 20 V.
+5. Tocá con la punta roja el polo positivo (+) de la pila.
+6. Tocá con la punta negra el polo negativo (-) de la pila.
+7. Leé el valor que aparece en pantalla.
 
-En un calefón ionizado, una pila baja puede confundirse con placa dañada, módulo defectuoso, cable flojo o falla de chispa. Por eso conviene seguir la cadena: pila/fuente → contactos → cableado → módulo → chispa → ionización.
+Valores orientativos para una pila alcalina de 1,5 V:
 
-${marcaModelo ? "Como mencionaste marca/modelo o un dato específico, conviene buscar el manual o código de ese equipo para confirmar tensión, tipo de pila y módulo compatible." : "Si no sabés marca y modelo, la orientación es general. Con marca/modelo se puede afinar mucho más."}
+- 1,55 V a 1,65 V: pila nueva o casi nueva.
+- 1,40 V a 1,50 V: pila todavía aceptable.
+- 1,20 V a 1,30 V: pila bastante descargada.
+- Menos de 1,10 V: conviene reemplazarla.
+- Si marca 0 V o un valor muy raro: puede estar agotada, mal apoyada la punta o el tester mal configurado.
 
-Para seguir: ¿tu calefón usa una pila grande, dos pilas, fuente eléctrica o display digital? ¿Hace chispa fuerte, débil o no hace chispa?`;
+Valores orientativos para una batería de 9 V:
+
+- 9,0 V a 9,6 V: buena.
+- 8,0 V a 8,8 V: puede funcionar, pero ya está bajando.
+- Menos de 7,5 V: conviene reemplazarla.
+
+Importante en calefones ionizados:
+
+Medir la pila afuera del equipo sirve, pero no siempre alcanza. Una pila puede marcar 1,5 V sin carga y fallar cuando el calefón intenta hacer chispa. Por eso, si la pila mide bien pero el calefón hace chispa débil, intermitente o se apaga, también hay que revisar:
+
+1. Contactos del portapilas.
+2. Resortes flojos.
+3. Sulfato u óxido.
+4. Cableado del portapilas al módulo.
+5. Fichas flojas.
+6. Humedad cerca del módulo.
+7. Si la tensión cae cuando el calefón intenta encender.
+
+Cómo interpretar la falla en el calefón:
+
+- No hace nada: puede ser pila agotada, portapilas sin contacto, cable cortado o módulo sin alimentación.
+- Hace chispa débil: puede ser pila baja, falso contacto o cable de chispa con fuga.
+- Hace chispa y corta: puede no ser la pila; puede entrar sensor de ionización, electrodo, cableado o placa.
+- Prende y se apaga: suele relacionarse más con detección de llama por ionización, aunque una alimentación débil también puede confundir el diagnóstico.
+
+Relación con el curso:
+
+Esto se conecta con la anatomía del calefón ionizado: alimentación, módulo electrónico, chispa, sensor de ionización, conectores y cableado. La idea es seguir la cadena eléctrica antes de cambiar piezas.
+
+Para seguir el diagnóstico: ¿qué pila usa tu calefón, una pila grande de 1,5 V, dos pilas, batería de 9 V o fuente eléctrica? ¿Y qué hace el calefón cuando abrís el agua: no hace nada, hace chispa débil o prende y se apaga?`;
     }
 
     if(t.includes("placa") || t.includes("módulo") || t.includes("modulo")){
       return `Guía virtual:
 
-Si el problema parece estar en la placa electrónica o módulo del calefón ionizado, no conviene asumir de entrada que la placa está quemada. Primero se analiza la cadena eléctrica/electrónica.
+Si el problema parece estar en la placa electrónica o módulo del calefón ionizado, hay que diagnosticar antes de cambiarla. Muchas veces parece placa, pero el problema real está en alimentación, cableado, sensor, electrodo, humedad o conectores.
 
-La placa o módulo suele recibir señales, habilitar chispa, controlar la secuencia de encendido y leer la confirmación de llama por ionización. Si falta una señal, el síntoma puede parecer “placa rota”, aunque el origen sea otra cosa.
+Qué función cumple la placa o módulo:
+
+La placa recibe señales, habilita la chispa, interpreta sensores y controla parte de la secuencia de encendido. En los calefones ionizados también se relaciona con la confirmación de llama mediante ionización. Si una señal no llega, el equipo puede no encender, hacer chispa y cortar, prender unos segundos y apagarse o marcar código.
 
 Qué puede estar pasando:
-1. Alimentación baja: pilas gastadas, fuente débil o falso contacto.
-2. Conectores flojos o sulfatados.
-3. Cable de electrodo o sensor de ionización desconectado.
-4. Humedad cerca de la placa.
-5. Pista quemada, componente dañado o placa sulfatada.
-6. Sensor o micro switch que no manda señal correcta.
-7. Display con código que orienta la falla.
 
-Con tester/multímetro se puede orientar midiendo alimentación y continuidad de cables, siempre sin puentear seguridades ni modificar el equipo.
+1. La placa no recibe alimentación correcta.
+2. Las pilas están bajas o el portapilas tiene sulfato.
+3. Hay un conector flojo o sulfatado.
+4. Hay humedad en la placa o en los terminales.
+5. El electrodo de ionización no confirma llama y parece falla de placa.
+6. El cable de chispa tiene fuga o está cortado.
+7. El micro switch o sensor de caudal no da la orden.
+8. La placa tiene pista quemada, componente reventado o zona negra.
+9. El display marca código, pero falta cruzarlo con marca/modelo.
 
-${marcaModelo ? "Como pusiste marca/modelo o un dato específico, la búsqueda debe cruzar esa marca/modelo con el síntoma para ver placa compatible, códigos y fallas comunes." : "Si no aparece marca/modelo, la respuesta queda general: conviene anotar marca, modelo y código impreso en la placa."}
+Qué revisar primero:
 
-Para seguir: ¿qué hace exactamente el calefón: no enciende, hace chispa y no prende, prende unos segundos y se apaga, o muestra código de error?`;
+1. Marca y modelo del calefón.
+2. Si usa pila, fuente o 220 V.
+3. Si hace chispa o no hace nada.
+4. Si se escucha el módulo trabajar.
+5. Si hay olor a quemado en placa.
+6. Si hay humedad, sulfato o insectos.
+7. Si los conectores están bien apretados.
+8. Si el cable del electrodo y sensor está conectado.
+
+Cómo probar con tester de forma orientativa:
+
+1. Primero confirmá alimentación: pila/fuente con voltaje correcto.
+2. Medí continuidad de cables dudosos con el equipo apagado.
+3. Revisá si llega tensión al módulo cuando se activa el equipo, solo si sabés dónde medir.
+4. Si hay pila buena pero no hay chispa ni señal, puede ser módulo, contacto, cableado o sensor que no habilita.
+5. Si hay chispa pero corta, no cambies placa de una: revisá ionización, electrodo, cable y conectores.
+
+Cómo interpretar:
+
+- No hace nada: alimentación, portapilas, cableado, micro switch o módulo.
+- Hace chispa débil: pila baja, falso contacto, cable de chispa, módulo cansado.
+- Hace chispa fuerte pero no mantiene: ionización, electrodo, cable del sensor, masa o placa que no lee señal.
+- Display con error: pedir código exacto y marca/modelo.
+
+Solución realista:
+
+No compres una placa nueva sin confirmar alimentación, conectores, pila/fuente, electrodo y sensor de ionización. Si la placa está quemada, sulfatada o mojada, puede requerir reparación electrónica o reemplazo por una compatible con el modelo exacto.
+
+${marcaModelo ? "Como mencionaste marca/modelo o un dato específico, conviene cruzar el código de placa con ese equipo para no comprar una placa incorrecta." : "Si no aparece marca/modelo, la respuesta queda general. Para afinar, necesitás marca, modelo y síntoma exacto."}
+
+Para seguir: ¿la placa no hace nada, hace chispa y corta, marca código de error, o ves la placa quemada/sulfatada?`;
     }
 
     if(t.includes("chispa") || t.includes("enciende") || t.includes("prende") || t.includes("apaga")){
       return `Guía virtual:
 
-Ese síntoma se analiza como una secuencia de encendido de un calefón ionizado.
+Ese síntoma se diagnostica separando la secuencia de encendido del calefón ionizado. No es lo mismo que no haga nada, que haga chispa débil, que haga chispa y no prenda, o que prenda y se apague.
 
-La cadena básica sería:
-1. Alimentación: pila/fuente con carga correcta.
-2. Orden de encendido: micro switch, sensor de caudal o señal inicial.
-3. Módulo/placa: recibe la orden y genera chispa.
-4. Electrodo de encendido: produce la chispa.
-5. Sensor de ionización: confirma que la llama quedó detectada.
-6. Cableado/conectores: deben estar firmes y sin sulfato.
+Cadena básica de funcionamiento:
 
-Si hace chispa pero no prende, puede estar fallando la alimentación, cable de chispa, electrodo, módulo o una condición previa de sensores. Si prende y se apaga, suele revisarse la confirmación por ionización: electrodo de ionización, cable, posición, suciedad o lectura de la placa.
+1. Alimentación: pila, fuente o tensión correcta.
+2. Orden de arranque: micro switch, sensor de caudal o señal de apertura.
+3. Placa/módulo: recibe la orden y activa la chispa.
+4. Chispa: cable de alta y electrodo de encendido.
+5. Encendido inicial.
+6. Ionización: el sensor confirma que la llama quedó detectada.
+7. La placa mantiene o corta el funcionamiento según la señal.
 
-Qué mirar visualmente:
-- Pilas/fuente.
-- Portapilas y contactos.
-- Cable de chispa.
-- Electrodo visible.
-- Cable del sensor de ionización.
-- Conectores flojos o sulfatados.
-- Humedad cerca de placa.
+Según el síntoma:
 
-Para seguir: ¿hace chispa fuerte, chispa débil, chispa continua, o prende unos segundos y corta?`;
+Si no hace nada:
+- Revisar pila/fuente.
+- Portapilas sulfatado.
+- Cable cortado.
+- Micro switch o sensor que no da orden.
+- Módulo sin alimentación.
+
+Si hace chispa débil:
+- Pila baja.
+- Contactos flojos.
+- Cable de chispa con fuga.
+- Electrodo sucio, quebrado o fuera de posición.
+- Módulo debilitado.
+
+Si hace chispa pero no prende:
+- Electrodo mal ubicado.
+- Cable de chispa con pérdida.
+- Sensor/orden incompleta.
+- Módulo que dispara chispa pero no completa secuencia.
+- En esta guía nos enfocamos en lo eléctrico/electrónico del diagnóstico.
+
+Si prende y se apaga:
+- Revisar sensor/electrodo de ionización.
+- Cable del sensor flojo o sulfatado.
+- Electrodo sucio o fuera de posición.
+- Mala masa o falso contacto.
+- Placa que no interpreta la señal de ionización.
+- Alimentación que cae al momento de trabajar.
+
+Qué revisar visualmente:
+
+1. Pila o fuente.
+2. Portapilas.
+3. Conectores.
+4. Cable de chispa.
+5. Electrodo visible.
+6. Sensor de ionización.
+7. Humedad o sulfato cerca del módulo.
+8. Display o código si tiene pantalla.
+
+Cómo usar tester en este diagnóstico:
+
+- Medí voltaje de pila/fuente.
+- Revisá continuidad de cables si el equipo está apagado.
+- Revisá caída de tensión si la pila mide bien pero al encender falla.
+- No puentear sensores ni modificar conexiones de seguridad.
+
+Solución realista:
+
+Primero confirmá alimentación y conectores. Después diferenciá si el problema está antes de la chispa, durante la chispa o después del encendido. Si prende y corta, mirá ionización antes de culpar a la placa.
+
+Para seguir: cuando abrís el agua, ¿no hace nada, hace tac-tac de chispa, hace chispa débil, prende unos segundos y se apaga, o marca error?`;
     }
 
     return `Guía virtual:
 
 Te respondo tomando la consulta como parte del diagnóstico eléctrico/electrónico de un calefón ionizado.
 
-En estos equipos conviene no cambiar piezas al azar. Primero se sigue la anatomía del calefón y la cadena de señales:
+Para que la respuesta sea útil, siempre conviene ubicar el síntoma en una cadena de diagnóstico. Un calefón ionizado no se revisa cambiando piezas al azar: se sigue el recorrido eléctrico/electrónico hasta encontrar dónde se corta la señal.
 
-1. Alimentación: pilas, fuente, contactos y tensión.
-2. Orden de encendido: micro switch, sensor de caudal o señal de apertura.
-3. Módulo/placa: interpreta señales y activa la secuencia.
-4. Chispa: electrodo, cable de alta y módulo.
-5. Ionización: sensor/electrodo que confirma que la llama fue detectada.
-6. Cableado: conectores, fichas, terminales, sulfato, humedad o falso contacto.
-7. Display: si tiene pantalla, el código ayuda a ubicar la falla.
+Cadena principal a revisar:
 
-Si usás tester, lo más común es razonar continuidad, alimentación y caída de tensión, según el componente que estés revisando. La idea del curso es mirar qué hace y qué no hace el calefón: no enciende, hace chispa y no prende, prende y se apaga, marca error o queda intermitente.
+1. Alimentación:
+   Pilas, fuente, tensión, portapilas, contactos y polaridad.
 
-${marcaModelo ? "Como mencionaste un dato de marca/modelo, la consulta puede hacerse más específica cruzando ese modelo con el síntoma." : "Si me pasás marca y modelo, puedo orientar la respuesta más puntual."}
+2. Orden de encendido:
+   Micro switch, sensor de caudal o señal que le dice al módulo que debe arrancar.
 
-Para seguir: ¿qué síntoma exacto tiene: no enciende, hace chispa y no prende, prende y se apaga, o querés probar un componente con tester?`;
+3. Placa o módulo:
+   Recibe alimentación, interpreta señales y manda orden de chispa.
+
+4. Chispa:
+   Cable de alta, electrodo de encendido, distancia, suciedad, fuga o electrodo dañado.
+
+5. Ionización:
+   Sensor/electrodo que confirma que la llama fue detectada. Si no confirma, el equipo puede prender y apagarse.
+
+6. Cableado y conectores:
+   Fichas flojas, sulfato, humedad, cables cortados o terminales sueltos.
+
+7. Display o código:
+   Si el modelo tiene pantalla, el código orienta la búsqueda.
+
+Qué revisar primero:
+
+- Qué hace exactamente: no enciende, hace chispa, prende y corta, marca error o queda intermitente.
+- Si usa pila, fuente o 220 V.
+- Si la chispa es fuerte o débil.
+- Si hay humedad o sulfato.
+- Si los conectores están firmes.
+- Si la marca/modelo permite buscar códigos o repuestos correctos.
+
+Cómo usar el tester en general:
+
+- Voltaje continuo para pilas/fuente.
+- Continuidad para cables, con el equipo apagado.
+- Revisión de caída de tensión si mide bien sin carga pero falla al trabajar.
+- No puentear sensores ni modificar seguridades.
+
+Solución realista:
+
+Primero identificá síntoma, después alimentación, después conectores/cables, después módulo/chispa y por último ionización o placa. Así se evita cambiar placa, sensor o módulo sin necesidad.
+
+${marcaModelo ? "Como mencionaste un dato de marca/modelo, la respuesta puede hacerse más específica buscando ese equipo y el síntoma." : "Si me pasás marca y modelo, puedo orientar la respuesta con más precisión."}
+
+Para seguir: ¿qué hace exactamente el calefón y qué querés probar: pila/fuente, placa, chispa, sensor de ionización, display o cableado?`;
   }
 
   window.iaEnviar = async function(){
@@ -1855,7 +2010,7 @@ Para seguir: ¿qué síntoma exacto tiene: no enciende, hace chispa y no prende,
     videoBox.innerHTML = `
       <div class="guia-panel">
         <div class="guia-head">
-          <img src="aspe-logo.jpeg" class="guia-head-logo" alt="ASPE">
+          <img src="saul.png" class="guia-head-logo" alt="ASPE">
           <div>
             <h2>Guía virtual en consultas de fallas</h2>
             <p>Pone la marca y modelo del calefón ionizado y pregunta con tus palabras qué hace, qué no hace o cuál sería la falla.</p>
