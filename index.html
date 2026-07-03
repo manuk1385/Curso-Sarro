@@ -1,17 +1,192 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-LN6HBQEZBX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Panel PRO Supabase</title>
 
-  gtag('config', 'G-LN6HBQEZBX');
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+body{
+  margin:0;
+  font-family:Inter,Arial;
+  background:#0b1220;
+  color:#e5e7eb;
+}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:30px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+h1{
+  font-size:28px;
+  margin:0;
+}
+
+button{
+  background:#2563eb;
+  border:none;
+  padding:10px 14px;
+  border-radius:10px;
+  color:white;
+  cursor:pointer;
+}
+
+button.danger{background:#dc2626;}
+button.edit{background:#16a34a;}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+  margin:20px 0;
+}
+
+.card{
+  background:#111827;
+  padding:15px;
+  border-radius:14px;
+  border:1px solid #1f2937;
+}
+
+.n{
+  font-size:26px;
+  font-weight:bold;
+  margin-top:5px;
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+
+th,td{
+  padding:12px;
+  border-bottom:1px solid #1f2937;
+  font-size:14px;
+}
+
+th{
+  background:#1f2937;
+  text-align:left;
+}
+
+tr:hover{
+  background:#111827;
+}
+
+.toolbar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:15px 0;
+}
+
+input,select{
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #334155;
+  background:#0f172a;
+  color:white;
+}
+
+.small{
+  opacity:.6;
+  font-size:12px;
+  margin-top:10px;
+}
+
+/* MODAL */
+.modal{
+  display:none;
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,.6);
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-content{
+  background:#0f172a;
+  padding:20px;
+  border-radius:12px;
+  width:300px;
+}
+
+.modal-content input{
+  width:100%;
+  margin-bottom:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>🚀 Panel PRO Supabase</h1>
+    <div>
+      <button onclick="exportExcel()">📄 Excel</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">Usuarios<div class="n" id="total">0</div></div>
+    <div class="card">Cursos<div class="n" id="cursos">0</div></div>
+    <div class="card">Hoy<div class="n" id="hoy">0</div></div>
+  </div>
+
+  <div class="toolbar">
+    <input id="search" placeholder="Buscar usuario..."/>
+    <select id="cursoFilter">
+      <option value="">Todos los cursos</option>
+    </select>
+  </div>
+
+  <table class="table">
+    <thead>
+<tr>
+<th>ID</th>
+<th>Teléfono</th>
+<th>Progreso</th>
+<th>Link acceso</th>
+<th>Acciones</th>
+</tr>
+</thead>
+    <tbody id="table"></tbody>
+  </table>
+
+  <div class="small">⚡ Realtime conectado a Supabase</div>
+
+</div>
+
+<!-- MODAL EDIT -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3>Editar usuario</h3>
+    <input id="editNombre" placeholder="Nombre"/>
+    <input id="editEmail" placeholder="Email"/>
+    <input id="editTelefono" placeholder="Teléfono"/>
+    <input id="editCurso" placeholder="Curso"/>
+    <button onclick="saveEdit()">Guardar</button>
+    <button onclick="closeModal()" class="danger">Cerrar</button>
+  </div>
+</div>
 
 <script>
 
@@ -20,1834 +195,192 @@ const supabaseUrl = "https://nzecuovatcavltrwufah.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56ZWN1b3ZhdGNhdmx0cnd1ZmFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5MDEwMTAsImV4cCI6MjA5MjQ3NzAxMH0.n6nvAuKb4GP-lOGHbeM91ibKt9M9oIxEz9oSCZD24uY";
 
 const supabaseClient = supabase.createClient(
-supabaseUrl,
-supabaseKey
+  supabaseUrl,
+  supabaseKey
 );
 
-</script>
-    
-    <link rel="icon" href="saul.png">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Curso Aspe</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+let data = [];
 
-<title>Iniciar Sesión Seguro | Acceso con Contraseña Protegida</title>
-<meta name="description" content="Página de inicio de sesión segura con opción para mostrar u ocultar contraseña. Acceso rápido, moderno y protegido para usuarios.">
-<meta name="keywords" content="login, iniciar sesión, contraseña, mostrar contraseña, acceso seguro, formulario login, seguridad web">
-<meta name="author" content="Tu Sitio Web">
-<meta name="robots" content="index, follow">
-<meta name="language" content="Spanish">
-<meta name="theme-color" content="#0f172a">
+/* =========================
+   CARGAR USUARIOS
+========================= */
 
-<link rel="canonical" href="https://tusitio.com/login">
+async function load(){
 
-<!-- Open Graph -->
-<meta property="og:type" content="website">
-<meta property="og:title" content="Iniciar Sesión Seguro | Acceso Protegido">
-<meta property="og:description" content="Accede con seguridad usando nuestro formulario moderno con opción para ver u ocultar contraseña.">
-<meta property="og:url" content="https://tusitio.com/login">
-<meta property="og:site_name" content="Tu Sitio Web">
-<meta property="og:locale" content="es_ES">
-<meta property="og:image" content="https://tusitio.com/img/login-preview.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Pantalla de inicio de sesión segura">
+  const { data: users, error } = await supabaseClient
+    .from("usuarios")
+    .select("*")
+    .order("id",{ascending:false});
 
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Iniciar Sesión Seguro">
-<meta name="twitter:description" content="Formulario de acceso seguro con opción de mostrar contraseña.">
-<meta name="twitter:image" content="https://tusitio.com/img/login-preview.jpg">
+  console.log(users);
+  console.log(error);
 
-    
-<style>
+  data = users || [];
 
-body{
-margin:0;
-font-family:Arial;
-background:#f5f7fb;
+  render(data);
+
 }
 
 /* =========================
-   COMPATIBILIDAD IOS / IPHONE / IPAD
+   RENDER
 ========================= */
-*{
-box-sizing:border-box;
--webkit-tap-highlight-color:transparent;
-}
 
-html{
-width:100%;
-min-height:100%;
--webkit-text-size-adjust:100%;
-}
+function render(users){
 
-body{
-width:100%;
-min-height:100dvh;
-overflow-x:hidden;
-padding-left:env(safe-area-inset-left);
-padding-right:env(safe-area-inset-right);
-}
+document.getElementById("table").innerHTML = users.map(u => {
 
-input,
-button{
-font-family:inherit;
-font-size:16px; /* evita zoom automático en iPhone */
-}
+const link =
+"https://curso.sarrocero.com.ar/?token=" +
+u.token;
 
-button,
-a,
-.item,
-.titulo-menu,
-.toggle{
-touch-action:manipulation;
-}
+return `
 
-video{
-width:100%;
-height:100%;
-display:block;
-background:#000;
-object-fit:contain;
-border-radius:10px;
-}
+<tr>
 
-img{
-max-width:100%;
-height:auto;
-}
+<td>${u.id}</td>
 
+<td>${u.telefono || ""}</td>
 
-/* LOGIN */
+<td>${(u.progreso || []).length} / 13</td>
 
-#login, #registro{
-min-height:100dvh;
-height:auto;
-display:flex;
-justify-content:center;
-align-items:center;
-padding:calc(16px + env(safe-area-inset-top)) 14px calc(16px + env(safe-area-inset-bottom));
-}
+<td>
 
-.card{
-background:white;
-padding:30px;
-border-radius:10px;
-box-shadow:0 5px 20px rgba(0,0,0,0.1);
-width:300px;
-max-width:100%;
-}
-
-input{
-width:100%;
-padding:10px;
-margin-bottom:10px;
-border-radius:6px;
-border:1px solid #ccc;
-}
-
-button{
-width:100%;
-padding:10px;
-border:none;
-background:#2563eb;
-color:white;
-border-radius:6px;
-cursor:pointer;
-margin-top:5px;
-}
-
-.link{
-text-align:center;
-margin-top:10px;
-cursor:pointer;
-color:#2563eb;
-}
-
-/* PANEL */
-
-.topbar{
-height:60px;
-background:#0f172a;
-color:white;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:0 20px;
-}
-
-.panel{
-display:none;
-}
-
-.container{
-display:flex;
-min-height:calc(100vh - 60px);
-}
-
-.sidebar{
-width:260px;
-background:#0f172a;
-color:white;
-padding:20px;
-height:calc(100vh - 60px);
-overflow-y:auto;
-}
-
-.logo{
-width:120px;
-margin-bottom:20px;
-}
-
-.titulo-menu{
-cursor:pointer;
-padding:10px;
-background:#1e293b;
-border-radius:6px;
-margin-bottom:5px;
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.material-lista{
-max-height:0;
-overflow:hidden;
-transition:0.3s;
-}
-
-.abierto{
-max-height:2000px;
-}
-
-.item{
-padding:10px;
-margin-bottom:5px;
-border-left:3px solid #334155;
-display:flex;
-align-items:center;
-gap:10px;
-cursor:pointer;
-}
-
-.item:hover{
-background:#334155;
-}
-
-.circulo{
-width:10px;
-height:10px;
-border-radius:50%;
-background:white;
-}
-
-.completo{
-background:#22c55e;
-}
-
-.main{
-flex:1;
-padding:30px;
-}
-
-.video{
-background:black;
-height:300px;
-border-radius:10px;
-margin-bottom:20px;
-display:flex;
-align-items:center;
-justify-content:center;
-color:white;
-}
-
-.progreso{
-height:15px;
-background:#ddd;
-border-radius:10px;
-margin-bottom:20px;
-}
-
-.barra{
-height:100%;
-background:#22c55e;
-width:0%;
-border-radius:10px;
-}
-
-.botones{
-display:flex;
-gap:10px;
-}
-
-.logout{
-background:red;
-padding:6px 12px;
-border:none;
-color:white;
-border-radius:6px;
-cursor:pointer;
-}
-
-@media (max-width: 768px){
-
-/* LOGIN ocupa toda la pantalla */
-.card{
-width:95%;
-padding:25px;
-border-radius:14px;
-}
-
-.card h2{
-font-size:22px;
-margin-bottom:15px;
-}
-
-input{
-padding:14px;
-font-size:16px;
-}
-
-button{
-padding:14px;
-font-size:16px;
-}
-
-/* TOPBAR */
-.topbar{
-padding:12px;
-font-size:15px;
-}
-
-.container{
-flex-direction: column;
-}
-
-/* sidebar arriba */
-.sidebar{
-width:100%;
-height:auto;
-}
-
-/* contenido abajo ocupando todo */
-.main{
-width:100%;
-background:#fff;
-border-radius:20px 20px 0 0;
-margin-top:10px;
-}
-
-/* centra el contenido tipo app */
-.main{
-max-width:600px;
-margin-left:auto;
-margin-right:auto;
-}
-
-/* evita que quede corrido */
-body{
-overflow-x:hidden;
-}
-
-.logo{
-width:90px;
-margin:auto;
-}
-
-/* ITEMS más grandes */
-.item{
-padding:16px;
-font-size:16px;
-border-radius:10px;
-}
-
-
-/* TÍTULO */
-#titulo{
-font-size:22px;
-margin-bottom:15px;
-}
-
-/* VIDEO 🔥 protagonista */
-.video{
-height:260px;
-border-radius:14px;
-}
-
-/* TEXTO */
-#texto{
-font-size:16px;
-}
-
-/* PROGRESO */
-.progreso{
-height:14px;
-}
-
-/* BOTONES tipo app */
-.botones{
-flex-direction:column;
-gap:12px;
-}
-
-.botones button{
-padding:16px;
-font-size:16px;
-border-radius:12px;
-}
-
-/* LOGOUT */
-.logout{
-font-size:14px;
-padding:10px;
-}
-
-}
-
-
-/* IPHONE / IPAD */
-@media (max-width: 820px){
-
-.topbar{
-height:auto;
-min-height:60px;
-padding:calc(10px + env(safe-area-inset-top)) 14px 10px;
-gap:10px;
-position:sticky;
-top:0;
-z-index:10;
-}
-
-.container{
-min-height:auto;
-}
-
-.sidebar{
-padding:16px;
-max-height:42dvh;
-overflow-y:auto;
--webkit-overflow-scrolling:touch;
-}
-
-.main{
-padding:18px;
-min-height:58dvh;
-}
-
-.video{
-height:clamp(210px, 45vw, 360px);
-}
-
-.material-lista.abierto{
-max-height:42dvh;
-overflow-y:auto;
--webkit-overflow-scrolling:touch;
-}
-
-.card{
-width:min(100%, 390px);
-}
-
-#login{
-justify-content:flex-start;
-padding-top:calc(22px + env(safe-area-inset-top));
-}
-}
-
-/* IPHONE CHICO */
-@media (max-width: 430px){
-
-#login > div:first-child{
-max-width:100% !important;
-}
-
-.card{
-padding:22px;
-}
-
-.topbar{
-font-size:14px;
-}
-
-.sidebar{
-max-height:38dvh;
-}
-
-.main{
-padding:16px;
-border-radius:18px 18px 0 0;
-}
-
-.video{
-height:220px;
-}
-
-#titulo{
-font-size:20px;
-}
-
-.item,
-.titulo-menu{
-font-size:16px;
-min-height:48px;
-}
-
-.logout{
-width:auto;
-white-space:nowrap;
-}
-
-}
-
-.input-group{
-position:relative;
-}
-
-
-.input-group input{
-   width:100%;
-padding-right:10px;
-}
-.toggle{
-position:absolute;
-right:10px;
-top:50%;
-transform:translateY(-50%);
-cursor:pointer;
-font-size:18px;
-}
-
-/* =========================
-   AI ASPE NUEVA
-========================= */
-.ia-panel{background:#fff;border-radius:18px;padding:20px;box-shadow:0 8px 25px rgba(0,0,0,.08);color:#0f172a;width:100%;max-width:1100px;margin:auto}
-.ia-card-head{display:flex;gap:14px;align-items:center;margin-bottom:14px}.ia-logo{width:56px;height:56px;border-radius:16px;background:#0f172a;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px}.ia-card-head h2{margin:0;font-size:26px}.ia-card-head p{margin:4px 0 0;color:#64748b}.ia-warning{background:#fff7ed;border:1px solid #fb923c;color:#9a3412;padding:12px;border-radius:12px;margin:10px 0;line-height:1.45}.ia-quick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.ia-quick button{background:#1e293b;border-radius:12px;padding:12px}.ia-chat-box{height:390px;overflow-y:auto;background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px}.ia-bubble{padding:12px 14px;border-radius:14px;margin-bottom:10px;line-height:1.45;white-space:normal}.ia-bot{background:#e2e8f0;color:#0f172a;margin-right:8%}.ia-user{background:#2563eb;color:white;margin-left:15%}.ia-input-row{display:flex;gap:10px;margin-top:12px;align-items:stretch}.ia-input-row textarea{flex:1;min-height:54px;resize:vertical;border:1px solid #cbd5e1;border-radius:12px;padding:12px;font-family:inherit;font-size:16px}.ia-mic{width:60px;background:#ef4444;border-radius:12px;font-size:22px}.ia-send{width:130px;border-radius:12px}.ia-mic-state{font-size:13px;color:#64748b;margin-top:8px}.ia-result-img{margin:12px 0;background:#fff;border:1px solid #cbd5e1;border-radius:14px;padding:10px}.ia-result-img img{width:100%;max-height:340px;object-fit:contain;background:#000;border-radius:10px}.ia-result-img small{display:block;margin-top:6px;color:#475569}.ia-extra{margin:10px 0;padding:10px;background:#f1f5f9;border-radius:10px}.img-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:15px}.img-card{border:1px solid #e2e8f0;border-radius:14px;padding:10px;background:#f8fafc}.img-card img{width:100%;height:160px;object-fit:contain;background:#000;border-radius:10px}.img-card small{display:block;color:#64748b;margin:4px 0}.img-card p{font-size:13px;line-height:1.35;max-height:130px;overflow:auto}
-@media(max-width:768px){.ia-quick{grid-template-columns:1fr}.ia-input-row{flex-direction:column}.ia-mic,.ia-send{width:100%;padding:14px}.ia-chat-box{height:420px}.ia-bot,.ia-user{margin-left:0;margin-right:0}.img-grid{grid-template-columns:1fr}.ia-card-head h2{font-size:22px}}
-
-
-
-/* =========================
-   AI ASPE MEJORADA
-========================= */
-.video.ia-mode{
-  background:transparent;
-  height:auto;
-  min-height:0;
-  display:block;
-  color:inherit;
-}
-.ia-panel{
-  max-width:1100px;
-  margin:0 auto;
-}
-.ia-chat-box{
-  height:auto;
-  max-height:58vh;
-  min-height:360px;
-  overflow-y:auto;
-}
-.ia-bubble{
-  font-size:16px;
-}
-.ia-bot{
-  background:#eef2f7;
-  border:1px solid #dbe3ee;
-}
-.ia-user{
-  background:#2563eb;
-}
-.ia-image-link-box{margin:10px 0;padding:12px;background:#ecfeff;border:1px solid #67e8f9;border-radius:12px}.ia-image-link-box a{display:inline-block;background:#0891b2;color:white;text-decoration:none;padding:10px 14px;border-radius:10px;font-weight:bold;margin-top:6px}
-.ia-google-box{
-  margin-top:12px;
-  padding:12px;
-  border-radius:12px;
-  background:#ecfeff;
-  border:1px solid #67e8f9;
-}
-.ia-google-box a{
-  color:#0f766e;
-  font-weight:bold;
-}
-.ia-gemini-box{
-  margin-top:12px;
-  padding:12px;
-  border-radius:12px;
-  background:#f0fdf4;
-  border:1px solid #86efac;
-}
-.ia-source{
-  color:#475569;
-  font-size:14px;
-  margin-top:4px;
-}
-.ia-result-img{
-  max-width:720px;
-}
-.ia-result-img img{
-  max-height:380px;
-}
-@media(max-width:768px){
-  .video.ia-mode{height:auto!important;}
-  .ia-chat-box{max-height:none;min-height:320px;}
-}
-
-
-
-/* =========================
-   AI ASPE V5 - ajustes visuales
-========================= */
-.ia-result-img{
-  max-width:360px !important;
-  margin:10px 0 !important;
-  padding:8px !important;
-}
-.ia-result-img img{
-  width:100% !important;
-  max-height:210px !important;
-  object-fit:contain !important;
-  background:#000 !important;
-  border-radius:10px !important;
-}
-.ia-google-box,
-.ia-gemini-box{
-  background:#ffffff;
-  border:1px solid #cbd5e1;
-  border-radius:12px;
-  padding:12px;
-  margin:10px 0;
-}
-.ia-img-link{
-  display:inline-block;
-  margin-top:8px;
-  background:#2563eb;
-  color:#fff !important;
-  padding:10px 14px;
-  border-radius:10px;
-  text-decoration:none;
-  font-weight:bold;
-}
-.ia-course-tag{
-  display:inline-block;
-  background:#dcfce7;
-  color:#166534;
-  padding:5px 8px;
-  border-radius:999px;
-  font-size:13px;
-  margin-bottom:6px;
-}
-@media(max-width:768px){
-  .ia-result-img{max-width:260px !important;}
-  .ia-result-img img{max-height:160px !important;}
-}
-
-
-/* =========================
-   AI ASPE V6 - vista cliente
-========================= */
-.ia-panel-client{max-width:1100px;background:#fff;border:1px solid #e2e8f0;}
-.ia-panel-client .ia-warning:first-of-type{display:none;}
-.ia-quick-client button{font-size:16px;font-weight:700;}
-.ia-actions-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
-.ia-actions-row button{width:auto;background:#334155;padding:10px 14px;border-radius:10px;}
-.ia-actions-row button:first-child{background:#0f766e;}
-.ia-gemini-box{background:#ffffff!important;border:1px solid #dbe3ee!important;box-shadow:0 2px 10px rgba(15,23,42,.04);}
-.ia-warning-small{font-size:14px;background:#f8fafc!important;color:#475569!important;border:1px solid #e2e8f0!important;}
-.ia-result-img{max-width:280px!important;}
-.ia-result-img img{max-height:160px!important;}
-.ia-bubble{user-select:text;}
-@media(max-width:768px){.ia-actions-row button{width:100%;}.ia-result-img{max-width:220px!important}.ia-result-img img{max-height:140px!important}}
-
-</style>
-</head>
-
-<body>
-
-<!-- LOGIN  -->
-
-<div id="login" style="flex-direction:column; gap:20px;">
-
-<!-- MENSAJE WHATSAPP -->
-<div style="
-background:#dcfce7;
-border:1px solid #22c55e;
-padding:18px;
-border-radius:12px;
-text-align:center;
-max-width:370px;
-font-family:Arial;
-">
-
-<h3 style="margin:0 0 10px 0; color:#166534;">
-🔥 ¿Te interesa comprar el curso sobre Calefones Ionizados Aspe?
-</h3>
-
-<p style="margin:0 0 15px 0; color:#166534;">
-Escribime directamente por WhatsApp.
-</p>
-
-<a 
-href="https://wa.me/5492926404627" 
-target="_blank"
+<input
+value="${link}"
+readonly
 style="
-display:inline-block;
-background:#22c55e;
+width:260px;
+padding:6px;
+border-radius:6px;
+border:none;
+background:#1e293b;
 color:white;
-padding:12px 18px;
-border-radius:10px;
-text-decoration:none;
-font-weight:bold;
-">
-📲 Hablar por WhatsApp
-</a>
+"
+/>
 
-</div>
+<button onclick="copiarLink('${link}')">
+📋 Copiar
+</button>
 
-<div class="card"> <h2>Iniciar sesión</h2> <input id="user" placeholder="Número de teléfono"> <div class="input-group"> <input id="pass" type="password" placeholder="Contraseña"> <span class="toggle" onclick="togglePass('pass', this)">👁</span> </div> <button onclick="login()">Entrar</button> <div class="link" onclick="mostrarRegistro()">Registrarse</div> </div>  </div>
+</td>
 
-<!-- REGISTRO -->
+<td>
+<button class="danger" onclick="deleteUser(${u.id})">
+Eliminar
+</button>
+</td>
 
+</tr>
 
-<div id="registro" style="display:none;">
-<div class="card">
-<h2>Registrarse</h2>
+`;
 
-<input id="newUser" placeholder="Número de teléfono">
+}).join("");
 
-<div class="input-group">
-<input id="newPass" type="password" placeholder="Contraseña">
-<span class="toggle" onclick="togglePass('newPass', this)">👁</span>
-</div>
+document.getElementById("total").innerText = users.length;
 
-<button onclick="registrar()">Crear cuenta</button>
+document.getElementById("cursos").innerText = 1;
 
-<div class="link" onclick="mostrarLogin()">Ya tengo cuenta</div>
-
-</div>
-</div>
-
-<!-- PANEL -->
-
-<div class="panel" id="panel">
-
-<div class="topbar">
-<div>Usuario: <span id="usuario"></span></div>
-<button class="logout" onclick="logout()">Cerrar sesión</button>
-</div>
-
-<div class="container">
-
-<div class="sidebar">
-
-<img src="saul.png" class="logo">
-
-<div class="titulo-menu" onclick="toggleMenu()">📚 Material</div>
-<div class="material-lista" id="listaMaterial"></div>
-
-<div class="titulo-menu" onclick="mostrarOrbisEurotrend()">
-    <div class="circulo" id="c_orbis"></div>
-    🔥 Orbis Eurotrend
-</div>
-
-<div class="titulo-menu" onclick="togglePDF()">📄 PDF</div>
-<div class="material-lista" id="listaPDF"></div>
-<div class="titulo-menu" onclick="mostrarAIAspe()">🤖 AI</div>
-
-</div>
-
-<div class="main">
-
-<h2 id="titulo">Selecciona material</h2>
-
-<div class="progreso">
-<div class="barra" id="barra"></div>
-</div>
-
-<div class="video" id="video">Contenido</div>
-
-<p id="texto">Aquí aparecerá el contenido.</p>
-
-<div class="botones">
-<button onclick="anterior()">⬅</button>
-<button onclick="hecho()">✔ Hecho</button>
-<button onclick="siguiente()">➡</button>
-</div>
-</div>
-
-</div>
-
-</div>
-<script>
-/* =========================
-   DATOS (SIEMPRE ARRIBA)
-========================= */
-
-let materiales = [
-"01 - Introducción",
-"02 - Diferencias",
-"03 - Detección",
-"04 - Componentes 1",
-"05 - Componentes 2",
-"06 - Componentes 3",
-"07 - Componentes 4",
-"08 - Componentes 5",
-"09 - Componentes 6",
-"10 - Tipos",
-"11 - Fallas",
-
-"12 - Final"
-];
-
-let videos = [
-"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/01-Introduccion.general.mp4",
-"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/02-Diferencia.entre.calefon.tradicional.y.ionizado.mp4",
-"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/03-Proceso.de.deteccion.de.llama.ionizada.mp4",
-"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/04-Componentes-1.mp4",
-"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/05-Componentes-2.mp4",
-"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/06-Componentes-3.mp4",
-"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/07-Componentes-4.mp4",
-"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/08-Componentes-5.mp4",
-"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/09-Componentes-6.mp4",
-"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/10-Tipos.de.calefones.ionizados.y.como.funcionan.mp4",
-"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/11-Fallas.y.mantenimiento.mp4",
-"https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/13-Final.mp4"
-];
-    
-let pdfs = [
-"Pdf.pdf",                 
-"Pdf1.pdf",
-"Pdf2.pdf",
-"Pdf3.pdf",
-"Pdf4.pdf",
-"Pdf5.pdf",
-"Pdf6.pdf",
-"Pdf7.pdf",
-"Pdf8.pdf",
-"Pdf9.pdf"
-];
-
-/* VIDEO NUEVO ORBIS EUROTREND */
-const ORBIS_ID = "orbis_eurotrend";
-const ORBIS_VIDEO_URL = "https://github.com/manuk1385/Curso-Sarro/releases/download/v2.0/videonuevo1.mp4";/* =========================
-   VARIABLES
-========================= */
-
-let usuarioActual = "";
-let actual = 0;
-let completados = [];
-
-function obtenerDeviceID(){
-
-let id = localStorage.getItem("device_id");
-
-if(!id){
-
-id = crypto.randomUUID();
-
-localStorage.setItem("device_id", id);
+document.getElementById("hoy").innerText = users.length;
 
 }
 
-return id;
+function copiarLink(link){
+
+navigator.clipboard.writeText(link);
+
+alert("Link copiado");
 
 }
 
-/* =========================
-   LOGIN
-========================= */
-
-async function login(){
-
-let telefono = document.getElementById("user").value.trim();
-
-let pass = document.getElementById("pass").value.trim();
-
-if(telefono === ""){
-alert("Ingresá tu teléfono");
-return;
-}
-
-if(pass !== "CHIMANGOARCUCCI"){
-alert("Contraseña incorrecta");
-return;
-}
-
-const { data, error } = await supabaseClient
-.from("usuarios")
-.select("*")
-.eq("telefono", telefono)
-.maybeSingle();
-
-if(error || !data){
-alert("Usuario no encontrado");
-return;
-}
-
-localStorage.setItem("usuarioActivo", telefono);
-
-usuarioActual = telefono;
-
-mostrarPanel();
-}
 
 
 /* =========================
-   REGISTRO
+   BUSCADOR
 ========================= */
 
-async function registrar(){
+document.getElementById("search")
+.addEventListener("input", filter);
 
-let telefono = document.getElementById("newUser").value.trim();
+function filter(){
 
-let pass = document.getElementById("newPass").value.trim();
+const q = document
+.getElementById("search")
+.value
+.toLowerCase();
 
-if(telefono === "" || pass === ""){
-alert("Completá los campos");
-return;
-}
+const filtrados = data.filter(u =>
 
-/* CONTRASEÑA FIJA */
+(u.telefono || "")
+.toLowerCase()
+.includes(q)
 
-if(pass !== "CHIMANGOARCUCCI"){
-alert("La contraseña es incorrecta");
-return;
-}
-
-/* VERIFICA SI EXISTE */
-
-const { data: existe } = await supabaseClient
-.from("usuarios")
-.select("*")
-.eq("telefono", telefono)
-.maybeSingle();
-
-if(existe){
-alert("Ese usuario ya existe");
-return;
-}
-
-/* CREA USUARIO */
-
-const token = crypto.randomUUID();
-
-const { error } = await supabaseClient
-.from("usuarios")
-.insert([
-{
-telefono: telefono,
-password: pass,
-token: token,
-activo: true,
-device_id: null,
-progreso:[]
-}
-]);
-
-if(error){
-console.log(error);
-alert(JSON.stringify(error));
-return;
-}
-
-const linkAcceso = "https://curso.sarrocero.com.ar/?token=" + token;
-
-alert(
-"Cuenta creada correctamente\n\n" +
-"LINK DE ACCESO:\n" +
-linkAcceso
 );
 
-mostrarLogin();
+render(filtrados);
 
 }
 
 /* =========================
-   VISTAS
+   ELIMINAR
 ========================= */
 
-function mostrarRegistro(){
-document.getElementById("login").style.display="none";
-document.getElementById("registro").style.display="flex";
-}
+async function deleteUser(id){
 
-function mostrarLogin(){
-document.getElementById("registro").style.display="none";
-document.getElementById("login").style.display="flex";
-}
-
-/* =========================
-   PANEL
-========================= */
-
-async function mostrarPanel(){
-
-
-document.getElementById("login").style.display="none";
-document.getElementById("registro").style.display="none";
-document.getElementById("panel").style.display="block";
-
-document.getElementById("usuario").innerText = usuarioActual;
-
-await cargarProgreso();
-cargarMaterial(0);
- 
-// carga primer video
-
-}
-
-/* =========================
-   LOGOUT
-========================= */
-
-function logout(){
-localStorage.removeItem("usuarioActivo");
-location.reload();
-}
-
-/* =========================
-   PROGRESO
-========================= */
-
-async function cargarProgreso(){
-
-const { data } = await supabaseClient
-.from("usuarios")
-.select("progreso")
-.eq("telefono", usuarioActual)
-.maybeSingle();
-
-completados = data?.progreso || [];
-
-actualizarUI();
-
-}
-
-async function guardarProgreso(){
+if(!confirm("¿Eliminar usuario?")) return;
 
 await supabaseClient
 .from("usuarios")
-.update({
-progreso: completados
-})
-.eq("telefono", usuarioActual);
+.delete()
+.eq("id", id);
+
+load();
 
 }
 
 /* =========================
-   CARGAR MATERIAL (VIDEO)
+   EXPORTAR EXCEL
 ========================= */
 
-function cargarMaterial(i){
+function exportExcel(){
 
-document.getElementById("video").classList.remove("ia-mode");
-const botones = document.querySelector(".botones");
-if(botones) botones.style.display = "flex";
-actual = i;
+const ws = XLSX.utils.json_to_sheet(data);
 
-document.getElementById("titulo").innerText = materiales[i];
+const wb = XLSX.utils.book_new();
 
-document.getElementById("video").innerHTML = `
-<video controls controlsList="nodownload" playsinline webkit-playsinline preload="metadata">
-    <source src="${videos[i]}?raw=true" type="video/mp4">
-</video>
-`;
+XLSX.utils.book_append_sheet(
+wb,
+ws,
+"Usuarios"
+);
+
+XLSX.writeFile(wb, "USUARIO CURSO.xlsx");
 
 }
 
 /* =========================
-   ORBIS EUROTREND
+   REALTIME
 ========================= */
 
-function mostrarOrbisEurotrend(){
-
-document.getElementById("video").classList.remove("ia-mode");
-const botones = document.querySelector(".botones");
-if(botones) botones.style.display = "flex";
-actual = ORBIS_ID;
-
-document.getElementById("listaMaterial").classList.remove("abierto");
-document.getElementById("listaPDF").classList.remove("abierto");
-
-document.getElementById("titulo").innerText = "🔥 Orbis Eurotrend";
-
-document.getElementById("video").innerHTML = `
-<video controls controlsList="nodownload" playsinline webkit-playsinline preload="metadata">
-    <source src="${ORBIS_VIDEO_URL}" type="video/mp4">
-    Tu navegador no puede reproducir este video. Probá convertirlo a MP4 si no se ve.
-</video>
-`;
-
-document.getElementById("texto").innerText = "Video especial Orbis Eurotrend.";
-
-}
+supabaseClient
+.channel("usuarios")
+.on(
+"postgres_changes",
+{
+event:"*",
+schema:"public",
+table:"usuarios"
+},
+() => load()
+)
+.subscribe();
 
 /* =========================
-   BOTONES
+   INICIO
 ========================= */
 
-function siguiente(){
-if(typeof actual === "number" && actual < materiales.length-1) cargarMaterial(actual+1);
-}
-
-function anterior(){
-if(typeof actual === "number" && actual>0) cargarMaterial(actual-1);
-}
-
-/* =========================
-   HECHO
-========================= */
-
-function hecho(){
-
-if(actual === null || actual === undefined){ alert("Este apartado no se marca como Hecho."); return; }
-let index = completados.indexOf(actual);
-
-if(index===-1){
-completados.push(actual);
-}else{
-completados.splice(index,1);
-}
-
-guardarProgreso();
-actualizarUI();
-
-}
-
-/* =========================
-   UI
-========================= */
-
-function actualizarUI(){
-
-materiales.forEach((_,i)=>{
-let c = document.getElementById("c"+i);
-if(!c) return;
-
-if(completados.includes(i)){
-c.classList.add("completo");
-}else{
-c.classList.remove("completo");
-}
-});
-
-/* círculo verde de Orbis Eurotrend */
-let cOrbis = document.getElementById("c_orbis");
-if(cOrbis){
-    if(completados.includes(ORBIS_ID)){
-        cOrbis.classList.add("completo");
-    }else{
-        cOrbis.classList.remove("completo");
-    }
-}
-
-/* total = videos del curso + 1 video Orbis */
-let totalContenido = materiales.length + 1;
-let p = (completados.length / totalContenido) * 100;
-document.getElementById("barra").style.width = p+"%";
-
-}
-
-/* =========================
-   TOGGLES
-========================= */
-
-function toggleMenu(){
-document.getElementById("listaMaterial").classList.toggle("abierto");
-document.getElementById("listaPDF").classList.remove("abierto");
-}
-
-function togglePDF(){
-document.getElementById("listaPDF").classList.toggle("abierto");
-document.getElementById("listaMaterial").classList.remove("abierto");
-}
-
-async function accesoAutomatico(){
-
-const params = new URLSearchParams(window.location.search);
-
-const token = params.get("token");
-
-if(!token) return;
-
-const deviceID = obtenerDeviceID();
-
-const { data } = await supabaseClient
-.from("usuarios")
-.select("*")
-.eq("token", token)
-.eq("activo", true)
-.maybeSingle();
-
-if(!data){
-
-document.body.innerHTML = "Acceso inválido";
-
-return;
-
-}
-
-/* PRIMER INGRESO */
-
-if(!data.device_id){
-
-await supabaseClient
-.from("usuarios")
-.update({
-device_id: deviceID
-})
-.eq("token", token);
-
-}
-
-/* OTRO DISPOSITIVO */
-
-else if(data.device_id !== deviceID){
-
-document.body.innerHTML =
-"Este acceso pertenece a otro dispositivo";
-
-return;
-
-}
-
-usuarioActual = data.telefono;
-
-mostrarPanel();
-
-}
-/* =========================
-   INICIO (IMPORTANTE)
-========================= */
-
-document.addEventListener("DOMContentLoaded", () => {
-
-let contenedor = document.getElementById("listaMaterial");
-let contPDF = document.getElementById("listaPDF");
-
-// MATERIAL
-materiales.forEach((mat,i)=>{
-    let div = document.createElement("div");
-    div.className="item";
-    div.onclick=()=>cargarMaterial(i);
-
-    let circulo = document.createElement("div");
-    circulo.className="circulo";
-    circulo.id="c"+i;
-
-    div.appendChild(circulo);
-    div.append(mat);
-
-    contenedor.appendChild(div);
-});
-
-// PDF
-pdfs.forEach((pdf,i)=>{
-    let div = document.createElement("div");
-    div.className="item pdf-item";
-
-    div.innerHTML = `📄 ${pdf.replace(".pdf","")}`;
-
-    div.onclick = () => {
-        window.open(pdfs[i], "_blank"); // abre en otra pestaña
-    };
-
-    contPDF.appendChild(div);
-});
-accesoAutomatico();
-
-if(localStorage.getItem("usuarioActivo")){
-
-usuarioActual = localStorage.getItem("usuarioActivo");
-
-mostrarPanel();
-
-}
-
-});
-
-
-
-function togglePass(id, el){
-let input = document.getElementById(id);
-
-if(input.type === "password"){
-input.type = "text";
-el.innerText = "🙈";
-}else{
-input.type = "password";
-el.innerText = "👁";
-}
-}
+load();
 
 </script>
 
-<script src="ia-aspe-conocimiento.js"></script>
-
-
-<!-- =========================
-     AI ASPE V12 - MICROFONO Y RESPONSIVE FINAL
-========================= -->
-<style id="iaAspeV12Responsive">
-/* Botón mic: apagado = micrófono, escuchando = círculo blanco */
-.ia-mic{
-  width:64px!important;
-  min-width:64px!important;
-  min-height:58px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  border-radius:14px!important;
-  background:#ef4444!important;
-  color:#fff!important;
-  font-size:24px!important;
-  position:relative!important;
-  overflow:hidden!important;
-  flex:0 0 auto!important;
-}
-.ia-mic .ia-mic-icon{display:inline-block!important;line-height:1!important;}
-.ia-mic .ia-mic-dot{display:none!important;}
-.ia-mic.ia-listening .ia-mic-icon{display:none!important;}
-.ia-mic.ia-listening .ia-mic-dot{
-  display:block!important;
-  width:22px!important;
-  height:22px!important;
-  border-radius:50%!important;
-  background:#fff!important;
-  box-shadow:0 0 0 8px rgba(255,255,255,.18)!important;
-}
-.ia-mic.ia-listening{
-  background:#dc2626!important;
-  animation:iaAspeMicPulseV12 1.05s infinite!important;
-}
-@keyframes iaAspeMicPulseV12{
-  0%{box-shadow:0 0 0 0 rgba(220,38,38,.35)}
-  70%{box-shadow:0 0 0 14px rgba(220,38,38,0)}
-  100%{box-shadow:0 0 0 0 rgba(220,38,38,0)}
-}
-
-/* Imagen de la AI chica y ordenada */
-.ia-result-img{max-width:360px!important;margin:12px 0!important;}
-.ia-result-img img{max-height:220px!important;width:100%!important;object-fit:contain!important;}
-
-/* Responsive general */
-@media (max-width: 1024px){
-  .container{display:block!important;}
-  .sidebar{
-    width:100%!important;
-    height:auto!important;
-    min-height:auto!important;
-    display:block!important;
-    padding:12px!important;
-    position:relative!important;
-  }
-  .logo{width:86px!important;margin:8px auto 14px!important;display:block!important;}
-  .titulo-menu{font-size:17px!important;padding:14px!important;margin-bottom:8px!important;}
-  .content{width:100%!important;padding:14px!important;}
-  .video-box,.ia-mode{min-height:520px!important;height:auto!important;}
-  .ia-quick{grid-template-columns:repeat(2,1fr)!important;gap:10px!important;}
-  .ia-chat-box{height:420px!important;max-height:55vh!important;}
-  .ia-result-img{max-width:300px!important;}
-  .ia-result-img img{max-height:190px!important;}
-}
-
-@media (max-width: 768px){
-  body{overflow-x:hidden!important;}
-  .topbar{height:auto!important;min-height:56px!important;padding:10px 12px!important;gap:10px!important;}
-  .content{padding:10px!important;}
-  .ia-card-head{display:block!important;text-align:left!important;}
-  .ia-logo{width:46px!important;height:46px!important;font-size:19px!important;margin-bottom:8px!important;}
-  .ia-card-head h2{font-size:22px!important;}
-  .ia-card-head p{font-size:15px!important;}
-  .ia-quick{grid-template-columns:1fr!important;}
-  .ia-quick button{font-size:16px!important;padding:13px!important;}
-  .ia-chat-box{height:46vh!important;min-height:310px!important;padding:10px!important;}
-  .ia-bubble{font-size:15px!important;padding:11px!important;margin-left:0!important;margin-right:0!important;}
-  .ia-user,.ia-bot{margin-left:0!important;margin-right:0!important;}
-  .ia-input-row{display:flex!important;flex-direction:row!important;gap:8px!important;align-items:stretch!important;}
-  .ia-input-row textarea{min-height:58px!important;font-size:16px!important;}
-  .ia-mic{width:56px!important;min-width:56px!important;min-height:58px!important;padding:0!important;}
-  .ia-send{width:86px!important;min-width:86px!important;padding:0 8px!important;font-size:16px!important;}
-  .ia-actions{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;}
-  .ia-actions button{width:100%!important;}
-  .ia-result-img{max-width:220px!important;padding:6px!important;}
-  .ia-result-img img{max-height:145px!important;border-radius:8px!important;}
-  .img-grid{grid-template-columns:1fr!important;}
-}
-
-@media (max-width: 430px){
-  .ia-chat-box{height:44vh!important;}
-  .ia-send{width:78px!important;min-width:78px!important;font-size:15px!important;}
-  .ia-mic{width:52px!important;min-width:52px!important;}
-  .ia-result-img{max-width:190px!important;}
-  .ia-result-img img{max-height:125px!important;}
-}
-</style>
-
-<script id="iaAspeV13MicrofonoUnPermiso">
-(function(){
-  const SESSION_KEY = 'ia_aspe_mic_permiso_sesion_v13';
-  const LANG = 'es-AR';
-
-  window.IA_ASPE_RECOGNITION_V13 = window.IA_ASPE_RECOGNITION_V13 || null;
-  window.IA_ASPE_LISTENING_V13 = false;
-  window.IA_ASPE_BASE_TEXT_V13 = '';
-
-  function estado(txt){
-    const e = document.getElementById('iaMicEstado');
-    if(e) e.innerText = txt;
-  }
-
-  function btn(){
-    let b = document.getElementById('iaMicBtn') || document.querySelector('.ia-mic');
-    if(!b) return null;
-    b.id = 'iaMicBtn';
-    b.onclick = window.iaMicrofono;
-    return b;
-  }
-
-  function pintarMic(escuchando){
-    const b = btn();
-    if(!b) return;
-    if(escuchando){
-      b.classList.add('ia-listening');
-      b.innerHTML = '<span class="ia-mic-dot" aria-hidden="true"></span>';
-      b.title = 'Tocar para cortar';
-      b.setAttribute('aria-label','Cortar micrófono');
-    }else{
-      b.classList.remove('ia-listening');
-      b.innerHTML = '<span class="ia-mic-icon">🎙️</span>';
-      b.title = 'Tocar para hablar';
-      b.setAttribute('aria-label','Activar micrófono');
-    }
-  }
-
-  function crearReconocimiento(){
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!SR) return null;
-
-    const rec = new SR();
-    rec.lang = LANG;
-    rec.continuous = true;
-    rec.interimResults = true;
-    rec.maxAlternatives = 1;
-
-    rec.onstart = function(){
-      window.IA_ASPE_LISTENING_V13 = true;
-      sessionStorage.setItem(SESSION_KEY, '1');
-      pintarMic(true);
-      estado('Escuchando... tocá de nuevo el micrófono para cortar. No se envía solo.');
-    };
-
-    rec.onresult = function(ev){
-      const input = document.getElementById('iaPregunta');
-      if(!input) return;
-
-      let finalTxt = '';
-      let interimTxt = '';
-      for(let i = ev.resultIndex; i < ev.results.length; i++){
-        const txt = ev.results[i][0].transcript || '';
-        if(ev.results[i].isFinal) finalTxt += txt + ' ';
-        else interimTxt += txt;
-      }
-
-      const base = window.IA_ASPE_BASE_TEXT_V13 || '';
-      const nuevo = (base + ' ' + finalTxt + interimTxt).replace(/\s+/g,' ').trim();
-      if(nuevo) input.value = nuevo;
-      estado('Texto detectado. Podés corregirlo y después tocar Enviar.');
-    };
-
-    rec.onerror = function(ev){
-      const error = ev && ev.error ? ev.error : '';
-      window.IA_ASPE_LISTENING_V13 = false;
-      pintarMic(false);
-
-      if(error === 'not-allowed'){
-        estado('Chrome no dejó usar el micrófono. En el cartel elegí “Permitir mientras visito el sitio”.');
-      }else if(error === 'no-speech'){
-        estado('No detecté palabras. Hablá más cerca del micrófono y probá de nuevo.');
-      }else if(error === 'audio-capture'){
-        estado('No encontré micrófono activo. Revisá el micrófono de Windows/Chrome.');
-      }else{
-        estado('La escucha se detuvo. Podés tocar el micrófono otra vez.');
-      }
-    };
-
-    rec.onend = function(){
-      window.IA_ASPE_LISTENING_V13 = false;
-      pintarMic(false);
-      estado('Escucha detenida. Podés editar el texto y tocar Enviar.');
-    };
-
-    return rec;
-  }
-
-  window.iaMicrofono = function(){
-    const input = document.getElementById('iaPregunta');
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if(!SR){
-      estado('Este navegador no tiene reconocimiento de voz. Usá Chrome actualizado.');
-      return;
-    }
-
-    if(window.IA_ASPE_LISTENING_V13 && window.IA_ASPE_RECOGNITION_V13){
-      try{ window.IA_ASPE_RECOGNITION_V13.stop(); }catch(e){}
-      return;
-    }
-
-    window.IA_ASPE_BASE_TEXT_V13 = input ? input.value.trim() : '';
-
-    /* IMPORTANTE:
-       Antes se llamaba a getUserMedia() y después a SpeechRecognition.start().
-       Eso podía generar DOS carteles de permiso.
-       Ahora NO usamos getUserMedia: solo SpeechRecognition pide el micrófono una vez.
-    */
-    window.IA_ASPE_RECOGNITION_V13 = crearReconocimiento();
-    if(!window.IA_ASPE_RECOGNITION_V13){
-      estado('No se pudo iniciar el reconocimiento de voz.');
-      return;
-    }
-
-    try{
-      estado(sessionStorage.getItem(SESSION_KEY) ? 'Activando micrófono...' : 'Primer uso: aceptá el permiso del micrófono una sola vez.');
-      window.IA_ASPE_RECOGNITION_V13.start();
-    }catch(e){
-      estado('El micrófono ya estaba iniciando. Esperá un segundo y tocá de nuevo.');
-    }
-  };
-
-  const oldMostrarIA = window.mostrarIA;
-  if(typeof oldMostrarIA === 'function'){
-    window.mostrarIA = function(){
-      oldMostrarIA.apply(this, arguments);
-      setTimeout(function(){
-        const b = btn();
-        if(b){
-          b.innerHTML = '<span class="ia-mic-icon">🎙️</span>';
-          b.onclick = window.iaMicrofono;
-        }
-        const e = document.getElementById('iaMicEstado');
-        if(e) e.innerText = 'Tocá el micrófono, aceptá el permiso una vez, hablá, volvé a tocar para cortar y después enviá.';
-      }, 30);
-    };
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(function(){ pintarMic(false); }, 100);
-  });
-})();
-</script>
-
-
-
-<!-- =========================
-     AI ASPE V14 - MOBILE + 3 BOTONES + SIN SALTO AL FINAL
-========================= -->
-<style id="iaAspeV15SimpleFinal">
-/* Solo 3 botones rápidos y diseño más limpio */
-.ia-quick-client{
-  grid-template-columns:repeat(3,1fr)!important;
-  gap:12px!important;
-}
-.ia-quick-client button{
-  min-height:56px!important;
-  font-size:17px!important;
-  border-radius:14px!important;
-}
-
-/* Chat sin empujar toda la página hacia abajo */
-.ia-chat-box{
-  scroll-behavior:auto!important;
-  overscroll-behavior:contain!important;
-}
-
-/* Imágenes chicas en AI */
-.ia-result-img{
-  max-width:300px!important;
-  width:100%!important;
-}
-.ia-result-img img{
-  max-height:180px!important;
-  width:100%!important;
-  object-fit:contain!important;
-}
-
-/* Tablet */
-@media (max-width: 1024px){
-  .ia-panel-client{max-width:100%!important;width:100%!important;padding:14px!important;}
-  .ia-quick-client{grid-template-columns:repeat(3,1fr)!important;}
-  .ia-chat-box{height:48dvh!important;min-height:360px!important;}
-  .ia-result-img{max-width:260px!important;}
-  .ia-result-img img{max-height:160px!important;}
-}
-
-/* Celular/iPhone */
-@media (max-width: 640px){
-  .topbar{
-    position:sticky!important;
-    top:0!important;
-    z-index:20!important;
-    height:auto!important;
-    padding:10px 12px!important;
-    gap:10px!important;
-  }
-  .container{display:block!important;width:100%!important;}
-  .sidebar{
-    width:100%!important;
-    height:auto!important;
-    padding:10px!important;
-    position:relative!important;
-  }
-  .content{padding:10px!important;width:100%!important;}
-  .ia-panel-client{padding:12px!important;border-radius:16px!important;}
-  .ia-card-head{display:flex!important;gap:10px!important;align-items:center!important;margin-bottom:10px!important;}
-  .ia-logo{width:42px!important;height:42px!important;min-width:42px!important;border-radius:12px!important;font-size:18px!important;margin:0!important;}
-  .ia-card-head h2{font-size:22px!important;line-height:1.1!important;}
-  .ia-card-head p{font-size:14px!important;line-height:1.25!important;}
-
-  .ia-quick-client{
-    grid-template-columns:1fr!important;
-    gap:8px!important;
-    margin:10px 0!important;
-  }
-  .ia-quick-client button{
-    min-height:48px!important;
-    padding:10px 12px!important;
-    font-size:16px!important;
-  }
-
-  .ia-chat-box{
-    height:46dvh!important;
-    min-height:330px!important;
-    max-height:520px!important;
-    padding:10px!important;
-    border-radius:14px!important;
-  }
-  .ia-bubble{
-    font-size:15px!important;
-    line-height:1.42!important;
-    padding:10px!important;
-    margin-left:0!important;
-    margin-right:0!important;
-    max-width:100%!important;
-  }
-  .ia-user,.ia-bot{margin-left:0!important;margin-right:0!important;}
-
-  /* En celular el texto va arriba, y abajo micrófono + enviar */
-  .ia-input-row{
-    display:grid!important;
-    grid-template-columns:64px 1fr!important;
-    gap:8px!important;
-    align-items:stretch!important;
-    margin-top:10px!important;
-  }
-  .ia-input-row textarea{
-    grid-column:1 / 3!important;
-    grid-row:1!important;
-    width:100%!important;
-    min-height:74px!important;
-    max-height:130px!important;
-    font-size:16px!important;
-    line-height:1.25!important;
-    resize:vertical!important;
-  }
-  .ia-mic{
-    grid-column:1!important;
-    grid-row:2!important;
-    width:64px!important;
-    min-width:64px!important;
-    height:58px!important;
-    min-height:58px!important;
-    padding:0!important;
-    border-radius:14px!important;
-  }
-  .ia-send{
-    grid-column:2!important;
-    grid-row:2!important;
-    width:100%!important;
-    min-width:0!important;
-    height:58px!important;
-    min-height:58px!important;
-    font-size:17px!important;
-    border-radius:14px!important;
-  }
-
-  .ia-actions-row{
-    display:grid!important;
-    grid-template-columns:1fr!important;
-    gap:8px!important;
-    margin-top:10px!important;
-  }
-  .ia-actions-row button{width:100%!important;min-height:48px!important;font-size:16px!important;}
-  .ia-mic-state{font-size:13px!important;line-height:1.35!important;margin-top:8px!important;}
-
-  .ia-result-img{max-width:170px!important;padding:5px!important;margin:8px 0!important;}
-  .ia-result-img img{max-height:110px!important;border-radius:8px!important;}
-  .ia-result-img small{font-size:11px!important;}
-}
-
-/* iPhone chico */
-@media (max-width: 390px){
-  .ia-chat-box{height:44dvh!important;min-height:300px!important;}
-  .ia-result-img{max-width:150px!important;}
-  .ia-result-img img{max-height:95px!important;}
-  .ia-input-row{grid-template-columns:58px 1fr!important;}
-  .ia-mic{width:58px!important;min-width:58px!important;}
-}
-
-/* V15: debajo del micrófono/input/enviar queda solo Nueva conversación */
-.ia-actions-row-simple{display:block!important;margin-top:12px!important;}
-.ia-actions-row-simple button{width:100%!important;max-width:360px!important;min-height:48px!important;font-size:18px!important;}
-@media (max-width: 768px){
-  .ia-actions-row-simple button{max-width:100%!important;width:100%!important;min-height:52px!important;font-size:18px!important;}
-}
-</style>
-
-<script id="iaAspeV15SimpleFinal">
-(function(){
-  /* Evita que cada respuesta mande el chat abajo del todo. La respuesta queda agregada,
-     pero el alumno puede bajar manualmente para leerla. */
-  window.iaAgregar = function(html, tipo='bot'){
-    const chat = document.getElementById('iaChat');
-    if(!chat) return;
-    const div = document.createElement('div');
-    div.className = 'ia-bubble ' + (tipo === 'user' ? 'ia-user' : 'ia-bot');
-    div.innerHTML = html;
-    const estabaCercaDelFinal = (chat.scrollHeight - chat.scrollTop - chat.clientHeight) < 40;
-    const topAntes = chat.scrollTop;
-    chat.appendChild(div);
-    /* Solo baja un poquito si el usuario ya estaba exactamente al final.
-       En celular, si estaba leyendo arriba, no lo mueve. */
-    if(estabaCercaDelFinal && window.innerWidth > 900){
-      chat.scrollTop = chat.scrollHeight;
-    }else{
-      chat.scrollTop = topAntes;
-    }
-  };
-
-  /* Reescribimos la solapa AI con SOLO 3 botones rápidos */
-  window.mostrarAIAspe = function(){
-    actual = null;
-    const mat = document.getElementById('listaMaterial');
-    const pdf = document.getElementById('listaPDF');
-    if(mat) mat.classList.remove('abierto');
-    if(pdf) pdf.classList.remove('abierto');
-    const botones = document.querySelector('.botones');
-    if(botones) botones.style.display = 'none';
-    const videoBox = document.getElementById('video');
-    videoBox.classList.add('ia-mode');
-    document.getElementById('titulo').innerText = '🤖 AI Aspe';
-    document.getElementById('texto').innerText = 'Asistente del curso para consultas sobre calefones ionizados.';
-    videoBox.innerHTML = `
-    <div class="ia-panel ia-panel-client">
-      <div class="ia-card-head">
-        <div class="ia-logo">AI</div>
-        <div><h2>AI Aspe</h2><p>Escribí o hablá tu consulta. La AI usa el curso, imágenes y explicación ampliada.</p></div>
-      </div>
-      <div class="ia-quick ia-quick-client">
-        <button onclick="iaPreguntaRapida('Mi calefón prende y se apaga')">Prende y se apaga</button>
-        <button onclick="iaPreguntaRapida('Hace chispa pero no prende')">Hace chispa pero no prende</button>
-        <button onclick="iaPreguntaRapida('No enciende')">No enciende</button>
-      </div>
-      <div id="iaChat" class="ia-chat-box">
-        <div class="ia-bubble ia-bot"><b>AI Aspe:</b> Tocá el micrófono, hablá, volvé a tocarlo para cortar, revisá el texto y después tocá Enviar.</div>
-      </div>
-      <div class="ia-input-row">
-        <button id="iaMicBtn" class="ia-mic" onclick="iaMicrofono()" title="Tocar para hablar"><span class="ia-mic-icon">🎙️</span></button>
-        <textarea id="iaPregunta" placeholder="Ej: prende y se apaga, hace chispa pero no prende, no enciende, sensor de ionización, placa electrónica..."></textarea>
-        <button class="ia-send" onclick="iaEnviar()">Enviar</button>
-      </div>
-      <div class="ia-actions-row ia-actions-row-simple">
-        <button onclick="iaNuevaConversacion()">Nueva conversación</button>
-      </div>
-      <div id="iaMicEstado" class="ia-mic-state" style="display:none"></div>
-    </div>`;
-
-    setTimeout(function(){
-      const b = document.getElementById('iaMicBtn');
-      if(b){
-        b.innerHTML = '<span class="ia-mic-icon">🎙️</span>';
-        b.onclick = window.iaMicrofono;
-      }
-    },30);
-  };
-
-  /* Si el botón del sidebar llama mostrarIA, lo mandamos a la vista nueva */
-  window.mostrarIA = window.mostrarAIAspe;
-
-  /* Micrófono: sin cartel informativo fijo debajo. */
-  const oldMicro = window.iaMicrofono;
-  window.iaMicrofono = function(){
-    const estado = document.getElementById('iaMicEstado');
-    if(estado){
-      estado.style.display = 'none';
-      estado.innerText = '';
-    }
-    if(typeof oldMicro === 'function') return oldMicro.apply(this, arguments);
-  };
-})();
-</script>
-
-<!-- =========================
-     AI ASPE V16 - NO BAJAR AUTOMATICAMENTE
-========================= -->
-<style id="iaAspeV16NoAutoScroll">
-  html, body, .content, .container, .ia-panel-client, .ia-chat-box{
-    scroll-behavior:auto!important;
-    overflow-anchor:none!important;
-  }
-</style>
-<script id="iaAspeV16NoAutoScroll">
-(function(){
-  function guardarPosicion(){
-    const chat = document.getElementById('iaChat');
-    return {
-      x: window.scrollX || window.pageXOffset || 0,
-      y: window.scrollY || window.pageYOffset || 0,
-      chat: chat,
-      chatTop: chat ? chat.scrollTop : 0
-    };
-  }
-
-  function restaurarPosicion(pos){
-    if(!pos) return;
-    if(pos.chat) pos.chat.scrollTop = pos.chatTop;
-    window.scrollTo(pos.x, pos.y);
-  }
-
-  window.iaAgregar = function(html, tipo='bot'){
-    const chat = document.getElementById('iaChat');
-    if(!chat) return;
-
-    const pos = guardarPosicion();
-
-    const div = document.createElement('div');
-    div.className = 'ia-bubble ' + (tipo === 'user' ? 'ia-user' : 'ia-bot');
-    div.innerHTML = html;
-    chat.appendChild(div);
-
-    /* No bajar nunca automáticamente: queda en el mismo lugar donde hiciste la pregunta. */
-    restaurarPosicion(pos);
-    requestAnimationFrame(function(){ restaurarPosicion(pos); });
-    setTimeout(function(){ restaurarPosicion(pos); }, 80);
-    setTimeout(function(){ restaurarPosicion(pos); }, 300);
-  };
-
-  if(typeof window.iaEnviar === 'function'){
-    const oldEnviar = window.iaEnviar;
-    window.iaEnviar = async function(){
-      const pos = guardarPosicion();
-      const r = oldEnviar.apply(this, arguments);
-      restaurarPosicion(pos);
-      requestAnimationFrame(function(){ restaurarPosicion(pos); });
-      setTimeout(function(){ restaurarPosicion(pos); }, 100);
-      setTimeout(function(){ restaurarPosicion(pos); }, 500);
-      return r;
-    };
-  }
-})();
-</script>
 </body>
 </html>
