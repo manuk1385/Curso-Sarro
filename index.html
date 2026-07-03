@@ -666,6 +666,37 @@ font-size:18px;
 .ia-logo.ia-sarro-logo{font-size:13px!important;letter-spacing:.1px!important;line-height:1!important;text-align:center!important;}
 @media(max-width:768px){.ia-logo.ia-sarro-logo{font-size:11px!important;}}
 </style>
+<style>
+/* =========================
+   AJUSTE VIDEO CURSO - MÁS CHICO
+   Mantiene controles nativos: play, volumen y pantalla completa.
+========================= */
+.video:not(.guia-mode){
+  width:min(100%, 980px)!important;
+  height:420px!important;
+  margin:0 auto 20px auto!important;
+}
+
+.video:not(.guia-mode) video{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  border-radius:10px!important;
+}
+
+@media(max-width:820px){
+  .video:not(.guia-mode){
+    width:100%!important;
+    height:280px!important;
+  }
+}
+
+@media(max-width:430px){
+  .video:not(.guia-mode){
+    height:230px!important;
+  }
+}
+</style>
 </head>
 
 <body>
@@ -758,7 +789,7 @@ font-weight:bold;
 
 <div class="titulo-menu" onclick="togglePDF()">📄 PDF</div>
 <div class="material-lista" id="listaPDF"></div>
-<div class="titulo-menu" onclick="mostrarAIAspe()"><img src="aspe-logo.jpeg" class="aspe-menu-logo" alt="ASPE"> Guía virtual</div>
+<div class="titulo-menu" onclick="mostrarAIAspe()"><img src="saul.png" class="aspe-menu-logo" alt="ASPE"> Guía virtual</div>
 
 </div>
 
@@ -2104,7 +2135,7 @@ Para seguir: ¿qué hace exactamente el calefón y qué querés probar: pila/fue
     videoBox.innerHTML = `
       <div class="guia-panel">
         <div class="guia-head">
-          <img src="aspe-logo.jpeg" class="guia-head-logo" alt="ASPE">
+          <img src="saul.png" class="guia-head-logo" alt="ASPE">
           <div>
             <h2>Guía virtual en consultas de fallas</h2>
             <p>Pone la marca y modelo del calefón ionizado y pregunta con tus palabras qué hace, qué no hace o cuál sería la falla.</p>
