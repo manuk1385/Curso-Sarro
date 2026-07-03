@@ -758,7 +758,7 @@ font-weight:bold;
 
 <div class="titulo-menu" onclick="togglePDF()">📄 PDF</div>
 <div class="material-lista" id="listaPDF"></div>
-<div class="titulo-menu" onclick="mostrarAIAspe()">🛠️ Guía virtual</div>
+<div class="titulo-menu" onclick="mostrarAIAspe()"><img src="saul.png" class="aspe-menu-logo" alt="ASPE"> Guía virtual</div>
 
 </div>
 
@@ -1290,1132 +1290,658 @@ el.innerText = "👁";
 
 <script src="ia-aspe-conocimiento.js"></script>
 
-
 <!-- =========================
-     AI ASPE V12 - MICROFONO Y RESPONSIVE FINAL
+     GUÍA VIRTUAL - SOLO SECCIÓN IA NUEVA
+     Mantiene intacto Material, videos, PDF, Orbis y progreso.
 ========================= -->
-<style id="iaAspeV12Responsive">
-/* Botón mic: apagado = micrófono, escuchando = círculo blanco */
-.ia-mic{
-  width:64px!important;
-  min-width:64px!important;
-  min-height:58px!important;
+<style id="guiaVirtualSarroFinalCSS">
+.aspe-menu-logo{
+  width:26px!important;
+  height:26px!important;
+  object-fit:contain!important;
+  background:#fff!important;
+  border-radius:50%!important;
+  padding:2px!important;
+  flex:0 0 auto!important;
+}
+
+.video.guia-mode{
+  background:transparent!important;
+  height:auto!important;
+  min-height:0!important;
+  display:block!important;
+  color:#0f172a!important;
+  align-items:initial!important;
+  justify-content:initial!important;
+}
+
+.guia-panel{
+  width:100%!important;
+  max-width:1100px!important;
+  margin:0 auto!important;
+  background:#fff!important;
+  border:1px solid #e2e8f0!important;
+  border-radius:18px!important;
+  padding:20px!important;
+  box-shadow:0 8px 25px rgba(15,23,42,.06)!important;
+}
+
+.guia-head{
+  display:flex!important;
+  align-items:flex-start!important;
+  gap:16px!important;
+  margin-bottom:18px!important;
+}
+
+.guia-head-logo{
+  width:72px!important;
+  height:72px!important;
+  object-fit:contain!important;
+  background:#fff!important;
+  border:1px solid #e5e7eb!important;
+  border-radius:16px!important;
+  padding:5px!important;
+  flex:0 0 auto!important;
+}
+
+.guia-head h2{
+  margin:0 0 8px!important;
+  font-size:34px!important;
+  line-height:1.1!important;
+  color:#0f172a!important;
+}
+
+.guia-head p{
+  margin:0!important;
+  color:#64748b!important;
+  font-size:20px!important;
+  line-height:1.35!important;
+}
+
+.guia-chat{
+  height:430px!important;
+  max-height:58vh!important;
+  overflow-y:auto!important;
+  background:#f8fafc!important;
+  border:1px solid #e2e8f0!important;
+  border-radius:16px!important;
+  padding:16px!important;
+  scroll-behavior:auto!important;
+  overscroll-behavior:contain!important;
+}
+
+.guia-msg{
+  max-width:88%!important;
+  margin:12px 0!important;
+  padding:16px 18px!important;
+  border-radius:16px!important;
+  font-size:18px!important;
+  line-height:1.52!important;
+  white-space:pre-wrap!important;
+  word-break:break-word!important;
+}
+
+.guia-bot{
+  background:#e8eef6!important;
+  color:#0f172a!important;
+  border:1px solid #dbe3ee!important;
+  margin-right:auto!important;
+}
+
+.guia-user{
+  background:#2563eb!important;
+  color:#fff!important;
+  margin-left:auto!important;
+}
+
+.guia-input-row{
+  display:grid!important;
+  grid-template-columns:74px 1fr 150px!important;
+  gap:12px!important;
+  align-items:stretch!important;
+  margin-top:16px!important;
+}
+
+.guia-input{
+  width:100%!important;
+  min-height:68px!important;
+  max-height:160px!important;
+  resize:vertical!important;
+  border:1px solid #cbd5e1!important;
+  border-radius:14px!important;
+  padding:14px!important;
+  font-size:18px!important;
+  line-height:1.35!important;
+  font-family:Arial, Helvetica, sans-serif!important;
+}
+
+.guia-mic,
+.guia-send,
+.guia-new{
+  border:none!important;
+  color:white!important;
+  border-radius:14px!important;
+  cursor:pointer!important;
+  font-weight:700!important;
+}
+
+.guia-mic{
+  background:#ef4444!important;
+  font-size:30px!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  border-radius:14px!important;
-  background:#ef4444!important;
-  color:#fff!important;
-  font-size:24px!important;
-  position:relative!important;
-  overflow:hidden!important;
-  flex:0 0 auto!important;
+  min-height:68px!important;
 }
-.ia-mic .ia-mic-icon{display:inline-block!important;line-height:1!important;}
-.ia-mic .ia-mic-dot{display:none!important;}
-.ia-mic.ia-listening .ia-mic-icon{display:none!important;}
-.ia-mic.ia-listening .ia-mic-dot{
+
+.guia-mic .guia-dot{display:none!important;}
+.guia-mic.escuchando .guia-icon{display:none!important;}
+.guia-mic.escuchando .guia-dot{
   display:block!important;
-  width:22px!important;
-  height:22px!important;
+  width:26px!important;
+  height:26px!important;
   border-radius:50%!important;
   background:#fff!important;
-  box-shadow:0 0 0 8px rgba(255,255,255,.18)!important;
-}
-.ia-mic.ia-listening{
-  background:#dc2626!important;
-  animation:iaAspeMicPulseV12 1.05s infinite!important;
-}
-@keyframes iaAspeMicPulseV12{
-  0%{box-shadow:0 0 0 0 rgba(220,38,38,.35)}
-  70%{box-shadow:0 0 0 14px rgba(220,38,38,0)}
-  100%{box-shadow:0 0 0 0 rgba(220,38,38,0)}
+  box-shadow:0 0 0 8px rgba(255,255,255,.20)!important;
 }
 
-/* Imagen de la AI chica y ordenada */
-.ia-result-img{max-width:360px!important;margin:12px 0!important;}
-.ia-result-img img{max-height:220px!important;width:100%!important;object-fit:contain!important;}
+.guia-send{
+  background:#2563eb!important;
+  font-size:20px!important;
+}
 
-/* Responsive general */
-@media (max-width: 1024px){
-  .container{display:block!important;}
-  .sidebar{
-    width:100%!important;
-    height:auto!important;
-    min-height:auto!important;
-    display:block!important;
-    padding:12px!important;
-    position:relative!important;
+.guia-new{
+  margin-top:14px!important;
+  background:#0f8a78!important;
+  font-size:22px!important;
+  min-height:58px!important;
+  width:min(460px,100%)!important;
+}
+
+.guia-note{
+  margin-top:10px!important;
+  color:#64748b!important;
+  font-size:16px!important;
+  line-height:1.35!important;
+}
+
+.guia-loading{
+  opacity:.92!important;
+}
+
+@media(max-width:820px){
+  .main{
+    padding:16px!important;
   }
-  .logo{width:86px!important;margin:8px auto 14px!important;display:block!important;}
-  .titulo-menu{font-size:17px!important;padding:14px!important;margin-bottom:8px!important;}
-  .content{width:100%!important;padding:14px!important;}
-  .video-box,.ia-mode{min-height:520px!important;height:auto!important;}
-  .ia-quick{grid-template-columns:repeat(2,1fr)!important;gap:10px!important;}
-  .ia-chat-box{height:420px!important;max-height:55vh!important;}
-  .ia-result-img{max-width:300px!important;}
-  .ia-result-img img{max-height:190px!important;}
+  .video.guia-mode{
+    height:auto!important;
+  }
+  .guia-panel{
+    padding:14px!important;
+    border-radius:18px!important;
+  }
+  .guia-head{
+    gap:12px!important;
+  }
+  .guia-head-logo{
+    width:58px!important;
+    height:58px!important;
+    border-radius:14px!important;
+  }
+  .guia-head h2{
+    font-size:28px!important;
+  }
+  .guia-head p{
+    font-size:18px!important;
+  }
+  .guia-chat{
+    height:50vh!important;
+    min-height:360px!important;
+    max-height:560px!important;
+    padding:12px!important;
+  }
+  .guia-msg{
+    max-width:100%!important;
+    font-size:20px!important;
+    padding:15px!important;
+  }
+  .guia-input-row{
+    grid-template-columns:82px 1fr!important;
+    gap:10px!important;
+  }
+  .guia-input{
+    grid-column:1 / 3!important;
+    grid-row:1!important;
+    min-height:94px!important;
+    font-size:22px!important;
+  }
+  .guia-mic{
+    grid-column:1!important;
+    grid-row:2!important;
+    min-height:72px!important;
+  }
+  .guia-send{
+    grid-column:2!important;
+    grid-row:2!important;
+    min-height:72px!important;
+    font-size:24px!important;
+  }
+  .guia-new{
+    width:100%!important;
+    font-size:25px!important;
+    min-height:70px!important;
+  }
+  .guia-note{
+    font-size:18px!important;
+  }
 }
 
-@media (max-width: 768px){
-  body{overflow-x:hidden!important;}
-  .topbar{height:auto!important;min-height:56px!important;padding:10px 12px!important;gap:10px!important;}
-  .content{padding:10px!important;}
-  .ia-card-head{display:block!important;text-align:left!important;}
-  .ia-logo{width:46px!important;height:46px!important;font-size:19px!important;margin-bottom:8px!important;}
-  .ia-card-head h2{font-size:22px!important;}
-  .ia-card-head p{font-size:15px!important;}
-  .ia-quick{grid-template-columns:1fr!important;}
-  .ia-quick button{font-size:16px!important;padding:13px!important;}
-  .ia-chat-box{height:46vh!important;min-height:310px!important;padding:10px!important;}
-  .ia-bubble{font-size:15px!important;padding:11px!important;margin-left:0!important;margin-right:0!important;}
-  .ia-user,.ia-bot{margin-left:0!important;margin-right:0!important;}
-  .ia-input-row{display:flex!important;flex-direction:row!important;gap:8px!important;align-items:stretch!important;}
-  .ia-input-row textarea{min-height:58px!important;font-size:16px!important;}
-  .ia-mic{width:56px!important;min-width:56px!important;min-height:58px!important;padding:0!important;}
-  .ia-send{width:86px!important;min-width:86px!important;padding:0 8px!important;font-size:16px!important;}
-  .ia-actions{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;}
-  .ia-actions button{width:100%!important;}
-  .ia-result-img{max-width:220px!important;padding:6px!important;}
-  .ia-result-img img{max-height:145px!important;border-radius:8px!important;}
-  .img-grid{grid-template-columns:1fr!important;}
-}
-
-@media (max-width: 430px){
-  .ia-chat-box{height:44vh!important;}
-  .ia-send{width:78px!important;min-width:78px!important;font-size:15px!important;}
-  .ia-mic{width:52px!important;min-width:52px!important;}
-  .ia-result-img{max-width:190px!important;}
-  .ia-result-img img{max-height:125px!important;}
+@media(max-width:430px){
+  .guia-head h2{
+    font-size:25px!important;
+  }
+  .guia-head p{
+    font-size:17px!important;
+  }
+  .guia-chat{
+    min-height:330px!important;
+  }
+  .guia-msg{
+    font-size:19px!important;
+  }
+  .guia-input{
+    font-size:21px!important;
+  }
 }
 </style>
 
-<script id="iaAspeV13MicrofonoUnPermiso">
+<script id="guiaVirtualSarroFinalJS">
 (function(){
-  const SESSION_KEY = 'ia_aspe_mic_permiso_sesion_v13';
-  const LANG = 'es-AR';
+  let guiaHistorial = [];
+  let guiaRecognition = null;
+  let guiaEscuchando = false;
+  let guiaTextoBase = "";
 
-  window.IA_ASPE_RECOGNITION_V13 = window.IA_ASPE_RECOGNITION_V13 || null;
-  window.IA_ASPE_LISTENING_V13 = false;
-  window.IA_ASPE_BASE_TEXT_V13 = '';
+  function guiaEsc(s){
+    return String(s || "").replace(/[&<>"']/g, function(m){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m];
+    });
+  }
 
-  function estado(txt){
-    const e = document.getElementById('iaMicEstado');
+  function guiaLimpiar(s){
+    return String(s || "")
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/?b>/gi, "")
+      .replace(/<\/?strong>/gi, "")
+      .replace(/<\/?[^>]+>/g, "")
+      .trim();
+  }
+
+  function guiaChat(){
+    return document.getElementById("guiaChat");
+  }
+
+  function guiaInput(){
+    return document.getElementById("guiaPregunta");
+  }
+
+  function guiaEstado(txt){
+    const e = document.getElementById("guiaEstado");
     if(e) e.innerText = txt;
   }
 
-  function btn(){
-    let b = document.getElementById('iaMicBtn') || document.querySelector('.ia-mic');
-    if(!b) return null;
-    b.id = 'iaMicBtn';
-    b.onclick = window.iaMicrofono;
-    return b;
-  }
-
-  function pintarMic(escuchando){
-    const b = btn();
-    if(!b) return;
-    if(escuchando){
-      b.classList.add('ia-listening');
-      b.innerHTML = '<span class="ia-mic-dot" aria-hidden="true"></span>';
-      b.title = 'Tocar para cortar';
-      b.setAttribute('aria-label','Cortar micrófono');
-    }else{
-      b.classList.remove('ia-listening');
-      b.innerHTML = '<span class="ia-mic-icon">🎙️</span>';
-      b.title = 'Tocar para hablar';
-      b.setAttribute('aria-label','Activar micrófono');
-    }
-  }
-
-  function crearReconocimiento(){
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!SR) return null;
-
-    const rec = new SR();
-    rec.lang = LANG;
-    rec.continuous = true;
-    rec.interimResults = true;
-    rec.maxAlternatives = 1;
-
-    rec.onstart = function(){
-      window.IA_ASPE_LISTENING_V13 = true;
-      sessionStorage.setItem(SESSION_KEY, '1');
-      pintarMic(true);
-      estado('Escuchando... tocá de nuevo el micrófono para cortar. No se envía solo.');
-    };
-
-    rec.onresult = function(ev){
-      const input = document.getElementById('iaPregunta');
-      if(!input) return;
-
-      let finalTxt = '';
-      let interimTxt = '';
-      for(let i = ev.resultIndex; i < ev.results.length; i++){
-        const txt = ev.results[i][0].transcript || '';
-        if(ev.results[i].isFinal) finalTxt += txt + ' ';
-        else interimTxt += txt;
-      }
-
-      const base = window.IA_ASPE_BASE_TEXT_V13 || '';
-      const nuevo = (base + ' ' + finalTxt + interimTxt).replace(/\s+/g,' ').trim();
-      if(nuevo) input.value = nuevo;
-      estado('Texto detectado. Podés corregirlo y después tocar Enviar.');
-    };
-
-    rec.onerror = function(ev){
-      const error = ev && ev.error ? ev.error : '';
-      window.IA_ASPE_LISTENING_V13 = false;
-      pintarMic(false);
-
-      if(error === 'not-allowed'){
-        estado('Chrome no dejó usar el micrófono. En el cartel elegí “Permitir mientras visito el sitio”.');
-      }else if(error === 'no-speech'){
-        estado('No detecté palabras. Hablá más cerca del micrófono y probá de nuevo.');
-      }else if(error === 'audio-capture'){
-        estado('No encontré micrófono activo. Revisá el micrófono de Windows/Chrome.');
-      }else{
-        estado('La escucha se detuvo. Podés tocar el micrófono otra vez.');
-      }
-    };
-
-    rec.onend = function(){
-      window.IA_ASPE_LISTENING_V13 = false;
-      pintarMic(false);
-      estado('Escucha detenida. Podés editar el texto y tocar Enviar.');
-    };
-
-    return rec;
-  }
-
-  window.iaMicrofono = function(){
-    const input = document.getElementById('iaPregunta');
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if(!SR){
-      estado('Este navegador no tiene reconocimiento de voz. Usá Chrome actualizado.');
-      return;
-    }
-
-    if(window.IA_ASPE_LISTENING_V13 && window.IA_ASPE_RECOGNITION_V13){
-      try{ window.IA_ASPE_RECOGNITION_V13.stop(); }catch(e){}
-      return;
-    }
-
-    window.IA_ASPE_BASE_TEXT_V13 = input ? input.value.trim() : '';
-
-    /* IMPORTANTE:
-       Antes se llamaba a getUserMedia() y después a SpeechRecognition.start().
-       Eso podía generar DOS carteles de permiso.
-       Ahora NO usamos getUserMedia: solo SpeechRecognition pide el micrófono una vez.
-    */
-    window.IA_ASPE_RECOGNITION_V13 = crearReconocimiento();
-    if(!window.IA_ASPE_RECOGNITION_V13){
-      estado('No se pudo iniciar el reconocimiento de voz.');
-      return;
-    }
-
-    try{
-      estado(sessionStorage.getItem(SESSION_KEY) ? 'Activando micrófono...' : 'Primer uso: aceptá el permiso del micrófono una sola vez.');
-      window.IA_ASPE_RECOGNITION_V13.start();
-    }catch(e){
-      estado('El micrófono ya estaba iniciando. Esperá un segundo y tocá de nuevo.');
-    }
-  };
-
-  const oldMostrarIA = window.mostrarIA;
-  if(typeof oldMostrarIA === 'function'){
-    window.mostrarIA = function(){
-      oldMostrarIA.apply(this, arguments);
-      setTimeout(function(){
-        const b = btn();
-        if(b){
-          b.innerHTML = '<span class="ia-mic-icon">🎙️</span>';
-          b.onclick = window.iaMicrofono;
-        }
-        const e = document.getElementById('iaMicEstado');
-        if(e) e.innerText = 'Tocá el micrófono, aceptá el permiso una vez, hablá, volvé a tocar para cortar y después enviá.';
-      }, 30);
-    };
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(function(){ pintarMic(false); }, 100);
-  });
-})();
-</script>
-
-
-
-
-<!-- =========================
-     AYUDANTE V19 - GEMINI WEB + SIN SUGERENCIAS
-========================= -->
-<style id="guía virtualV19Final">
-.ia-quick,.ia-quick-client{display:none!important;}
-.ia-card-head p{margin:4px 0 0;color:#64748b;}
-.ia-chat-box{scroll-behavior:auto!important;overscroll-behavior:contain!important;}
-.ia-gemini-box{background:#ffffff!important;border:1px solid #dbe3ee!important;border-radius:14px!important;padding:14px!important;box-shadow:0 2px 10px rgba(15,23,42,.04)!important;line-height:1.55!important;}
-.ia-result-img,.ia-google-box{display:none!important;}
-.ia-actions-row-simple{display:block!important;margin-top:12px!important;}
-.ia-actions-row-simple button{width:100%!important;max-width:360px!important;min-height:48px!important;font-size:18px!important;}
-@media (max-width:1024px){
-  .ia-panel-client{max-width:100%!important;width:100%!important;padding:14px!important;}
-  .ia-chat-box{height:48dvh!important;min-height:360px!important;}
-}
-@media (max-width:640px){
-  .topbar{position:sticky!important;top:0!important;z-index:20!important;height:auto!important;padding:10px 12px!important;gap:10px!important;}
-  .container{display:block!important;width:100%!important;}
-  .sidebar{width:100%!important;height:auto!important;padding:10px!important;position:relative!important;}
-  .content{padding:10px!important;width:100%!important;}
-  .ia-panel-client{padding:12px!important;border-radius:16px!important;}
-  .ia-card-head{display:flex!important;gap:10px!important;align-items:center!important;margin-bottom:10px!important;}
-  .ia-logo{width:42px!important;height:42px!important;min-width:42px!important;border-radius:12px!important;font-size:16px!important;margin:0!important;}
-  .ia-card-head h2{font-size:22px!important;line-height:1.1!important;}
-  .ia-card-head p{font-size:14px!important;line-height:1.25!important;}
-  .ia-chat-box{height:46dvh!important;min-height:330px!important;max-height:520px!important;padding:10px!important;border-radius:14px!important;}
-  .ia-bubble{font-size:15px!important;line-height:1.42!important;padding:10px!important;margin-left:0!important;margin-right:0!important;max-width:100%!important;}
-  .ia-user,.ia-bot{margin-left:0!important;margin-right:0!important;}
-  .ia-input-row{display:grid!important;grid-template-columns:64px 1fr!important;gap:8px!important;align-items:stretch!important;margin-top:10px!important;}
-  .ia-input-row textarea{grid-column:1 / 3!important;grid-row:1!important;width:100%!important;min-height:74px!important;max-height:130px!important;font-size:16px!important;line-height:1.25!important;resize:vertical!important;}
-  .ia-mic{grid-column:1!important;grid-row:2!important;width:64px!important;min-width:64px!important;height:58px!important;min-height:58px!important;padding:0!important;border-radius:14px!important;}
-  .ia-send{grid-column:2!important;grid-row:2!important;width:100%!important;min-width:0!important;height:58px!important;min-height:58px!important;font-size:17px!important;border-radius:14px!important;}
-  .ia-actions-row{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;margin-top:10px!important;}
-  .ia-actions-row button{width:100%!important;min-height:52px!important;font-size:18px!important;max-width:100%!important;}
-  .ia-mic-state{font-size:13px!important;line-height:1.35!important;margin-top:8px!important;}
-}
-</style>
-<script id="guía virtualV19Final">
-(function(){
-  function pintarGuía virtual(){
-    if(typeof window.mostrarAIAspe === 'function') window.mostrarAIAspe();
-  }
-})();
-</script>
-
-<!-- =========================
-AYUDANTE V22 - FOTO / CÁMARA RESPONSIVE
-========================= -->
-<style id="guía virtualV22FotoCSS">
-.ia-quick,.ia-quick-client{display:none!important;}
-.ia-photo-btn{width:60px!important;min-width:60px!important;border-radius:14px!important;background:#0f766e!important;color:#fff!important;font-size:22px!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;}
-.ia-input-row-v22{display:grid!important;grid-template-columns:64px 64px 1fr 130px!important;gap:10px!important;align-items:stretch!important;}
-.ia-input-row-v22 textarea{min-height:58px!important;}
-.ia-foto-preview{margin:10px 0!important;}
-.ia-foto-preview-card{display:flex!important;gap:10px!important;align-items:center!important;background:#f8fafc!important;border:1px solid #dbe3ee!important;border-radius:14px!important;padding:10px!important;max-width:520px!important;}
-.ia-foto-preview-card img{width:90px!important;height:70px!important;object-fit:cover!important;border-radius:10px!important;background:#111!important;}
-.ia-foto-preview-card button{background:#475569!important;color:white!important;border-radius:10px!important;padding:9px 12px!important;}
-.ia-foto-modal{display:none!important;position:fixed!important;inset:0!important;z-index:9999!important;background:rgba(15,23,42,.62)!important;align-items:center!important;justify-content:center!important;padding:18px!important;}
-.ia-foto-modal.activo{display:flex!important;}
-.ia-foto-modal-card{width:min(560px,100%)!important;background:#fff!important;border-radius:18px!important;padding:18px!important;color:#0f172a!important;position:relative!important;box-shadow:0 18px 60px rgba(0,0,0,.35)!important;}
-.ia-foto-close{position:absolute!important;right:12px!important;top:10px!important;background:#ef4444!important;color:#fff!important;border-radius:10px!important;width:42px!important;height:42px!important;font-size:24px!important;line-height:1!important;}
-.ia-foto-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;margin-top:12px!important;}
-.ia-foto-actions button{min-height:48px!important;border-radius:12px!important;background:#2563eb!important;color:#fff!important;font-size:16px!important;}
-.ia-camara-box{margin-top:14px!important;}
-.ia-camara-box video{width:100%!important;max-height:55vh!important;border-radius:14px!important;background:#111!important;object-fit:contain!important;}
-.ia-img-link{display:inline-block!important;background:#2563eb!important;color:#fff!important;padding:10px 14px!important;border-radius:10px!important;text-decoration:none!important;font-weight:700!important;}
-@media (max-width:768px){
-  .ia-input-row-v22{grid-template-columns:58px 58px 1fr!important;gap:8px!important;}
-  .ia-input-row-v22 textarea{grid-column:1 / 4!important;grid-row:1!important;width:100%!important;min-height:86px!important;}
-  .ia-input-row-v22 .ia-mic{grid-column:1!important;grid-row:2!important;width:58px!important;min-width:58px!important;height:58px!important;}
-  .ia-input-row-v22 .ia-photo-btn{grid-column:2!important;grid-row:2!important;width:58px!important;min-width:58px!important;height:58px!important;}
-  .ia-input-row-v22 .ia-send{grid-column:3!important;grid-row:2!important;width:100%!important;min-width:0!important;height:58px!important;}
-  .ia-foto-actions{grid-template-columns:1fr!important;}
-  .ia-foto-preview-card{max-width:100%!important;}
-  .ia-foto-preview-card img{width:76px!important;height:58px!important;}
-}
-</style>
-
-
-
-<!-- =========================
-     AYUDANTE V27 - NO QUEDA CARGANDO + MARCA/MODELO WEB
-- No garantiza 100%, devuelve confirmado/probable/no confirmado.
-     - Detecta marca/modelo/pieza desde foto con Gemini Vision.
-     - Mantiene contexto de conversación hasta tocar Nueva conversación.
-========================= -->
-<style id="guía virtualV25VisionContextoCSS">
-.ia-quick,.ia-quick-client{display:none!important;}
-.ia-result-img,.ia-google-box,.ia-image-link-box{display:none!important;}
-.ia-panel,.ia-panel-client{max-width:1100px!important;width:100%!important;background:#fff!important;border-radius:18px!important;border:1px solid #e2e8f0!important;padding:18px!important;box-shadow:0 8px 25px rgba(15,23,42,.06)!important;}
-.ia-card-head{display:flex!important;gap:14px!important;align-items:center!important;margin-bottom:14px!important;}
-.ia-logo{width:56px!important;height:56px!important;min-width:56px!important;border-radius:16px!important;background:#0f172a!important;color:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;font-weight:900!important;font-size:22px!important;}
-.ia-card-head h2{margin:0!important;font-size:28px!important;line-height:1.1!important;}
-.ia-card-head p{margin:4px 0 0!important;color:#64748b!important;font-size:16px!important;}
-.ia-chat-box{height:430px!important;overflow-y:auto!important;background:#f8fafc!important;border:1px solid #e2e8f0!important;border-radius:14px!important;padding:14px!important;scroll-behavior:auto!important;overscroll-behavior:contain!important;}
-.ia-bubble{padding:12px 14px!important;border-radius:14px!important;margin-bottom:10px!important;line-height:1.48!important;white-space:normal!important;font-size:16px!important;}
-.ia-bot{background:#e2e8f0!important;color:#0f172a!important;margin-right:8%!important;}
-.ia-user{background:#2563eb!important;color:#fff!important;margin-left:15%!important;}
-.ia-gemini-box{background:#fff!important;border:1px solid #dbe3ee!important;border-radius:14px!important;padding:14px!important;box-shadow:0 2px 10px rgba(15,23,42,.04)!important;line-height:1.55!important;}
-.ia-input-row-v26{display:grid!important;grid-template-columns:64px 64px 1fr 130px!important;gap:10px!important;align-items:stretch!important;margin-top:12px!important;}
-.ia-input-row-v26 textarea{min-height:58px!important;resize:vertical!important;border:1px solid #cbd5e1!important;border-radius:12px!important;padding:12px!important;font-family:inherit!important;font-size:16px!important;}
-.ia-mic{background:#ef4444!important;border-radius:14px!important;color:#fff!important;font-size:22px!important;width:64px!important;min-width:64px!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;}
-.ia-photo-btn{background:#0f766e!important;border-radius:14px!important;color:#fff!important;font-size:22px!important;width:64px!important;min-width:64px!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;}
-.ia-send{border-radius:14px!important;min-width:130px!important;font-size:17px!important;}
-.ia-actions-row-simple{margin-top:10px!important;display:block!important;}
-.ia-actions-row-simple button{background:#0f766e!important;color:#fff!important;border-radius:12px!important;width:100%!important;max-width:360px!important;min-height:48px!important;font-size:18px!important;}
-.ia-mic .ia-mic-dot{display:none!important;width:22px!important;height:22px!important;background:#fff!important;border-radius:999px!important;}
-.ia-mic.ia-listening .ia-mic-icon{display:none!important;}
-.ia-mic.ia-listening .ia-mic-dot{display:block!important;}
-.ia-mic.ia-listening{animation:iaAspeMicPulseV26 1.05s infinite!important;}
-@keyframes iaAspeMicPulseV26{0%{box-shadow:0 0 0 0 rgba(239,68,68,.35)}70%{box-shadow:0 0 0 10px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
-.ia-foto-preview-card{display:flex!important;gap:10px!important;align-items:center!important;background:#fff!important;border:1px solid #dbe3ee!important;border-radius:14px!important;padding:10px!important;margin:10px 0!important;max-width:520px!important;}
-.ia-foto-preview-card img{width:90px!important;height:70px!important;object-fit:cover!important;border-radius:10px!important;background:#111!important;}
-.ia-foto-preview-card button{background:#475569!important;color:#fff!important;border-radius:10px!important;width:auto!important;padding:9px 12px!important;}
-.ia-foto-modal{display:none!important;position:fixed!important;inset:0!important;z-index:9999!important;background:rgba(15,23,42,.62)!important;align-items:center!important;justify-content:center!important;padding:18px!important;}
-.ia-foto-modal.activo{display:flex!important;}
-.ia-foto-modal-card{width:min(560px,100%)!important;background:#fff!important;border-radius:18px!important;padding:18px!important;color:#0f172a!important;position:relative!important;box-shadow:0 18px 60px rgba(0,0,0,.35)!important;}
-.ia-foto-close{position:absolute!important;right:12px!important;top:10px!important;background:#ef4444!important;color:#fff!important;border-radius:10px!important;width:42px!important;height:42px!important;font-size:24px!important;line-height:1!important;}
-.ia-foto-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;margin-top:12px!important;}
-.ia-foto-actions button{min-height:48px!important;border-radius:12px!important;background:#2563eb!important;color:#fff!important;font-size:16px!important;}
-.ia-camara-box{margin-top:14px!important;}
-.ia-camara-box video{width:100%!important;max-height:55vh!important;border-radius:14px!important;background:#111!important;object-fit:contain!important;}
-.ia-img-link{display:inline-block!important;background:#2563eb!important;color:#fff!important;padding:10px 14px!important;border-radius:10px!important;text-decoration:none!important;font-weight:700!important;margin-top:8px!important;}
-@media (max-width:900px){.ia-panel{padding:14px!important}.ia-chat-box{height:48dvh!important;min-height:360px!important}}
-@media (max-width:640px){
-  .topbar{position:sticky!important;top:0!important;z-index:20!important;height:auto!important;padding:10px 12px!important;gap:10px!important;}
-  .container{display:block!important;width:100%!important;}
-  .sidebar{width:100%!important;height:auto!important;padding:10px!important;position:relative!important;}
-  .content{padding:10px!important;width:100%!important;}
-  .ia-panel{padding:12px!important;border-radius:16px!important;}
-  .ia-card-head{gap:10px!important;margin-bottom:10px!important;}
-  .ia-logo{width:42px!important;height:42px!important;min-width:42px!important;border-radius:12px!important;font-size:16px!important;}
-  .ia-card-head h2{font-size:22px!important;}
-  .ia-card-head p{font-size:14px!important;line-height:1.25!important;}
-  .ia-chat-box{height:46dvh!important;min-height:330px!important;max-height:520px!important;padding:10px!important;border-radius:14px!important;}
-  .ia-bubble{font-size:15px!important;line-height:1.42!important;padding:10px!important;max-width:100%!important;}
-  .ia-user,.ia-bot{margin-left:0!important;margin-right:0!important;}
-  .ia-input-row-v26{grid-template-columns:58px 58px 1fr!important;gap:8px!important;}
-  .ia-input-row-v26 textarea{grid-column:1 / 4!important;grid-row:1!important;width:100%!important;min-height:86px!important;max-height:130px!important;}
-  .ia-input-row-v26 .ia-mic{grid-column:1!important;grid-row:2!important;width:58px!important;min-width:58px!important;height:58px!important;}
-  .ia-input-row-v26 .ia-photo-btn{grid-column:2!important;grid-row:2!important;width:58px!important;min-width:58px!important;height:58px!important;}
-  .ia-input-row-v26 .ia-send{grid-column:3!important;grid-row:2!important;width:100%!important;min-width:0!important;height:58px!important;font-size:17px!important;}
-  .ia-actions-row-simple button{max-width:100%!important;}
-  .ia-foto-actions{grid-template-columns:1fr!important;}
-  .ia-foto-preview-card{max-width:100%!important;}
-  .ia-foto-preview-card img{width:76px!important;height:58px!important;}
-}
-</style>
-
-<script id="guía virtualV27NoCargaModeloJS">
-(function(){
-  const API_KEY = window.IA_ASPE_GEMINI_API_KEY || 'AIzaSyDny5NRmRpDvHhbIKOqqbe0AM5JKQMHFzg';
-  const MODEL_WEB = 'gemini-2.0-flash';
-  const MODEL_FALLBACK = 'gemini-1.5-flash';
-  const SEARCH_SUFFIX = 'Sobre Calefones Ionizados';
-  // En archivo local / localhost puede fallar Gemini por permisos, CORS o API.
-  // Esta bandera permite que la página responda igual en modo prueba antes de subir a GitHub.
-  const MODO_PRUEBA_LOCAL = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-  let fotoActual = null;
-  let fotoPreviewUrl = '';
-  let cameraStream = null;
-  let historial = [];
-
-  const marcasModelos = `
-Marcas y líneas frecuentes a considerar en Argentina y Latinoamérica: Orbis, Orbis Eurotrend, Orbis botonera, Orbis corredera, Ecotermo, Ecotermo CL Ionizado, Ecotermo CL 12 Ionizado, Longvie, Volcan, Rheem, Señorial, Escorial, Peabody, Universal, Saiar, Eskabe, Sherman, Emege. Modelos/capacidades visibles posibles: 10L, 12L, 14L, 16L, litros/min, tiro natural, tiro balanceado, tiro forzado, sin piloto, encendido electrónico, ionizado, display digital. Componentes eléctricos/electrónicos: placa o módulo electrónico, display, botonera, micro switch, sensor de caudal, sensor de temperatura, sensor de sobretemperatura, electrodo de encendido, sensor/electrodo de ionización, chispero, transformador de ignición, pilas/fuente, cableado, conectores, terminales, masa, bujía/electrodo, solenoide/válvula controlada por placa. También puede aparecer termotanque eléctrico, que debe identificarse como tal y aclarar que no es calefón ionizado.`;
-
-  function esc(s){ return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
-  function limpiarRespuesta(s){ return String(s||'').replace(/<\/?b>/gi,'').replace(/<\/?strong>/gi,'').replace(/<br\s*\/?\s*>/gi,'\n').replace(/<[^>]+>/g,''); }
-  function chat(){ return document.getElementById('iaChat'); }
-  function input(){ return document.getElementById('iaPregunta'); }
-  function status(t){ const e=document.getElementById('iaMicEstado'); if(e) e.innerText=t; }
-  function add(html,tipo='bot'){
-    const c=chat(); if(!c) return null;
+  function guiaAdd(tipo, texto, claseExtra){
+    const c = guiaChat();
+    if(!c) return null;
     const keepTop = c.scrollTop;
-    const d=document.createElement('div');
-    d.className='ia-bubble '+(tipo==='user'?'ia-user':'ia-bot');
-    d.innerHTML=html;
-    c.appendChild(d);
+    const div = document.createElement("div");
+    div.className = "guia-msg " + (tipo === "user" ? "guia-user" : "guia-bot") + (claseExtra ? " " + claseExtra : "");
+    div.textContent = texto;
+    c.appendChild(div);
     c.scrollTop = keepTop;
-    return d;
-  }
-  function safeTema(q){
-    const s=String(q||'').toLowerCase();
-    const terms=['calefon','calefón','ionizado','termo','termotanque','placa','sensor','electrodo','display','chispa','enciende','prende','apaga','orbis','ecotermo','longvie','volcan','rheem','señorial','escorial','pilas','fuente','cable','conector','caudal','micro switch','bujia','bujía','botonera','temperatura','eurotrend'];
-    return terms.some(x=>s.includes(x)) || !!fotoActual;
-  }
-  function preguntaFinal(q){
-    let base = String(q||'').trim();
-    if(!base) base = 'Identificá la imagen y explicá el componente o equipo';
-    return `${base} ${SEARCH_SUFFIX}`;
-  }
-  function contextoTexto(){
-    return historial.slice(-8).map(m=>`${m.rol}: ${m.texto}`).join('\n');
-  }
-  function cursoApoyo(q){
-    try{
-      if(typeof iaBuscarCurso==='function'){
-        const r=iaBuscarCurso(q || 'calefon ionizado placa sensor electrodo', 3);
-        return r.map(x=>`- ${x.clase}, segundo ${x.segundo}: ${String(x.texto||'').slice(0,380)}`).join('\n');
-      }
-    }catch(e){}
-    return '';
-  }
-  function imageLink(q){
-    const query = encodeURIComponent(`${q || 'calefon ionizado componente'} ${SEARCH_SUFFIX} parte electrica electronica`);
-    return `<a class="ia-img-link" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${query}">Ver imagen del problema</a>`;
-  }
-  function fileToBase64(file){
-    return new Promise((resolve,reject)=>{
-      const r=new FileReader();
-      r.onload=()=>{
-        const result=String(r.result||'');
-        const data=result.split(',')[1]||'';
-        resolve({mimeType:file.type||'image/jpeg', data, name:file.name||'foto'});
-      };
-      r.onerror=reject;
-      r.readAsDataURL(file);
-    });
-  }
-  async function setFoto(file){
-    if(!file) return;
-    fotoActual = await fileToBase64(file);
-    if(fotoPreviewUrl) URL.revokeObjectURL(fotoPreviewUrl);
-    fotoPreviewUrl = URL.createObjectURL(file);
-    pintarPreview();
-  }
-  function pintarPreview(){
-    const box=document.getElementById('iaFotoPreview');
-    if(!box) return;
-    if(!fotoActual){ box.innerHTML=''; return; }
-    box.innerHTML=`<div class="ia-foto-preview-card"><img src="${fotoPreviewUrl}" alt="Foto cargada"><div><b>Foto cargada</b><br><small>El guía virtual intentará detectar tipo, marca, modelo y componente visible.</small></div><button type="button" onclick="iaQuitarFotoV26()">Quitar</button></div>`;
-  }
-  window.iaQuitarFotoV26=function(){ fotoActual=null; if(fotoPreviewUrl) URL.revokeObjectURL(fotoPreviewUrl); fotoPreviewUrl=''; pintarPreview(); };
-  window.iaAbrirFoto=function(){ const m=document.getElementById('iaFotoModal'); if(m) m.classList.add('activo'); };
-  window.iaCerrarFoto=function(){ const m=document.getElementById('iaFotoModal'); if(m) m.classList.remove('activo'); detenerCamara(); };
-  window.iaElegirGaleria=function(){ const f=document.getElementById('iaGaleriaInput'); if(f) f.click(); };
-  window.iaTomarFoto=function(){ iniciarCamara(); };
-  async function iniciarCamara(){
-    const box=document.getElementById('iaCamaraBox'); if(!box) return;
-    box.innerHTML='<p>Activando cámara...</p>';
-    try{
-      cameraStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
-      box.innerHTML='<video id="iaCamVideo" autoplay playsinline></video><button type="button" style="margin-top:10px;background:#0f766e" onclick="iaCapturarCamaraV26()">Usar esta foto</button>';
-      document.getElementById('iaCamVideo').srcObject=cameraStream;
-    }catch(e){
-      box.innerHTML='<p>No pude abrir la cámara dentro de la página. Probá con “Subir foto” desde galería.</p>';
-    }
-  }
-  function detenerCamara(){ if(cameraStream){ cameraStream.getTracks().forEach(t=>t.stop()); cameraStream=null; } }
-  window.iaCapturarCamaraV26=async function(){
-    const v=document.getElementById('iaCamVideo'); if(!v) return;
-    const canvas=document.createElement('canvas');
-    canvas.width=v.videoWidth||1280; canvas.height=v.videoHeight||720;
-    canvas.getContext('2d').drawImage(v,0,0,canvas.width,canvas.height);
-    const blob=await new Promise(res=>canvas.toBlob(res,'image/jpeg',0.88));
-    await setFoto(new File([blob],'foto-camara.jpg',{type:'image/jpeg'}));
-    window.iaCerrarFoto();
-  };
-  function detectarTemaLocal(q){
-    const t=norm(q||'');
-    if(/placa|modulo|electronica|circuito|display/.test(t)) return 'placa electrónica / módulo de control';
-    if(/ionizacion|sensor|electrodo|llama|detecta/.test(t)) return 'sensor/electrodo de ionización';
-    if(/chispa|chisper|encendido|bujia/.test(t)) return 'sistema de encendido electrónico';
-    if(/pila|bateria|fuente|alimentacion|corriente/.test(t)) return 'alimentación eléctrica, pilas o fuente';
-    if(/conector|cable|cableado|terminal|sulfat|humedad|oxido/.test(t)) return 'cableado, conectores o terminales';
-    if(/marca|modelo|foto|termotanque|termo|calefon|equipo/.test(t)) return 'identificación visual de equipo o componente';
-    return 'diagnóstico eléctrico/electrónico general';
-  }
-  function datosEscritos(q){
-    const t=norm(q||'');
-    const marcas=['orbis','ecotermo','longvie','volcan','rheem','señorial','senorial','escorial','peabody','eskabe','saiar','sherman','universal','emege'];
-    const marca=marcas.find(m=>t.includes(m));
-    const modelo=(String(q||'').match(/(eurotrend|cl\s*\d+|cl\s*ionizado|\d+\s*l(?:itros)?(?:\/min)?|\d+\s*litros\s*\/\s*min|tiro\s*(?:natural|balanceado|forzado)|sin\s*piloto|encendido\s*electronico|encendido\s*electrónico)/i)||[])[0]||'';
-    return {marca, modelo};
-  }
-  function hayMarcaModelo(q){
-    const d=datosEscritos(q);
-    return !!(d.marca || d.modelo);
-  }
-  function consultaWebPreparada(q, visual=''){
-    const partes=[];
-    if(q) partes.push(q);
-    if(visual) partes.push(visual);
-    const d=datosEscritos(q);
-    if(d.marca) partes.push(d.marca);
-    if(d.modelo) partes.push(d.modelo);
-    partes.push(SEARCH_SUFFIX);
-    partes.push('parte eléctrica electrónica');
-    return partes.filter(Boolean).join(' ');
-  }
-  function respuestaPruebaLocal(q){
-    const tema = detectarTemaLocal(q);
-    const apoyo = cursoApoyo(q || tema);
-    const tieneFoto = !!fotoActual;
-    const d=datosEscritos(q);
-    const puedeBuscarModelo = hayMarcaModelo(q);
-    const consulta = puedeBuscarModelo ? consultaWebPreparada(q) : preguntaFinal(q || tema);
-    return `Respuesta orientativa de prueba:
-
-1) Identificación visual / foto cargada:
-${tieneFoto ? 'Hay una foto cargada. En modo prueba local no puedo confirmar visualmente marca/modelo con Gemini Vision, pero igual respondo con una guía útil. Para reconocer el modelo exacto, la foto debe mostrar logo, etiqueta, litros/min, código, modelo y componente visible. En la web publicada con Gemini funcionando, el Guía virtual analiza esa imagen y puede devolver marca/modelo probable.' : 'No hay foto cargada. Estoy respondiendo por texto.'}
-
-2) Tema detectado:
-${tema}.
-
-3) Marca/modelo detectado por texto:
-Marca escrita: ${d.marca || 'no indicada'}.
-Modelo/capacidad escrito: ${d.modelo || 'no indicado'}.
-
-4) Búsqueda externa:
-${puedeBuscarModelo ? `Como la marca/modelo aparece escrito, la consulta externa preparada sería: "${consulta}".` : 'No se escribió marca/modelo. Entonces no conviene inventar una búsqueda por marca. Si la foto permite leer etiqueta/logo, Gemini Vision la usará en la web publicada; si no se lee, el Guía virtual debe pedir una foto más cercana de la etiqueta o del código del componente.'}
-
-5) Explicación útil:
-En un calefón ionizado, el diagnóstico eléctrico/electrónico se piensa como una cadena: alimentación, placa o módulo, orden de encendido, chispa, detección por ionización, sensores, cableado, conectores y respuesta del equipo. Si una señal falla, puede no encender, hacer chispa sin prender, prender y apagarse, marcar código o quedar intermitente.
-
-6) Qué mirar de forma visual:
-Etiqueta de marca/modelo, código de placa, conectores flojos, cables cortados o sulfatados, pilas/fuente, humedad cerca de la placa, display con error, electrodo/sensor visible fuera de posición o suciedad sobre conectores.
-
-7) Apoyo del curso:
-${apoyo || 'Sin coincidencia local clara, pero la consulta entra dentro del alcance si trata de calefón ionizado, placa, sensor, electrodo, chispa, pilas, display, cableado o componente eléctrico/electrónico.'}`;
-  }
-  async function consultarGemini(q){
-    const apoyo = cursoApoyo(q);
-    const datosTexto=datosEscritos(q);
-    const marcaModeloTexto = [datosTexto.marca, datosTexto.modelo].filter(Boolean).join(' ');
-    const prompt = `Actuá como Guía virtual educativo especializado en identificación visual y diagnóstico orientativo de calefones ionizados, SOLO parte eléctrica/electrónica.
-
-TAREA PRINCIPAL:
-1) Si hay imagen: primero analizá visualmente la foto. Leé logo, etiqueta, marca, modelo, litros/min, código, display, botonera o componente visible. Si es una pieza interna, identificá si parece placa, sensor, electrodo, display, cableado, conector, micro switch, sensor de caudal, sensor de temperatura, pilas/fuente u otro componente.
-2) Si la marca/modelo se ve en la imagen o fue escrito por el usuario, usá esa marca/modelo para comparar con información web/Gemini.
-3) Si NO se ve marca/modelo y el usuario NO lo escribió, NO inventes marca ni modelo. Respondé como probable y pedí foto cercana de la etiqueta.
-4) Para búsqueda o razonamiento externo, usá siempre una consulta específica terminada en: "Sobre Calefones Ionizados". Si detectás marca/modelo, la consulta debe incluirlos. Si no detectás marca/modelo, buscá solo por el componente/problema general.
-
-Consulta base preparada: "${consultaWebPreparada(q || 'analizar foto de calefón ionizado', marcaModeloTexto)}".
-
-Marcas/modelos/componentes posibles:
-${marcasModelos}
-
-Contexto de la conversación actual:
-${contextoTexto() || 'Sin contexto previo.'}
-
-Apoyo mínimo del curso/subtítulos para confirmar relación:
-${apoyo || 'Sin coincidencia local clara.'}
-
-Pregunta actual del usuario: ${q || 'Analizá la imagen.'}
-
-Respondé en español claro y detallado. Estructura exacta:
-1) Identificación visual: tipo de equipo o pieza.
-2) Marca/modelo probable: marca, línea/modelo, capacidad o código visible.
-3) Nivel de certeza: Confirmado / Probable / No confirmado, y por qué.
-4) Búsqueda/razonamiento usado: explicá qué marca/modelo/problema tomaste para ampliar la respuesta. Si no había marca/modelo, decí que no lo inventaste.
-5) Parte eléctrica/electrónica relacionada.
-6) Respuesta a la consulta del usuario.
-7) Qué foto extra pedirías para confirmar.
-No desarrolles plomería ni trabajos de gas. Si aparece un termotanque eléctrico, identificalo correctamente y aclaralo.`;
-    const parts=[{text:prompt}];
-    if(fotoActual && fotoActual.data){ parts.push({inline_data:{mime_type:fotoActual.mimeType, data:fotoActual.data}}); }
-    async function call(model, useSearch){
-      const body={contents:[{role:'user',parts}]};
-      if(useSearch) body.tools=[{google_search:{}}];
-      const controller=new AbortController();
-      const timer=setTimeout(()=>controller.abort(), 12000);
-      try{
-        const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:controller.signal});
-        if(!res.ok) throw new Error('HTTP '+res.status);
-        const data=await res.json();
-        return data?.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('\n').trim() || '';
-      } finally { clearTimeout(timer); }
-    }
-    try{ return await call(MODEL_WEB,true); }
-    catch(e1){ return await call(MODEL_FALLBACK,false); }
-  }
-  function conTimeoutPromesa(promesa, ms){
-    return new Promise((resolve, reject)=>{
-      const t=setTimeout(()=>reject(new Error('timeout_total_gemini')), ms);
-      promesa.then(v=>{ clearTimeout(t); resolve(v); }).catch(e=>{ clearTimeout(t); reject(e); });
-    });
+    return div;
   }
 
-  function esPruebaLocal(){
-    return location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  function guiaActualizar(div, texto){
+    if(div) div.textContent = texto;
   }
 
-  async function obtenerRespuestaSegura(q){
-    /*
-      IMPORTANTE: en local a veces Gemini queda bloqueado por navegador/API/CORS.
-      Para que nunca quede "Analizando...", en prueba local respondemos directo con modo prueba.
-      En GitHub Pages/HTTPS intenta Gemini Vision + búsqueda; si tarda más de 9 s, cae al modo prueba.
-    */
-    if(esPruebaLocal()){
-      return respuestaPruebaLocal(q);
-    }
-    try{
-      const r = await conTimeoutPromesa(consultarGemini(q), 9000);
-      if(!r || !String(r).trim()) throw new Error('respuesta_vacia');
-      return r;
-    }catch(e){
-      return respuestaPruebaLocal(q);
-    }
+  function guiaContexto(){
+    return guiaHistorial.slice(-8).map(function(m){
+      return m.rol + ": " + m.texto;
+    }).join("\n");
   }
 
-  function respuestaEmergencia(q){
-    let tema='diagnóstico eléctrico/electrónico general';
-    try{ tema = detectarTemaLocal(q || 'foto de calefón ionizado'); }catch(e){}
-    let d={marca:'',modelo:''};
-    try{ d = datosEscritos(q || ''); }catch(e){}
-    const hayFoto = !!fotoActual;
-    let consulta='';
-    try{ consulta = consultaWebPreparada(q || tema); }catch(e){ consulta = (q || tema) + ' Sobre Calefones Ionizados parte eléctrica/electrónica'; }
-    let identificacion = hayFoto
-      ? 'Hay una foto cargada. Si en la imagen se ve logo, etiqueta, litros/min, código o tapa de componentes, el guía virtual debe usar eso para orientar marca/modelo. En modo local sin Gemini Vision real no puedo leer la foto con precisión, pero igual doy una respuesta útil y no dejo cargando.'
-      : 'No hay foto cargada. Respondo por el texto escrito.';
-    return `Identificación inicial:
-${identificacion}
+  function guiaTieneMarcaModelo(txt){
+    const t = String(txt || "").toLowerCase();
+    const marcas = ["orbis","ecotermo","longvie","rheem","volcan","volcán","señorial","senorial","escorial","peabody","universal","saiar","eskabe","eurotrend"];
+    const tieneMarca = marcas.some(function(m){ return t.includes(m); });
+    const tieneModelo = /\b(cl\s*\d+|r7|eurotrend|\d+\s*l|\d+\s*litros|modelo|mod\.|cod\.|código|codigo)\b/i.test(txt || "");
+    return tieneMarca || tieneModelo;
+  }
 
-Tema detectado:
-${tema}.
+  function guiaConsultaFinal(txt){
+    const base = String(txt || "").trim();
+    return base + " sobre calefones ionizados";
+  }
 
-Marca/modelo escrito:
-Marca: ${d.marca || 'no indicada'}
-Modelo/capacidad: ${d.modelo || 'no indicado'}
+  function guiaEsProbableCalefon(txt){
+    const t = String(txt || "").toLowerCase();
+    const claves = [
+      "calefon","calefón","ionizado","ionización","ionizacion","chispa","prende","enciende","apaga",
+      "pila","pilas","tester","multimetro","multímetro","placa","modulo","módulo","sensor","electrodo",
+      "display","cable","cableado","conector","conectores","fuente","bateria","batería","continuidad",
+      "voltaje","tension","tensión","micro switch","microswitch","caudal","orbis","ecotermo","longvie",
+      "rheem","volcan","volcán","eurotrend","bujia","bujía"
+    ];
+    return claves.some(function(k){ return t.includes(k); });
+  }
 
-Respuesta clara:
-Para una consulta sobre ${tema}, primero conviene identificar el equipo por marca/modelo y después mirar la parte eléctrica/electrónica relacionada: placa o módulo, display, alimentación, pilas/fuente, cableado, conectores, sensor/electrodo de ionización, chispero, sensor de caudal o sensor de temperatura.
+  async function guiaGemini(pregunta){
+    const apiKey = (window.GUIA_VIRTUAL_GEMINI_API_KEY || window.IA_ASPE_GEMINI_API_KEY || "").trim();
+    if(!apiKey || apiKey.includes("PEG") || apiKey.includes("TU_API")) return null;
 
-Si la consulta es “tengo problema con la placa de ese calefón”, lo ideal es revisar visualmente si hay humedad, sulfato, pistas quemadas, conectores flojos, cables cortados o código visible en la placa. Para saber qué placa corresponde, hace falta marca, modelo exacto y código de la placa.
+    const consulta = guiaConsultaFinal(pregunta);
+    const especificidad = guiaTieneMarcaModelo(pregunta)
+      ? "El usuario dio marca/modelo o dato específico. Respondé con orientación más específica para esa marca/modelo si corresponde."
+      : "El usuario no dio marca/modelo. Respondé general sobre calefones ionizados y pedí marca/modelo al final.";
 
-Búsqueda que se usaría con Gemini/web:
+    const prompt = `
+Sos la Guía virtual en consultas de fallas del curso ASPE.
+Respondé solamente sobre calefones ionizados, anatomía del equipo y parte eléctrica/electrónica.
+La consulta siempre debe interpretarse agregando al final: "sobre calefones ionizados".
+
+Consulta preparada:
 ${consulta}
 
-Para confirmar mejor:
-Subí una foto cercana de la etiqueta del calefón/termo y otra de la pieza o placa donde se vea el código impreso.`;
-  }
+Contexto de conversación:
+${guiaContexto() || "Sin contexto previo."}
 
-  async function responder(){
-    const inp=input(); if(!inp) return;
-    const q=inp.value.trim();
-    if(!q && !fotoActual) return;
-    if(!safeTema(q)){
-      add('<b>Guía virtual:</b> Solo respondo consultas relacionadas con calefones ionizados, termotanques/calefones y componentes eléctricos/electrónicos.', 'bot');
-      return;
-    }
-    historial.push({rol:'Alumno',texto:q || 'Foto enviada para identificar equipo/componente'});
-    add(`<b>Alumno:</b> ${esc(q || 'Analizá esta foto')} ${fotoActual?'<br><small>Foto adjunta para identificar tipo, marca, modelo o pieza.</small>':''}`, 'user');
-    inp.value='';
-    const loading=add('<b>Guía virtual:</b><br>Preparando respuesta...', 'bot');
+Reglas:
+- Respondé como ChatGPT, claro, útil y con bastante explicación.
+- Si el usuario pregunta "pila", "tester", "placa", "chispa", "sensor", "display", "cableado" o "conector", asumí que habla de calefón ionizado.
+- Se usa mucho tester/multímetro en este curso: explicá cómo razonar mediciones de forma educativa y segura.
+- Enfocate en placa, módulo, pilas/fuente, chispa, sensor/electrodo de ionización, display, micro switch, sensores, continuidad, conectores y cableado.
+- No des instrucciones de plomería ni trabajos de gas. Si hay riesgo o manipulación peligrosa, recomendá técnico/gasista matriculado.
+- No muestres etiquetas HTML.
+- Siempre terminá con una pregunta para seguir el diagnóstico.
+- ${especificidad}
+`;
 
-    try{
-      let respuesta;
-      if(esPruebaLocal()){
-        respuesta = respuestaEmergencia(q);
-      }else{
-        respuesta = await conTimeoutPromesa(obtenerRespuestaSegura(q), 8000).catch(()=>respuestaEmergencia(q));
+    const modelos = ["gemini-1.5-flash", "gemini-1.5-flash-latest"];
+    for(const modelo of modelos){
+      const controller = new AbortController();
+      const timer = setTimeout(function(){ controller.abort(); }, 14000);
+      try{
+        const url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelo + ":generateContent?key=" + encodeURIComponent(apiKey);
+        const res = await fetch(url, {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          signal:controller.signal,
+          body:JSON.stringify({
+            contents:[{role:"user", parts:[{text:prompt}]}],
+            generationConfig:{temperature:0.35, maxOutputTokens:1700}
+          })
+        });
+        clearTimeout(timer);
+        if(!res.ok) continue;
+        const data = await res.json();
+        const txt = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts
+          ? data.candidates[0].content.parts.map(function(p){ return p.text || ""; }).join("\n")
+          : "";
+        if(txt.trim()) return guiaLimpiar(txt);
+      }catch(e){
+        clearTimeout(timer);
       }
-      if(!respuesta || !String(respuesta).trim()) respuesta = respuestaEmergencia(q);
-      let extra='';
-      try{ extra = imageLink(q || detectarTemaLocal(q)); }catch(e){ extra=''; }
-      const html=`<b>Guía virtual:</b><div class="ia-gemini-box">${esc(limpiarRespuesta(respuesta)).replace(/\n/g,'<br>')}</div>${extra}`;
-      if(loading) loading.innerHTML=html; else add(html,'bot');
-      historial.push({rol:'Guía virtual',texto:String(respuesta).slice(0,2000)});
-    }catch(err){
-      const respuesta = respuestaEmergencia(q);
-      const html=`<b>Guía virtual:</b><div class="ia-gemini-box">${esc(limpiarRespuesta(respuesta)).replace(/\n/g,'<br>')}</div>`;
-      if(loading) loading.innerHTML=html; else add(html,'bot');
-      historial.push({rol:'Guía virtual',texto:String(respuesta).slice(0,2000)});
     }
-  }
-  window.iaEnviar = responder;
-  window.iaNuevaConversacion=function(){
-    historial=[]; fotoActual=null; if(fotoPreviewUrl) URL.revokeObjectURL(fotoPreviewUrl); fotoPreviewUrl='';
-    const c=chat(); if(c) c.innerHTML='<div class="ia-bubble ia-bot"><b>Guía virtual:</b> Nueva conversación iniciada. Subí una foto o escribí tu consulta sobre calefones ionizados, marca/modelo o componentes eléctricos/electrónicos.</div>';
-    pintarPreview();
-  };
-  window.mostrarAIAspe=function(){
-    actual=null;
-    const lm=document.getElementById('listaMaterial'); if(lm) lm.classList.remove('abierto');
-    const lp=document.getElementById('listaPDF'); if(lp) lp.classList.remove('abierto');
-    const botones=document.querySelector('.botones'); if(botones) botones.style.display='none';
-    const videoBox=document.getElementById('video');
-    if(videoBox) videoBox.classList.add('ia-mode');
-    const titulo=document.getElementById('titulo'); if(titulo) titulo.innerText='🛠️ Guía virtual';
-    const texto=document.getElementById('texto'); if(texto) texto.innerText='Subí una foto o escribí una consulta. Detecta tipo de equipo, marca/modelo probable, componente y responde sobre calefones ionizados.';
-    if(!videoBox) return;
-    videoBox.innerHTML=`
-    <div class="ia-panel">
-      <div class="ia-card-head">
-        <div class="ia-logo ia-sarro-logo">Sarro</div>
-        <div><h2>Guía virtual</h2><p>Guía para consultas sobre fallas eléctricas/electrónicas de calefones ionizados. Siempre responde; en local usa modo prueba inmediato si Gemini no conecta.</p></div>
-      </div>
-      <div id="iaChat" class="ia-chat-box">
-        <div class="ia-bubble ia-bot"><b>Guía virtual:</b> Subí una foto o escribí tu consulta. Voy a mirar el contexto de esta conversación hasta que toques <b>Nueva conversación</b>.</div>
-      </div>
-      <div id="iaFotoPreview"></div>
-      <div class="ia-input-row-v26">
-        <button id="iaMicBtn" class="ia-mic" onclick="iaMicrofono()" title="Hablar"><span class="ia-mic-icon">🎙️</span><span class="ia-mic-dot"></span></button>
-        <button class="ia-photo-btn" onclick="iaAbrirFoto()" title="Subir o sacar foto">📷</button>
-        <textarea id="iaPregunta" placeholder="Ej: qué marca/modelo es, qué componente es, esta placa está rota, qué puede fallar..."></textarea>
-        <button class="ia-send" onclick="iaEnviar()">Enviar</button>
-      </div>
-      <div class="ia-actions-row-simple"><button onclick="iaNuevaConversacion()">Nueva conversación</button></div>
-      <div id="iaMicEstado" class="ia-mic-state">El micrófono escribe el texto. No se envía solo.</div>
-      <input id="iaGaleriaInput" type="file" accept="image/*" style="display:none">
-      <div id="iaFotoModal" class="ia-foto-modal">
-        <div class="ia-foto-modal-card">
-          <button class="ia-foto-close" onclick="iaCerrarFoto()">×</button>
-          <h3>Foto para analizar</h3>
-          <p>Podés subir una foto desde galería o abrir la cámara dentro de la página.</p>
-          <div class="ia-foto-actions">
-            <button onclick="iaElegirGaleria()">Subir foto</button>
-            <button onclick="iaTomarFoto()">Sacar foto</button>
-          </div>
-          <div id="iaCamaraBox" class="ia-camara-box"></div>
-        </div>
-      </div>
-    </div>`;
-    const gal=document.getElementById('iaGaleriaInput');
-    if(gal) gal.onchange=async(e)=>{ await setFoto(e.target.files && e.target.files[0]); window.iaCerrarFoto(); gal.value=''; };
-    pintarPreview();
-  };
-})();
-</script>
-
-</body>
-
-</html>
-
-<!-- =========================
-     V30 - GUÍA VIRTUAL EN CONSULTAS DE FALLAS
-     Texto + audio + contexto. Sin cámara, sin fotos, sin sugerencias rápidas.
-========================= -->
-<style id="guiaVirtualV30CSS">
-.ia-photo-btn,.ia-foto-preview,.ia-foto-modal,.ia-quick,.ia-quick-client{display:none!important;}
-.ia-panel,.ia-panel-client{max-width:1100px!important;width:100%!important;background:#fff!important;border-radius:18px!important;border:1px solid #e2e8f0!important;padding:18px!important;box-shadow:0 8px 25px rgba(15,23,42,.06)!important;}
-.ia-card-head{display:flex!important;gap:14px!important;align-items:center!important;margin-bottom:14px!important;}
-.ia-logo{width:56px!important;height:56px!important;min-width:56px!important;border-radius:16px!important;background:#0f172a!important;color:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;font-weight:900!important;font-size:22px!important;}
-.ia-card-head h2{margin:0!important;font-size:28px!important;line-height:1.1!important;}
-.ia-card-head p{margin:4px 0 0!important;color:#64748b!important;font-size:16px!important;}
-.ia-chat-box{height:430px!important;overflow-y:auto!important;background:#f8fafc!important;border:1px solid #e2e8f0!important;border-radius:14px!important;padding:14px!important;scroll-behavior:auto!important;overscroll-behavior:contain!important;}
-.ia-bubble{padding:12px 14px!important;border-radius:14px!important;margin-bottom:10px!important;line-height:1.48!important;white-space:normal!important;font-size:16px!important;}
-.ia-bot{background:#e2e8f0!important;color:#0f172a!important;margin-right:8%!important;}
-.ia-user{background:#2563eb!important;color:#fff!important;margin-left:15%!important;}
-.ia-gemini-box{background:#fff!important;border:1px solid #dbe3ee!important;border-radius:14px!important;padding:14px!important;box-shadow:0 2px 10px rgba(15,23,42,.04)!important;line-height:1.58!important;}
-.ia-input-row-v30{display:grid!important;grid-template-columns:64px 1fr 130px!important;gap:10px!important;align-items:stretch!important;margin-top:12px!important;}
-.ia-input-row-v30 textarea{min-height:58px!important;resize:vertical!important;border:1px solid #cbd5e1!important;border-radius:12px!important;padding:12px!important;font-family:inherit!important;font-size:16px!important;}
-.ia-mic{background:#ef4444!important;border-radius:14px!important;color:#fff!important;font-size:22px!important;width:64px!important;min-width:64px!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;}
-.ia-mic-dot{display:none!important;width:22px!important;height:22px!important;border-radius:999px!important;background:#fff!important;}
-.ia-mic.escuchando .ia-mic-icon{display:none!important;}
-.ia-mic.escuchando .ia-mic-dot{display:block!important;}
-.ia-send{background:#2563eb!important;color:#fff!important;border-radius:12px!important;font-size:18px!important;font-weight:700!important;min-width:120px!important;}
-.ia-actions-row-simple{display:block!important;margin-top:12px!important;}
-.ia-actions-row-simple button{width:100%!important;max-width:360px!important;min-height:48px!important;font-size:18px!important;background:#0f766e!important;color:#fff!important;border-radius:12px!important;}
-.ia-mic-state{font-size:14px!important;color:#64748b!important;margin-top:8px!important;}
-@media(max-width:900px){
-  .ia-panel{padding:14px!important;border-radius:16px!important;}
-  .ia-chat-box{height:46dvh!important;min-height:330px!important;}
-}
-@media(max-width:640px){
-  .topbar{position:sticky!important;top:0!important;z-index:20!important;height:auto!important;padding:10px 12px!important;gap:10px!important;}
-  .container{display:block!important;width:100%!important;}
-  .sidebar{width:100%!important;height:auto!important;padding:10px!important;position:relative!important;}
-  .content{padding:10px!important;width:100%!important;}
-  .ia-card-head{gap:10px!important;align-items:flex-start!important;}
-  .ia-logo{width:44px!important;height:44px!important;min-width:44px!important;border-radius:13px!important;font-size:18px!important;}
-  .ia-card-head h2{font-size:22px!important;}
-  .ia-card-head p{font-size:14px!important;line-height:1.28!important;}
-  .ia-chat-box{height:45dvh!important;min-height:320px!important;max-height:520px!important;padding:10px!important;}
-  .ia-bubble{font-size:15px!important;line-height:1.42!important;padding:10px!important;margin-left:0!important;margin-right:0!important;max-width:100%!important;}
-  .ia-user,.ia-bot{margin-left:0!important;margin-right:0!important;}
-  .ia-input-row-v30{grid-template-columns:64px 1fr!important;gap:8px!important;}
-  .ia-input-row-v30 textarea{grid-column:1 / 3!important;grid-row:1!important;width:100%!important;min-height:84px!important;font-size:16px!important;}
-  .ia-input-row-v30 .ia-mic{grid-column:1!important;grid-row:2!important;height:58px!important;}
-  .ia-input-row-v30 .ia-send{grid-column:2!important;grid-row:2!important;width:100%!important;height:58px!important;}
-  .ia-actions-row-simple button{max-width:100%!important;min-height:54px!important;}
-}
-</style>
-<script id="guiaVirtualV30Script">
-(function(){
-  const API_KEY = window.IA_ASPE_GEMINI_API_KEY || 'AIzaSyDny5NRmRpDvHhbIKOqqbe0AM5JKQMHFzg';
-  const MODEL_WEB = 'gemini-2.0-flash';
-  const MODEL_FALLBACK = 'gemini-1.5-flash';
-  let historialGuia = [];
-  let recognition = null;
-  let escuchando = false;
-
-  function esc(s){ return String(s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-  function norm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
-  function limpiarRespuesta(s){ return String(s||'').replace(/<\/?b>/gi,'').replace(/<\/?strong>/gi,'').replace(/<br\s*\/?\s*>/gi,'\n').replace(/<[^>]+>/g,''); }
-  function chat(){ return document.getElementById('iaChat'); }
-  function input(){ return document.getElementById('iaPregunta'); }
-  function estado(){ return document.getElementById('iaMicEstado'); }
-  function micBtn(){ return document.getElementById('iaMicBtn'); }
-  function add(html, tipo){ const c=chat(); if(!c) return null; const d=document.createElement('div'); d.className='ia-bubble '+(tipo==='user'?'ia-user':'ia-bot'); d.innerHTML=html; c.appendChild(d); return d; }
-
-  function actualizarSidebar(){
-    document.querySelectorAll('.titulo-menu').forEach(el=>{
-      const txt=(el.textContent||'').toLowerCase();
-      if(txt.includes('guía virtual') || txt.includes('ai')) el.innerHTML='🧭 Guía virtual';
-    });
-  }
-  setTimeout(actualizarSidebar, 300);
-
-  function esTemaPermitido(q){
-    const s=String(q||'').toLowerCase();
-    const terms=['calefon','calefón','ionizado','termotanque','termo','placa','sensor','ionizacion','ionización','electrodo','chispa','encendido','display','pilas','fuente','cable','conector','micro switch','caudal','temperatura','modulo','módulo','falla','no prende','se apaga'];
-    return terms.some(t=>s.includes(t));
+    return null;
   }
 
-  function detectarMarcaModelo(q){
-    const s=String(q||'');
-    const marcas=['Orbis','Ecotermo','Longvie','Volcan','Volcán','Rheem','Señorial','Escorial','Peabody','Universal','Saiar','Emege','Eskabe'];
-    const modelos=['Eurotrend','CL 12','CL12','CL 14','CL14','14L','12L','ionizado','sin piloto','encendido electrónico'];
-    const marca=marcas.find(m=>s.toLowerCase().includes(m.toLowerCase())) || '';
-    const modelo=modelos.find(m=>s.toLowerCase().includes(m.toLowerCase())) || '';
-    return {marca, modelo, tiene: !!(marca||modelo)};
-  }
+  function guiaRespuestaLocal(pregunta){
+    const t = String(pregunta || "").toLowerCase();
+    const marcaModelo = guiaTieneMarcaModelo(pregunta);
 
-  function contextoTexto(){
-    return historialGuia.slice(-8).map(x=>`${x.rol}: ${x.texto}`).join('\n');
-  }
+    if(t.includes("pila") || t.includes("pilas") || t.includes("bateria") || t.includes("batería") || t.includes("tester") || t.includes("multimetro") || t.includes("multímetro")){
+      return `Guía virtual:
 
-  function consultaGemini(q){
-    const dm=detectarMarcaModelo(q + ' ' + contextoTexto());
-    const extra = dm.tiene ? ` Marca/modelo indicado o detectado en la conversación: ${dm.marca} ${dm.modelo}. Respondé más específico para ese equipo.` : ' No se indicó marca/modelo; respondé general sobre calefones ionizados.';
-    return `${q}. ${extra} Sobre Calefones Ionizados`;
-  }
+Tu consulta entra en la parte eléctrica/electrónica del calefón ionizado, especialmente en alimentación del encendido.
 
-  function respuestaLocal(q){
-    const s=norm(q + ' ' + contextoTexto());
-    const dm=detectarMarcaModelo(q + ' ' + contextoTexto());
-    let tema='diagnóstico eléctrico/electrónico general';
-    let causas=[];
-    let mirada=[];
-    let preguntaFinal='¿Qué síntoma exacto hace el calefón: no enciende, hace chispa, prende y se apaga, marca error, o no responde nada?';
+Para probar con tester la carga de la pila, pensalo así: la pila alimenta el módulo de encendido, la chispa y la primera secuencia del calefón. Si está baja, floja, mal colocada o con contactos sulfatados, el calefón puede no hacer chispa, hacer chispa débil, prender y apagarse o no responder.
 
-    if(s.includes('placa') || s.includes('modulo') || s.includes('módulo')){
-      tema='placa electrónica o módulo de encendido';
-      causas=['la placa puede estar dañada por humedad, sulfato, recalentamiento o un pico de tensión','también puede parecer falla de placa cuando en realidad falta alimentación, hay un conector flojo, un sensor no habilita el encendido o el electrodo no confirma llama','si el equipo no hace chispa, no prende display o corta rápido, conviene revisar toda la cadena antes de comprar una placa nueva'];
-      mirada=['código impreso en la placa o en la etiqueta del repuesto','marcas negras, olor a quemado, pistas levantadas o componentes hinchados','sulfato, humedad o terminales verdes/blancos en conectores','cables cortados, fichas flojas o masa defectuosa','si usa pilas, fuente o alimentación externa y si esa alimentación llega correctamente'];
-      preguntaFinal='¿La placa se ve quemada o mojada, no hace chispa, no prende display, o el calefón prende unos segundos y se apaga? Si tenés marca, modelo o código de placa, escribímelo.';
-    } else if(s.includes('chispa')){
-      tema='chispa, electrodo de encendido y orden de arranque';
-      causas=['pilas o fuente con poca tensión','chispero, transformador de encendido o módulo que no entrega alta tensión','electrodo de encendido sucio, flojo, quebrado o mal ubicado','cable de alta tensión cortado, flojo o sulfatado','placa que no recibe señal de demanda o no envía la orden de chispa','sensor de caudal o micro switch que no habilita el arranque'];
-      mirada=['si la chispa es fuerte, débil o inexistente','estado de pilas/fuente y portapilas','cable del electrodo y ficha de conexión','posición visible del electrodo respecto del quemador','si se escucha clic al abrir agua'];
-      preguntaFinal='¿Hace chispa fuerte, chispa débil o directamente no hace chispa? ¿El equipo usa pilas o fuente?';
-    } else if(s.includes('se apaga') || s.includes('apaga') || s.includes('ioniz')){
-      tema='detección de llama por ionización';
-      causas=['el sensor o electrodo de ionización puede estar sucio, desalineado o con mala conexión','la llama puede no tocar correctamente el sensor y la placa interpreta que no hay llama','el cable de ionización o la masa pueden estar flojos o sulfatados','la placa puede no interpretar correctamente la señal de ionización','si corta siempre a los pocos segundos, el problema suele estar en confirmación de llama o señal de seguridad'];
-      mirada=['si el calefón llega a encender y cuántos segundos tarda en cortar','estado visible del electrodo/sensor de ionización','cable del sensor y conector en placa','humedad, sulfato o falso contacto','si el problema aparece siempre o solo a veces'];
-      preguntaFinal='¿El calefón prende la llama y corta a los 2 o 5 segundos, o ni siquiera llega a encender?';
-    } else if(s.includes('no enciende') || s.includes('no prende') || s.includes('no arranca')){
-      tema='cadena de alimentación y habilitación del encendido';
-      causas=['pilas o fuente sin tensión suficiente','portapilas sulfatado o terminales flojos','sensor de caudal o micro switch sin señal de demanda','conector flojo entre cuerpo de agua, placa y módulo','placa sin alimentación o con falla interna','display o módulo sin respuesta'];
-      mirada=['si prende display o queda totalmente muerto','si al abrir agua se escucha clic o intento de chispa','estado de pilas/fuente y conectores','humedad cerca de la placa','cableado visible cortado o sulfatado'];
-      preguntaFinal='Al abrir el agua, ¿hace clic, hace chispa, prende display o queda totalmente muerto?';
-    } else if(s.includes('display') || s.includes('codigo') || s.includes('código') || s.includes('error')){
-      tema='display, código de error y señales de placa/sensores';
-      causas=['el display puede marcar error por sensor de temperatura, señal de caudal, sobretemperatura, alimentación o placa','un falso contacto entre display y placa puede provocar lectura intermitente','si el error aparece al encender, suele relacionarse con arranque; si aparece durante el uso, puede relacionarse con sensores o corte de seguridad'];
-      mirada=['qué código exacto aparece','si el display prende normal, parpadea o se apaga','en qué momento aparece el error','conector del display y cableado visible','si hubo humedad o golpe cerca del panel'];
-      preguntaFinal='¿Qué código muestra el display y en qué momento aparece: al abrir agua, al encender o después de unos segundos?';
+Orientación con tester/multímetro:
+1. Usá medición de tensión continua, normalmente V DC o V⎓.
+2. Medí la pila fuera del equipo para ver si tiene tensión.
+3. Revisá la polaridad: positivo con positivo y negativo con negativo.
+4. Mirá el portapilas: resortes, chapitas, sulfato, óxido o falso contacto.
+5. Si mide bien afuera pero falla colocada, puede haber mal contacto en el portapilas.
+6. Si la chispa suena débil o intermitente, la pila puede caer cuando el módulo intenta trabajar.
+
+En un calefón ionizado, una pila baja puede confundirse con placa dañada, módulo defectuoso, cable flojo o falla de chispa. Por eso conviene seguir la cadena: pila/fuente → contactos → cableado → módulo → chispa → ionización.
+
+${marcaModelo ? "Como mencionaste marca/modelo o un dato específico, conviene buscar el manual o código de ese equipo para confirmar tensión, tipo de pila y módulo compatible." : "Si no sabés marca y modelo, la orientación es general. Con marca/modelo se puede afinar mucho más."}
+
+Para seguir: ¿tu calefón usa una pila grande, dos pilas, fuente eléctrica o display digital? ¿Hace chispa fuerte, débil o no hace chispa?`;
     }
 
-    const equipo = dm.tiene ? [dm.marca,dm.modelo].filter(Boolean).join(' ') : '';
-    const marcaTxt = dm.tiene
-      ? `Como mencionaste o venías hablando de ${equipo}, conviene cruzar la falla con ese equipo/modelo, el código exacto de la pieza y el síntoma real.`
-      : 'Como todavía no tengo marca ni modelo, te doy una guía general para calefones ionizados. Si después me pasás marca, modelo o código de pieza, puedo orientar la respuesta con más precisión.';
+    if(t.includes("placa") || t.includes("módulo") || t.includes("modulo")){
+      return `Guía virtual:
 
-    return `Entiendo. Lo voy a tomar como una consulta sobre ${tema} de un calefón ionizado.
+Si el problema parece estar en la placa electrónica o módulo del calefón ionizado, no conviene asumir de entrada que la placa está quemada. Primero se analiza la cadena eléctrica/electrónica.
 
-${marcaTxt}
-
-Respuesta directa:
-En un calefón ionizado, la parte eléctrica/electrónica trabaja como una cadena. Primero tiene que haber alimentación, después señal de demanda, luego orden de encendido, chispa, confirmación de llama por ionización y finalmente continuidad del funcionamiento. Cuando una de esas señales falla, el equipo puede no encender, cortar rápido, hacer chispa sin prender, marcar error o quedar intermitente.
+La placa o módulo suele recibir señales, habilitar chispa, controlar la secuencia de encendido y leer la confirmación de llama por ionización. Si falta una señal, el síntoma puede parecer “placa rota”, aunque el origen sea otra cosa.
 
 Qué puede estar pasando:
-${causas.length ? causas.map((x,i)=>`${i+1}. ${x}.`).join('\n') : '1. Puede haber una interrupción en la alimentación, placa/módulo, sensores, encendido, ionización, conectores o cableado.\n2. A veces parece una falla de placa, pero el origen puede estar en un sensor, electrodo, ficha sulfatada o alimentación débil.\n3. Si el síntoma es intermitente, conviene pensar primero en falsos contactos, humedad o conectores.'}
+1. Alimentación baja: pilas gastadas, fuente débil o falso contacto.
+2. Conectores flojos o sulfatados.
+3. Cable de electrodo o sensor de ionización desconectado.
+4. Humedad cerca de la placa.
+5. Pista quemada, componente dañado o placa sulfatada.
+6. Sensor o micro switch que no manda señal correcta.
+7. Display con código que orienta la falla.
 
-Partes eléctricas/electrónicas relacionadas:
-- Placa electrónica o módulo de encendido.
-- Pilas, fuente o alimentación eléctrica.
-- Electrodo de encendido.
-- Sensor/electrodo de ionización.
-- Cableado, fichas y conectores.
-- Display o panel, si el modelo lo tiene.
-- Sensor de caudal, micro switch o señal que habilita el encendido.
-- Sensores de temperatura o corte, según el modelo.
+Con tester/multímetro se puede orientar midiendo alimentación y continuidad de cables, siempre sin puentear seguridades ni modificar el equipo.
 
-Qué revisar visualmente y de forma orientativa:
-${mirada.length ? mirada.map((x,i)=>`${i+1}. ${x}.`).join('\n') : '1. Estado de pilas/fuente y portapilas.\n2. Conectores flojos o sulfatados.\n3. Cables cortados o humedad cerca de la placa.\n4. Electrodo/sensor visible y cableado.\n5. Código en display si el equipo lo tiene.'}
+${marcaModelo ? "Como pusiste marca/modelo o un dato específico, la búsqueda debe cruzar esa marca/modelo con el síntoma para ver placa compatible, códigos y fallas comunes." : "Si no aparece marca/modelo, la respuesta queda general: conviene anotar marca, modelo y código impreso en la placa."}
 
-Antes de cambiar una pieza:
-No conviene asumir de entrada que la placa está rota. En el curso, la idea es razonar la anatomía del calefón ionizado como una secuencia: demanda de agua, alimentación, placa/módulo, chispa, detección por ionización y continuidad. Si falta una señal, el equipo puede cortar o no arrancar. Por eso conviene confirmar si el problema viene de la placa, del sensor, del electrodo, de la alimentación o de un falso contacto.
-
-Herramientas orientativas:
-Podés usar linterna para inspección visual y tester/multímetro solo para mediciones básicas y seguras si sabés usarlo. No recomiendo puentear sensores, anular seguridades ni modificar conexiones internas sin conocimiento.
-
-Para ser más específico necesito un dato más:
-${preguntaFinal}`;
-  }
-
-  async function llamarGemini(q){
-    const prompt = `Actuá como una Guía virtual en consultas de fallas del curso de calefones ionizados.
-Tu trabajo es guiar al alumno/cliente para entender qué puede estar pasando, como una respuesta clara tipo ChatGPT.
-
-ALCANCE OBLIGATORIO:
-- Solo calefones ionizados y su anatomía, funcionamiento y fallas de la parte eléctrica/electrónica.
-- Temas válidos: placa electrónica/módulo, encendido, chispa, electrodo, sensor de ionización, display, pilas/fuente, cableado, conectores, sensores, micro switch/sensor de caudal, temperatura y diagnóstico eléctrico/electrónico.
-- No desarrolles plomería, instalación, cañerías, combustión ni trabajos de gas.
-- No indiques anular, puentear o desactivar seguridades.
-
-ESTILO DE RESPUESTA:
-- Siempre da una respuesta útil para cada mensaje si está dentro del tema.
-- No respondas seco. Explicá con detalle, ordenado y fácil de entender.
-- Detectá si el usuario quiere una definición, un diagnóstico o una pieza/repuesto.
-- Si el usuario dice marca/modelo, respondé más específico para ese equipo.
-- Si no dice marca/modelo, respondé general sobre calefones ionizados y pedí ese dato al final.
-- Usá el contexto para saber si sigue hablando del mismo problema.
-- Terminá siempre con una pregunta concreta para avanzar el diagnóstico.
-
-CONTEXTO DE LA CONVERSACIÓN:
-${contextoTexto() || 'Sin contexto previo.'}
-
-CONSULTA PARA AMPLIAR CON GEMINI/WEB:
-${consultaGemini(q)}
-
-PREGUNTA ACTUAL:
-${q}
-
-ESTRUCTURA:
-1) Respuesta directa.
-2) Qué puede estar pasando.
-3) Partes eléctricas/electrónicas relacionadas.
-4) Qué revisar visualmente y de forma orientativa.
-5) Qué dato falta para ser más específico.
-6) Una pregunta final para seguir.`;
-    const parts=[{text:prompt}];
-    async function call(model, useSearch){
-      const body={contents:[{role:'user',parts}]};
-      if(useSearch) body.tools=[{google_search:{}}];
-      const controller=new AbortController();
-      const timer=setTimeout(()=>controller.abort(), 9000);
-      try{
-        const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:controller.signal});
-        if(!res.ok) throw new Error('HTTP '+res.status);
-        const data=await res.json();
-        return data?.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('\n').trim() || '';
-      } finally { clearTimeout(timer); }
+Para seguir: ¿qué hace exactamente el calefón: no enciende, hace chispa y no prende, prende unos segundos y se apaga, o muestra código de error?`;
     }
-    try{ return await call(MODEL_WEB,true); }
-    catch(e){ return await call(MODEL_FALLBACK,false); }
-  }
 
-  async function obtenerRespuesta(q){
-    const esPruebaLocal = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-    if(esPruebaLocal){
-      return respuestaLocal(q);
+    if(t.includes("chispa") || t.includes("enciende") || t.includes("prende") || t.includes("apaga")){
+      return `Guía virtual:
+
+Ese síntoma se analiza como una secuencia de encendido de un calefón ionizado.
+
+La cadena básica sería:
+1. Alimentación: pila/fuente con carga correcta.
+2. Orden de encendido: micro switch, sensor de caudal o señal inicial.
+3. Módulo/placa: recibe la orden y genera chispa.
+4. Electrodo de encendido: produce la chispa.
+5. Sensor de ionización: confirma que la llama quedó detectada.
+6. Cableado/conectores: deben estar firmes y sin sulfato.
+
+Si hace chispa pero no prende, puede estar fallando la alimentación, cable de chispa, electrodo, módulo o una condición previa de sensores. Si prende y se apaga, suele revisarse la confirmación por ionización: electrodo de ionización, cable, posición, suciedad o lectura de la placa.
+
+Qué mirar visualmente:
+- Pilas/fuente.
+- Portapilas y contactos.
+- Cable de chispa.
+- Electrodo visible.
+- Cable del sensor de ionización.
+- Conectores flojos o sulfatados.
+- Humedad cerca de placa.
+
+Para seguir: ¿hace chispa fuerte, chispa débil, chispa continua, o prende unos segundos y corta?`;
     }
-    try{
-      const r = await Promise.race([
-        llamarGemini(q),
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')), 8000))
-      ]);
-      if(r && String(r).trim()) return r;
-      return respuestaLocal(q);
-    }catch(e){
-      return respuestaLocal(q);
-    }
+
+    return `Guía virtual:
+
+Te respondo tomando la consulta como parte del diagnóstico eléctrico/electrónico de un calefón ionizado.
+
+En estos equipos conviene no cambiar piezas al azar. Primero se sigue la anatomía del calefón y la cadena de señales:
+
+1. Alimentación: pilas, fuente, contactos y tensión.
+2. Orden de encendido: micro switch, sensor de caudal o señal de apertura.
+3. Módulo/placa: interpreta señales y activa la secuencia.
+4. Chispa: electrodo, cable de alta y módulo.
+5. Ionización: sensor/electrodo que confirma que la llama fue detectada.
+6. Cableado: conectores, fichas, terminales, sulfato, humedad o falso contacto.
+7. Display: si tiene pantalla, el código ayuda a ubicar la falla.
+
+Si usás tester, lo más común es razonar continuidad, alimentación y caída de tensión, según el componente que estés revisando. La idea del curso es mirar qué hace y qué no hace el calefón: no enciende, hace chispa y no prende, prende y se apaga, marca error o queda intermitente.
+
+${marcaModelo ? "Como mencionaste un dato de marca/modelo, la consulta puede hacerse más específica cruzando ese modelo con el síntoma." : "Si me pasás marca y modelo, puedo orientar la respuesta más puntual."}
+
+Para seguir: ¿qué síntoma exacto tiene: no enciende, hace chispa y no prende, prende y se apaga, o querés probar un componente con tester?`;
   }
 
   window.iaEnviar = async function(){
-    const inp=input();
+    const inp = guiaInput();
     if(!inp) return;
-    const q=inp.value.trim();
-    if(!q) return;
+    const pregunta = inp.value.trim();
+    if(!pregunta) return;
 
-    if(!esTemaPermitido(q)){
-      add('<b>Guía virtual:</b> Puedo ayudarte solo con consultas del curso sobre calefones ionizados, anatomía del equipo y parte eléctrica/electrónica: placa, sensores, ionización, chispa, display, pilas/fuente, cableado, conectores o fallas de encendido.', 'bot');
-      return;
+    inp.value = "";
+    guiaAdd("user", "Alumno: " + pregunta);
+    guiaHistorial.push({rol:"Alumno", texto:pregunta});
+
+    const loading = guiaAdd("bot", "Guía virtual:\nPreparando respuesta...", "guia-loading");
+
+    let respuesta = null;
+    if(guiaEsProbableCalefon(pregunta)){
+      respuesta = await guiaGemini(pregunta);
     }
 
-    historialGuia.push({rol:'Alumno', texto:q});
-    add(`<b>Alumno:</b> ${esc(q)}`, 'user');
-    inp.value='';
-    const loading = add('<b>Guía virtual:</b><br>Preparando respuesta...', 'bot');
-
-    try{
-      let respuesta = '';
-      try{
-        respuesta = await Promise.race([
-          obtenerRespuesta(q),
-          new Promise((_, rej)=>setTimeout(()=>rej(new Error('timeout-general')), 7000))
-        ]);
-      }catch(e){
-        respuesta = respuestaLocal(q);
-      }
-
-      if(!respuesta || !String(respuesta).trim()){
-        respuesta = respuestaLocal(q);
-      }
-
-      historialGuia.push({rol:'Guía virtual', texto:String(respuesta).slice(0,2000)});
-      const html = `<b>Guía virtual:</b><div class="ia-gemini-box">${esc(limpiarRespuesta(respuesta)).replace(/\n/g,'<br>')}</div>`;
-      if(loading) loading.innerHTML = html;
-      else add(html,'bot');
-    }catch(err){
-      const fallback = `Entiendo. Lo voy a tomar como una consulta sobre diagnóstico eléctrico/electrónico de un calefón ionizado.\n\nEn estos equipos la falla se razona como una cadena: alimentación, señal de demanda, placa o módulo de encendido, chispa, sensor de ionización, cableado y confirmación de funcionamiento. Si una parte de esa cadena falla, el calefón puede no encender, hacer chispa y apagarse, marcar error, quedar intermitente o parecer que tiene la placa dañada.\n\nQué puede estar pasando:\n1. Puede haber baja alimentación en pilas, fuente o portapilas.\n2. Puede haber conectores flojos, sulfatados o humedad cerca de la placa.\n3. Puede fallar el electrodo de encendido o el sensor de ionización.\n4. Puede parecer falla de placa, pero antes conviene descartar alimentación, cables, conectores y sensores.\n5. Si la placa está quemada, mojada o con pistas dañadas, puede requerir reparación o reemplazo por una compatible con la marca/modelo.\n\nQué mirar de forma visual y orientativa:\n- Marca y modelo del calefón.\n- Código de la placa o módulo.\n- Si hace chispa o no hace nada.\n- Si prende y corta a los pocos segundos.\n- Si hay display y muestra algún código.\n- Si hay humedad, sulfato, cable cortado o ficha floja.\n\nPara seguir: ¿qué síntoma exacto hace el calefón: no enciende, hace chispa pero no prende, prende y se apaga, o marca un código?`;
-      if(loading) loading.innerHTML = `<b>Guía virtual:</b><div class="ia-gemini-box">${fallback.replace(/\n/g,'<br>')}</div>`;
-      else add(`<b>Guía virtual:</b><div class="ia-gemini-box">${fallback.replace(/\n/g,'<br>')}</div>`,'bot');
+    if(!respuesta){
+      respuesta = guiaRespuestaLocal(pregunta);
     }
+
+    respuesta = guiaLimpiar(respuesta);
+    guiaActualizar(loading, respuesta);
+    guiaHistorial.push({rol:"Guía virtual", texto:respuesta.slice(0,1800)});
   };
 
   window.iaNuevaConversacion = function(){
-    historialGuia=[];
-    const c=chat();
-    if(c) c.innerHTML='<div class="ia-bubble ia-bot"><b>Guía virtual:</b> Nueva conversación iniciada. Contame la falla del calefón ionizado o preguntame sobre placa, sensor, electrodo, chispa, display, pilas/fuente, cableado o componentes.</div>';
+    guiaHistorial = [];
+    const c = guiaChat();
+    if(c){
+      c.innerHTML = "";
+      guiaAdd("bot", "Guía virtual: Nueva conversación iniciada. Pone la marca y modelo del calefón ionizado y preguntá con tus palabras qué hace, qué no hace o cuál sería la falla.");
+    }
   };
 
   window.mostrarAIAspe = function(){
-    if(typeof actual !== 'undefined') actual=null;
-    const lm=document.getElementById('listaMaterial'); if(lm) lm.classList.remove('abierto');
-    const lp=document.getElementById('listaPDF'); if(lp) lp.classList.remove('abierto');
-    const botones=document.querySelector('.botones'); if(botones) botones.style.display='none';
-    const videoBox=document.getElementById('video');
-    if(videoBox) videoBox.classList.add('ia-mode');
-    const titulo=document.getElementById('titulo'); if(titulo) titulo.innerText='🧭 Guía virtual';
-    const texto=document.getElementById('texto'); if(texto) texto.innerText='Guía virtual en consultas de fallas para calefones ionizados.';
+    if(typeof actual !== "undefined") actual = null;
+
+    const lm = document.getElementById("listaMaterial");
+    if(lm) lm.classList.remove("abierto");
+
+    const lp = document.getElementById("listaPDF");
+    if(lp) lp.classList.remove("abierto");
+
+    const botones = document.querySelector(".botones");
+    if(botones) botones.style.display = "none";
+
+    const videoBox = document.getElementById("video");
+    if(videoBox) videoBox.classList.add("guia-mode");
+
+    const titulo = document.getElementById("titulo");
+    if(titulo) titulo.innerText = "Guía virtual";
+
+    const texto = document.getElementById("texto");
+    if(texto) texto.innerText = "";
+
     if(!videoBox) return;
-    videoBox.innerHTML=`
-    <div class="ia-panel">
-      <div class="ia-card-head">
-        <div class="ia-logo ia-sarro-logo">Sarro</div>
-        <div>
-          <h2>Guía virtual en consultas de fallas</h2>
-          <p>Escribí o hablá tu consulta. Responde sobre calefones ionizados, anatomía, funcionamiento y fallas eléctricas/electrónicas del curso.</p>
+
+    videoBox.innerHTML = `
+      <div class="guia-panel">
+        <div class="guia-head">
+          <img src="saul.png" class="guia-head-logo" alt="ASPE">
+          <div>
+            <h2>Guía virtual en consultas de fallas</h2>
+            <p>Pone la marca y modelo del calefón ionizado y pregunta con tus palabras qué hace, qué no hace o cuál sería la falla.</p>
+          </div>
         </div>
+
+        <div id="guiaChat" class="guia-chat">
+          <div class="guia-msg guia-bot">Guía virtual: Contame qué falla tiene el calefón ionizado. Puedo ayudarte con consultas del curso, tester/multímetro, pilas, placa, chispa, ionización, sensores, display, cableado, conectores y diagnóstico eléctrico/electrónico.</div>
+        </div>
+
+        <div class="guia-input-row">
+          <button id="guiaMicBtn" class="guia-mic" onclick="iaMicrofono()" title="Hablar">
+            <span class="guia-icon">🎙️</span>
+            <span class="guia-dot"></span>
+          </button>
+          <textarea id="guiaPregunta" class="guia-input" placeholder="Ej: cómo pruebo con el tester la carga de la pila, mi calefón hace chispa y se apaga, Orbis Eurotrend no enciende..."></textarea>
+          <button class="guia-send" onclick="iaEnviar()">Enviar</button>
+        </div>
+
+        <button class="guia-new" onclick="iaNuevaConversacion()">Nueva conversación</button>
+        <div id="guiaEstado" class="guia-note">El micrófono escribe el texto. No se envía solo.</div>
       </div>
-      <div id="iaChat" class="ia-chat-box">
-        <div class="ia-bubble ia-bot"><b>Guía virtual:</b> Contame qué falla tiene el calefón ionizado. Te voy a responder y al final te voy a hacer una pregunta para seguir el diagnóstico. Si sabés marca, modelo, síntoma o componente interno, escribilo para hacerlo más específico. Voy a recordar esta conversación hasta que toques <b>Nueva conversación</b>.</div>
-      </div>
-      <div class="ia-input-row-v30">
-        <button id="iaMicBtn" class="ia-mic" onclick="iaMicrofono()" title="Hablar"><span class="ia-mic-icon">🎙️</span><span class="ia-mic-dot"></span></button>
-        <textarea id="iaPregunta" placeholder="Ej: mi calefón ionizado hace chispa y se apaga, qué puede ser..."></textarea>
-        <button class="ia-send" onclick="iaEnviar()">Enviar</button>
-      </div>
-      <div class="ia-actions-row-simple"><button onclick="iaNuevaConversacion()">Nueva conversación</button></div>
-      <div id="iaMicEstado" class="ia-mic-state">El micrófono escribe el texto. No se envía solo.</div>
-    </div>`;
+    `;
   };
 
   window.iaMicrofono = function(){
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const inp = input();
-    if(!SR){ if(estado()) estado().textContent='Tu navegador no soporta dictado. Podés escribir la consulta.'; return; }
-    if(escuchando && recognition){ try{ recognition.stop(); }catch(e){} return; }
-    recognition = new SR();
-    recognition.lang='es-AR'; recognition.continuous=true; recognition.interimResults=true;
-    let finalText = inp ? inp.value.trim() : '';
-    recognition.onstart=function(){ escuchando=true; if(micBtn()) micBtn().classList.add('escuchando'); if(estado()) estado().textContent='Escuchando... tocá de nuevo el micrófono para cortar. No se envía solo.'; };
-    recognition.onresult=function(ev){
-      let inter='';
-      for(let i=ev.resultIndex;i<ev.results.length;i++){
-        const t=ev.results[i][0].transcript;
-        if(ev.results[i].isFinal) finalText = (finalText+' '+t).trim(); else inter += t;
-      }
-      if(inp) inp.value = (finalText + (inter ? ' ' + inter : '')).trim();
+    const inp = guiaInput();
+    const btn = document.getElementById("guiaMicBtn");
+
+    if(!SR){
+      guiaEstado("Tu navegador no soporta dictado. Podés escribir la consulta.");
+      return;
+    }
+
+    if(guiaEscuchando && guiaRecognition){
+      try{ guiaRecognition.stop(); }catch(e){}
+      return;
+    }
+
+    guiaTextoBase = inp ? inp.value.trim() : "";
+    guiaRecognition = new SR();
+    guiaRecognition.lang = "es-AR";
+    guiaRecognition.continuous = true;
+    guiaRecognition.interimResults = true;
+    guiaRecognition.maxAlternatives = 1;
+
+    guiaRecognition.onstart = function(){
+      guiaEscuchando = true;
+      if(btn) btn.classList.add("escuchando");
+      guiaEstado("Escuchando... tocá de nuevo el micrófono para cortar. No se envía solo.");
     };
-    recognition.onerror=function(){ escuchando=false; if(micBtn()) micBtn().classList.remove('escuchando'); if(estado()) estado().textContent='No pude usar el micrófono. Revisá el permiso del navegador o escribí la consulta.'; };
-    recognition.onend=function(){ escuchando=false; if(micBtn()) micBtn().classList.remove('escuchando'); if(estado()) estado().textContent='Escucha detenida. Podés editar el texto y tocar Enviar.'; };
-    try{ recognition.start(); }catch(e){ if(estado()) estado().textContent='No pude iniciar el micrófono. Probá de nuevo o escribí la consulta.'; }
+
+    guiaRecognition.onresult = function(ev){
+      let finalTxt = "";
+      let interimTxt = "";
+      for(let i = ev.resultIndex; i < ev.results.length; i++){
+        const txt = ev.results[i][0].transcript || "";
+        if(ev.results[i].isFinal) finalTxt += txt + " ";
+        else interimTxt += txt;
+      }
+      if(inp){
+        inp.value = (guiaTextoBase + " " + finalTxt + interimTxt).replace(/\s+/g," ").trim();
+      }
+      guiaEstado("Texto detectado. Podés corregirlo y tocar Enviar.");
+    };
+
+    guiaRecognition.onerror = function(){
+      guiaEscuchando = false;
+      if(btn) btn.classList.remove("escuchando");
+      guiaEstado("No pude usar el micrófono. Revisá permisos o escribí la consulta.");
+    };
+
+    guiaRecognition.onend = function(){
+      guiaEscuchando = false;
+      if(btn) btn.classList.remove("escuchando");
+      guiaEstado("Escucha detenida. Podés editar el texto y tocar Enviar.");
+    };
+
+    try{
+      guiaRecognition.start();
+    }catch(e){
+      guiaEstado("No pude iniciar el micrófono. Probá otra vez o escribí la consulta.");
+    }
   };
 })();
 </script>
+</body>
+</html>
