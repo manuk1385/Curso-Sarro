@@ -1681,7 +1681,31 @@ el.innerText = "👁";
     return claves.some(function(k){ return t.includes(k); });
   }
 
-  async function guiaGemini(pregunta){
+  
+  function guiaConTimeout(promesa, ms){
+    return new Promise(function(resolve){
+      let terminado = false;
+      const timer = setTimeout(function(){
+        if(terminado) return;
+        terminado = true;
+        resolve(null);
+      }, ms);
+
+      promesa.then(function(valor){
+        if(terminado) return;
+        terminado = true;
+        clearTimeout(timer);
+        resolve(valor);
+      }).catch(function(){
+        if(terminado) return;
+        terminado = true;
+        clearTimeout(timer);
+        resolve(null);
+      });
+    });
+  }
+
+async function guiaGemini(pregunta){
     const apiKey = (window.GUIA_VIRTUAL_GEMINI_API_KEY || window.IA_ASPE_GEMINI_API_KEY || "").trim();
     if(!apiKey || apiKey.includes("PEG") || apiKey.includes("TU_API")) return null;
 
@@ -1766,7 +1790,7 @@ ${especificidad}
     const modelos = ["gemini-1.5-flash", "gemini-1.5-flash-latest"];
     for(const modelo of modelos){
       const controller = new AbortController();
-      const timer = setTimeout(function(){ controller.abort(); }, 14000);
+      const timer = setTimeout(function(){ controller.abort(); }, 8000);
       try{
         const url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelo + ":generateContent?key=" + encodeURIComponent(apiKey);
         const res = await fetch(url, {
@@ -1984,7 +2008,7 @@ Medí el sensor desconectado en Ω. Si marca un valor fijo y coherente, calentá
 Para seguir el diagnóstico: ¿qué valor te marca el sensor en ohms cuando lo medís desconectado?`;
     }
 
-    if(tema === "pila" || (tema === "medicion_general" && (t.includes("pila") || t.includes("bateria") || t.includes("batería")))){
+    if(tema === "pila" || (tema === "medicion_general" && (t.includes("pila") || t.includes("pilas") || t.includes("bateria") || t.includes("batería")))){
       return `Guía virtual:
 
 Sí, esa consulta corresponde al diagnóstico eléctrico/electrónico de un calefón ionizado, porque la pila o batería alimenta el módulo de encendido, la chispa y parte de la secuencia de arranque.
@@ -2276,8 +2300,29 @@ Para seguir el diagnóstico: ${guiaPreguntaFinalContextual(pregunta)}`;
     const loading = guiaAdd("bot", "Guía virtual:\nPreparando respuesta...", "guia-loading");
 
     let respuesta = null;
-    if(guiaEsProbableCalefon(pregunta)){
-      respuesta = await guiaGemini(pregunta);
+    const tema = typeof guiaTemaPregunta === "function" ? guiaTemaPregunta(pregunta) : "";
+
+    /*
+      Para evitar que quede cargando:
+      - Si es una pregunta muy concreta y ya tenemos respuesta local buena, responde local.
+      - Si usa Gemini, tiene límite de tiempo.
+      - Si Gemini falla, responde fallback local.
+    */
+
+    const temasConRespuestaLocalFuerte = [
+      "pila",
+      "sensor_temperatura",
+      "placa",
+      "chispa",
+      "ionizacion",
+      "display",
+      "cableado"
+    ];
+
+    if(temasConRespuestaLocalFuerte.includes(tema)){
+      respuesta = guiaRespuestaLocal(pregunta);
+    }else if(guiaEsProbableCalefon(pregunta)){
+      respuesta = await guiaConTimeout(guiaGemini(pregunta), 9000);
     }
 
     if(!respuesta){
@@ -2286,6 +2331,7 @@ Para seguir el diagnóstico: ${guiaPreguntaFinalContextual(pregunta)}`;
 
     respuesta = guiaLimpiar(respuesta);
     guiaActualizar(loading, respuesta);
+    if(loading) loading.classList.remove("guia-loading");
     guiaHistorial.push({rol:"Guía virtual", texto:respuesta.slice(0,1800)});
   };
 
