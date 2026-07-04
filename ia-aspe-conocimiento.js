@@ -2,7 +2,7 @@
    CONFIGURACIÓN GEMINI
    Pegá acá tu API key si querés que la guía consulte Gemini.
    Si lo dejás vacío, la guía responde igual con respuesta local.
-========================= */
+========================= */ 
 
 window.GUIA_VIRTUAL_GEMINI_API_KEY = "AIzaSyDny5NRmRpDvHhbIKOqqbe0AM5JKQMHFzg";
 
