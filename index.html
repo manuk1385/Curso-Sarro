@@ -1714,9 +1714,11 @@ Reglas obligatorias:
 3. Explicá como ChatGPT: con pasos, ejemplos, valores orientativos, interpretación y próximos pasos.
 4. Si la pregunta es corta o incompleta, inferí el tema si está relacionado con calefones ionizados. Ejemplo: "pila", "tester", "chispa", "placa", "display", "sensor" o "cable" se interpretan dentro del calefón ionizado.
 5. Si el alumno ya preguntó algo parecido, no vuelvas a empezar de cero: continuá desde el tema anterior.
-6. Hacé UNA SOLA pregunta adicional al final. Solo una. Tiene que ser concreta y servir para seguir el diagnóstico.
-7. No hagas listas de muchas preguntas al final.
-8. No digas "necesito más datos" sin antes dar una explicación útil.
+6. Hacé UNA SOLA pregunta adicional al final. Solo una.
+7. Esa pregunta final NO debe ser siempre la misma. Tiene que cambiar según el tema que se esté hablando.
+8. La pregunta final debe estar directamente relacionada con la respuesta anterior y servir para avanzar el diagnóstico.
+9. No hagas listas de muchas preguntas al final.
+10. No digas "necesito más datos" sin antes dar una explicación útil.
 9. Si falta marca/modelo, podés pedirlo, pero solo como una única pregunta final si realmente ayuda.
 10. Si preguntan cómo medir, probar o usar tester/multímetro, indicá:
    - dónde va el cable negro,
@@ -1738,6 +1740,13 @@ Reglas obligatorias:
 16. No desarrolles plomería ni trabajos de gas. Enfocate en diagnóstico eléctrico/electrónico y educativo.
 17. Si hay riesgo o manipulación peligrosa, recomendá técnico/gasista matriculado, pero seguí explicando el diagnóstico eléctrico seguro.
 18. La respuesta debe cerrar con una sola pregunta final, no más.
+19. Ejemplos de pregunta final contextual:
+   - Si habla de pila/tester: preguntá por el valor que midió o qué escala usó.
+   - Si habla de chispa: preguntá si la chispa es fuerte, débil o intermitente.
+   - Si habla de placa: preguntá si llega alimentación al módulo o si hay humedad/sulfato.
+   - Si habla de ionización: preguntá si prende y se apaga a los pocos segundos.
+   - Si habla de display: preguntá qué código aparece y en qué momento.
+   - Si habla de cableado: preguntá qué conector o cable está revisando.
 
 Estructura ideal:
 - Respuesta directa a la pregunta.
@@ -1746,7 +1755,7 @@ Estructura ideal:
 - Valores o señales esperadas si aplica.
 - Qué significa cada resultado.
 - Próximo paso real.
-- Una sola pregunta final.
+- Una sola pregunta final relacionada exactamente con el tema hablado, sin repetir siempre la misma.
 
 ${especificidad}
 `;
@@ -1809,6 +1818,45 @@ ${proximo}
 Para seguir el diagnóstico: ${preguntaFinal}`;
   }
 
+
+  function guiaPreguntaFinalContextual(pregunta){
+    const t = String(pregunta || "").toLowerCase();
+
+    if(t.includes("pila") || t.includes("bateria") || t.includes("batería")){
+      return "¿qué valor te marcó la pila cuando la mediste con el tester?";
+    }
+
+    if(t.includes("tester") || t.includes("multimetro") || t.includes("multímetro") || t.includes("medir") || t.includes("mido") || t.includes("probar")){
+      return "¿qué componente querés medir exactamente y qué valor te aparece en el tester?";
+    }
+
+    if(t.includes("chispa")){
+      return "¿la chispa se escucha fuerte, débil o intermitente?";
+    }
+
+    if(t.includes("placa") || t.includes("modulo") || t.includes("módulo")){
+      return "¿ves humedad, sulfato o alguna zona quemada en la placa?";
+    }
+
+    if(t.includes("ionizacion") || t.includes("ionización") || t.includes("electrodo") || t.includes("sensor")){
+      return "¿el calefón prende unos segundos y se apaga, o directamente no llega a prender?";
+    }
+
+    if(t.includes("display") || t.includes("codigo") || t.includes("código") || t.includes("error")){
+      return "¿qué código aparece en el display y en qué momento aparece?";
+    }
+
+    if(t.includes("cable") || t.includes("conector") || t.includes("ficha") || t.includes("sulfato")){
+      return "¿qué conector o cable estás revisando ahora?";
+    }
+
+    if(t.includes("enciende") || t.includes("prende") || t.includes("apaga")){
+      return "¿en qué momento corta: antes de prender, apenas prende o después de unos segundos?";
+    }
+
+    return "¿qué parte del calefón querés revisar ahora para seguir el diagnóstico?";
+  }
+
 function guiaRespuestaLocal(pregunta){
     const t = String(pregunta || "").toLowerCase();
     const marcaModelo = guiaTieneMarcaModelo(pregunta);
@@ -1868,7 +1916,7 @@ Relación con el curso:
 
 Esto se conecta con la anatomía del calefón ionizado: alimentación, módulo electrónico, chispa, sensor de ionización, conectores y cableado. La idea es seguir la cadena eléctrica antes de cambiar piezas.
 
-Para seguir el diagnóstico: ¿qué hace el calefón cuando abrís el agua: no hace nada, hace chispa débil o prende y se apaga?`;
+Para seguir el diagnóstico: ¿qué valor te marcó la pila en el tester?`;
     }
 
     
@@ -1964,7 +2012,7 @@ No compres una placa nueva sin confirmar alimentación, conectores, pila/fuente,
 
 ${marcaModelo ? "Como mencionaste marca/modelo o un dato específico, conviene cruzar el código de placa con ese equipo para no comprar una placa incorrecta." : "Si no aparece marca/modelo, la respuesta queda general. Para afinar, necesitás marca, modelo y síntoma exacto."}
 
-Para seguir el diagnóstico: ¿qué hace exactamente el calefón: no hace nada, hace chispa y corta, marca error o ves la placa quemada/sulfatada?`;
+Para seguir el diagnóstico: ¿al módulo le llega alimentación correcta o ves humedad/sulfato en la placa?`;
     }
 
     if(t.includes("chispa") || t.includes("enciende") || t.includes("prende") || t.includes("apaga")){
@@ -2035,7 +2083,7 @@ Solución realista:
 
 Primero confirmá alimentación y conectores. Después diferenciá si el problema está antes de la chispa, durante la chispa o después del encendido. Si prende y corta, mirá ionización antes de culpar a la placa.
 
-Para seguir el diagnóstico: cuando abrís el agua, ¿qué hace exactamente: no hace nada, hace chispa débil, prende y se apaga o marca error?`;
+Para seguir el diagnóstico: ¿la chispa se escucha fuerte, débil o intermitente?`;
     }
 
     return `Guía virtual:
@@ -2089,7 +2137,7 @@ Primero identificá síntoma, después alimentación, después conectores/cables
 
 ${marcaModelo ? "Como mencionaste un dato de marca/modelo, la respuesta puede hacerse más específica buscando ese equipo y el síntoma." : "Si me pasás marca y modelo, puedo orientar la respuesta con más precisión."}
 
-Para seguir el diagnóstico: ¿qué componente querés revisar primero?`;
+Para seguir el diagnóstico: ${guiaPreguntaFinalContextual(pregunta)}`;
   }
 
   window.iaEnviar = async function(){
