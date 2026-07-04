@@ -1672,7 +1672,7 @@ el.innerText = "👁";
     const t = String(txt || "").toLowerCase();
     const claves = [
       "calefon","calefón","ionizado","ionización","ionizacion","chispa","prende","enciende","apaga",
-      "pila","pilas","tester","multimetro","multímetro","placa","modulo","módulo","sensor","electrodo",
+      "pila","pilas","tester","multimetro","multímetro","placa","modulo","módulo","sensor","electrodo","temperatura","ntc","termistor","termostato","sobretemperatura","flujostato","flow switch","flujómetro","turbina","hall","reed","venturi","diafragma","solenoide","electroválvula",
       "temperatura","ntc","termistor","termostato","sobretemperatura","display","cable","cableado",
       "conector","conectores","fuente","bateria","batería","continuidad","resistencia","ohm","ohms",
       "voltaje","tension","tensión","micro switch","microswitch","caudal","orbis","ecotermo","longvie",
@@ -1705,6 +1705,35 @@ el.innerText = "👁";
     });
   }
 
+
+  function guiaComponentesCurso(){
+    const lista = window.GUIA_VIRTUAL_COMPONENTES_ASPE || [];
+    return lista.length ? lista.map(function(x){ return "- " + x; }).join("\n") : "- Componentes eléctricos/electrónicos generales de calefones ionizados.";
+  }
+
+  function guiaConTimeout(promesa, ms){
+    return new Promise(function(resolve){
+      let done = false;
+      const timer = setTimeout(function(){
+        if(done) return;
+        done = true;
+        resolve(null);
+      }, ms);
+
+      promesa.then(function(valor){
+        if(done) return;
+        done = true;
+        clearTimeout(timer);
+        resolve(valor);
+      }).catch(function(){
+        if(done) return;
+        done = true;
+        clearTimeout(timer);
+        resolve(null);
+      });
+    });
+  }
+
 async function guiaGemini(pregunta){
     const apiKey = (window.GUIA_VIRTUAL_GEMINI_API_KEY || window.IA_ASPE_GEMINI_API_KEY || "").trim();
     if(!apiKey || apiKey.includes("PEG") || apiKey.includes("TU_API")) return null;
@@ -1715,82 +1744,52 @@ async function guiaGemini(pregunta){
       : "El usuario no dio marca/modelo. Respondé general sobre calefones ionizados y pedí marca/modelo al final.";
 
     const prompt = `
-Sos la Guía virtual en consultas de fallas del curso ASPE sobre calefones ionizados.
-Tu estilo debe ser como ChatGPT: claro, inteligente, ordenado, detallado, coherente y práctico.
+Sos la Guía virtual en consultas de fallas del curso ASPE.
+Respondé como ChatGPT: claro, detallado, coherente, específico, práctico y con instrucciones paso a paso.
+Tu tema es solamente calefones ionizados: anatomía, funcionamiento, componentes, diagnóstico, tester/multímetro y fallas eléctricas/electrónicas.
 
-La consulta SIEMPRE debe interpretarse como si se buscara en Gemini así:
-[pregunta del alumno] + " sobre calefones ionizados".
-Pero la respuesta debe respetar el componente exacto preguntado.
+La consulta SIEMPRE se debe interpretar así:
+"${consulta}"
 
-Consulta preparada:
-${consulta}
+Eso significa que Gemini debe responder la pregunta del alumno + " sobre calefones ionizados".
 
 Contexto de conversación:
 ${guiaContexto() || "Sin contexto previo."}
 
-Tema probable por continuidad:
-${guiaUltimoTema() || "Sin tema previo claro."}
+Componentes del curso ASPE que podés usar para entender la pregunta:
+${guiaComponentesCurso()}
 
-Objetivo:
-Entender perfectamente qué quiso preguntar el alumno/cliente, responder con precisión y guiarlo paso a paso hacia una solución real del problema del calefón ionizado.
+Reglas:
+- Identificá primero el componente principal preguntado. Ejemplo: si dice "sensor de temperatura con tester", respondé sensor de temperatura, no pila.
+- Si dice "pila con tester", respondé pila.
+- Si dice "placa", respondé placa/módulo.
+- Si dice "chispa", respondé encendido, electrodo y cable de alta.
+- Si dice "ionización", respondé electrodo/sensor de llama.
+- Si dice "display", respondé códigos/display.
+- Si dice "cable/conector/sulfato", respondé cableado/conectores.
+- No repitas siempre lo mismo. Usá el contexto para seguir el mismo diagnóstico.
+- Da soluciones reales y pasos concretos, no solo teoría.
+- Cuando corresponda, indicá dónde poner el cable negro, dónde poner el cable rojo, qué escala usar, dónde apoyar las puntas, qué valores esperar y cómo interpretar.
+- Si faltan datos, respondé igual y hacé una sola pregunta final relacionada con el tema.
+- Hacé UNA sola pregunta al final, no varias.
+- No uses HTML.
+- No des instrucciones de plomería ni trabajos de gas. Si hay riesgo de gas, combustión, monóxido o manipulación peligrosa, recomendá técnico/gasista matriculado y seguí el diagnóstico eléctrico seguro.
+- ${especificidad}
 
-Reglas obligatorias:
-1. No repitas siempre la misma respuesta. Adaptá la respuesta a la pregunta exacta del alumno y al contexto de la conversación.
-1.b. Identificá primero el componente principal de la consulta. Si dice "sensor de temperatura", respondé sobre sensor de temperatura, aunque también diga tester. Si dice "placa", respondé sobre placa. Si dice "pila", respondé sobre pila. No confundas componentes.
-2. No des respuestas genéricas. Respondé con información concreta, útil y aplicable.
-3. Explicá como ChatGPT: con pasos, ejemplos, valores orientativos, interpretación y próximos pasos.
-4. Si la pregunta es corta o incompleta, inferí el tema si está relacionado con calefones ionizados. Ejemplo: "pila", "tester", "chispa", "placa", "display", "sensor" o "cable" se interpretan dentro del calefón ionizado.
-5. Si el alumno ya preguntó algo parecido, no vuelvas a empezar de cero: continuá desde el tema anterior.
-6. Hacé UNA SOLA pregunta adicional al final. Solo una.
-7. Esa pregunta final NO debe ser siempre la misma. Tiene que cambiar según el tema que se esté hablando.
-8. La pregunta final debe estar directamente relacionada con la respuesta anterior y servir para avanzar el diagnóstico.
-9. No hagas listas de muchas preguntas al final.
-10. No digas "necesito más datos" sin antes dar una explicación útil.
-9. Si falta marca/modelo, podés pedirlo, pero solo como una única pregunta final si realmente ayuda.
-10. Si preguntan cómo medir, probar o usar tester/multímetro, indicá:
-   - dónde va el cable negro,
-   - dónde va el cable rojo,
-   - qué escala usar,
-   - dónde apoyar las puntas,
-   - qué valores esperar,
-   - qué significa cada resultado,
-   - cómo se relaciona con el calefón ionizado.
-11. Si preguntan por placa/módulo, diferenciá placa dañada de pila/fuente, sensor, electrodo, conectores, humedad, cableado o display.
-12. Si preguntan por chispa/encendido, diferenciá:
-   - no hace nada,
-   - chispa débil,
-   - hace chispa pero no prende,
-   - prende y se apaga.
-13. Si preguntan por ionización, explicá electrodo/sensor, cable, posición, suciedad, masa, conectores y señal hacia la placa.
-14. Si preguntan por display/código, explicá causas probables y pedí el código exacto solo si hace falta.
-15. No uses etiquetas HTML.
-16. No desarrolles plomería ni trabajos de gas. Enfocate en diagnóstico eléctrico/electrónico y educativo.
-17. Si hay riesgo o manipulación peligrosa, recomendá técnico/gasista matriculado, pero seguí explicando el diagnóstico eléctrico seguro.
-18. La respuesta debe cerrar con una sola pregunta final, no más.
-19. Ejemplos de pregunta final contextual:
-   - Si habla de pila/tester: preguntá por el valor que midió o qué escala usó.
-   - Si habla de chispa: preguntá si la chispa es fuerte, débil o intermitente.
-   - Si habla de placa: preguntá si llega alimentación al módulo o si hay humedad/sulfato.
-   - Si habla de ionización: preguntá si prende y se apaga a los pocos segundos.
-   - Si habla de display: preguntá qué código aparece y en qué momento.
-   - Si habla de cableado: preguntá qué conector o cable está revisando.
-
-Estructura ideal:
-- Respuesta directa a la pregunta.
-- Explicación técnica simple.
-- Pasos concretos.
-- Valores o señales esperadas si aplica.
-- Qué significa cada resultado.
-- Próximo paso real.
-- Una sola pregunta final relacionada exactamente con el tema hablado, sin repetir siempre la misma.
-
-${especificidad}
+Estructura recomendada:
+1. Respuesta directa.
+2. Qué puede estar pasando.
+3. Cómo probarlo.
+4. Qué valores/señales esperar.
+5. Qué significa cada resultado.
+6. Próximo paso.
+7. Una sola pregunta final relacionada.
 `;
 
     const modelos = ["gemini-1.5-flash", "gemini-1.5-flash-latest"];
     for(const modelo of modelos){
       const controller = new AbortController();
-      const timer = setTimeout(function(){ controller.abort(); }, 8000);
+      const timer = setTimeout(function(){ controller.abort(); }, 9000);
       try{
         const url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelo + ":generateContent?key=" + encodeURIComponent(apiKey);
         const res = await fetch(url, {
@@ -2662,41 +2661,49 @@ Para seguir el diagnóstico: ${guiaPreguntaFinalContextual(pregunta)}`;
   window.iaEnviar = async function(){
     const inp = guiaInput();
     if(!inp) return;
-
     const pregunta = inp.value.trim();
     if(!pregunta) return;
 
     inp.value = "";
-
     guiaAdd("user", "Alumno: " + pregunta);
     guiaHistorial.push({rol:"Alumno", texto:pregunta});
 
-    const loading = guiaAdd("bot", "Guía virtual:\nPreparando respuesta...", "guia-loading");
+    const loading = guiaAdd("bot", "Guía virtual:\nConsultando Gemini...", "guia-loading");
+
+    let respuesta = null;
 
     try{
       /*
-        MODO SEGURO:
-        Responde siempre con inteligencia local del curso para que no se quede tildada.
-        La pregunta se interpreta como:
+        Primero responde Gemini.
+        La consulta que recibe Gemini ya se prepara como:
         pregunta del alumno + " sobre calefones ionizados"
       */
-      let respuesta = guiaRespuestaLocalRobusta(pregunta);
+      if(guiaEsProbableCalefon(pregunta)){
+        respuesta = await guiaConTimeout(guiaGemini(pregunta), 11000);
+      }
+
+      /*
+        Si Gemini no conecta, no queda cargando:
+        responde con la base local del curso.
+      */
+      if(!respuesta || !String(respuesta).trim()){
+        respuesta = (typeof guiaRespuestaLocalRobusta === "function")
+          ? guiaRespuestaLocalRobusta(pregunta)
+          : guiaRespuestaLocal(pregunta);
+      }
 
       respuesta = guiaLimpiar(respuesta);
       guiaActualizar(loading, respuesta);
       if(loading) loading.classList.remove("guia-loading");
       guiaHistorial.push({rol:"Guía virtual", texto:respuesta.slice(0,1800)});
     }catch(e){
-      const emergencia = `Guía virtual:
+      const fallback = (typeof guiaRespuestaLocalRobusta === "function")
+        ? guiaRespuestaLocalRobusta(pregunta)
+        : guiaRespuestaLocal(pregunta);
 
-Tu consulta corresponde al diagnóstico de calefones ionizados. Para avanzar, primero hay que ubicar el síntoma dentro de la cadena eléctrica/electrónica: alimentación, módulo/placa, chispa, sensores, ionización, display o cableado.
-
-Como respuesta segura: revisá primero alimentación, conectores, sulfato, humedad y después el componente específico que querés probar con tester.
-
-Para seguir el diagnóstico: ¿qué componente querés revisar ahora?`;
-
-      guiaActualizar(loading, emergencia);
+      guiaActualizar(loading, guiaLimpiar(fallback));
       if(loading) loading.classList.remove("guia-loading");
+      guiaHistorial.push({rol:"Guía virtual", texto:String(fallback).slice(0,1800)});
     }
   };
 
