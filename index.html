@@ -789,7 +789,7 @@ font-weight:bold;
 
 <div class="titulo-menu" onclick="togglePDF()">📄 PDF</div>
 <div class="material-lista" id="listaPDF"></div>
-<div class="titulo-menu" onclick="mostrarAIAspe()"><img src="aspe-logo.jpeg" class="aspe-menu-logo" alt="ASPE"> Guía virtual</div>
+<div class="titulo-menu" onclick="mostrarAIAspe()"><img src="saul.png" class="aspe-menu-logo" alt="ASPE"> Guía virtual</div>
 
 </div>
 
@@ -1638,9 +1638,21 @@ el.innerText = "👁";
   }
 
   function guiaContexto(){
-    return guiaHistorial.slice(-8).map(function(m){
+    return guiaHistorial.slice(-10).map(function(m){
       return m.rol + ": " + m.texto;
     }).join("\n");
+  }
+
+  function guiaUltimoTema(){
+    if(!guiaHistorial.length) return "";
+    const ultimos = guiaHistorial.slice(-4).map(function(m){ return m.texto || ""; }).join(" ").toLowerCase();
+    if(ultimos.includes("pila") || ultimos.includes("tester") || ultimos.includes("multimetro") || ultimos.includes("multímetro")) return "pila/tester";
+    if(ultimos.includes("placa") || ultimos.includes("modulo") || ultimos.includes("módulo")) return "placa/módulo";
+    if(ultimos.includes("chispa") || ultimos.includes("enciende") || ultimos.includes("prende") || ultimos.includes("apaga")) return "chispa/encendido";
+    if(ultimos.includes("ionizacion") || ultimos.includes("ionización") || ultimos.includes("electrodo") || ultimos.includes("sensor")) return "ionización/sensor";
+    if(ultimos.includes("display") || ultimos.includes("codigo") || ultimos.includes("código") || ultimos.includes("error")) return "display/código";
+    if(ultimos.includes("cable") || ultimos.includes("conector") || ultimos.includes("ficha")) return "cableado/conectores";
+    return "";
   }
 
   function guiaTieneMarcaModelo(txt){
@@ -1679,7 +1691,7 @@ el.innerText = "👁";
 
     const prompt = `
 Sos la Guía virtual en consultas de fallas del curso ASPE sobre calefones ionizados.
-Tu estilo de respuesta debe ser como ChatGPT: claro, ordenado, detallado, coherente, con instrucciones útiles y explicaciones precisas.
+Tu estilo debe ser como ChatGPT: claro, inteligente, ordenado, detallado, coherente y práctico.
 
 La consulta SIEMPRE debe interpretarse agregando al final:
 "sobre calefones ionizados".
@@ -1690,14 +1702,23 @@ ${consulta}
 Contexto de conversación:
 ${guiaContexto() || "Sin contexto previo."}
 
+Tema probable por continuidad:
+${guiaUltimoTema() || "Sin tema previo claro."}
+
 Objetivo:
-Guiar al alumno/cliente hasta entender qué le pasa al calefón ionizado, hacer preguntas de seguimiento y acercarse paso a paso a la solución.
+Entender perfectamente qué quiso preguntar el alumno/cliente, responder con precisión y guiarlo paso a paso hacia una solución real del problema del calefón ionizado.
 
 Reglas obligatorias:
-1. Respondé siempre con una explicación útil si la pregunta puede relacionarse con calefones ionizados.
-2. No des respuestas cortas ni genéricas. Tenés que explicar como lo haría ChatGPT, con detalle y coherencia.
-3. Si pregunta cómo probar algo, explicá pasos concretos.
-4. Si habla de tester/multímetro, indicá:
+1. No repitas siempre la misma respuesta. Adaptá la respuesta a la pregunta exacta del alumno y al contexto de la conversación.
+2. No des respuestas genéricas. Respondé con información concreta, útil y aplicable.
+3. Explicá como ChatGPT: con pasos, ejemplos, valores orientativos, interpretación y próximos pasos.
+4. Si la pregunta es corta o incompleta, inferí el tema si está relacionado con calefones ionizados. Ejemplo: "pila", "tester", "chispa", "placa", "display", "sensor" o "cable" se interpretan dentro del calefón ionizado.
+5. Si el alumno ya preguntó algo parecido, no vuelvas a empezar de cero: continuá desde el tema anterior.
+6. Hacé UNA SOLA pregunta adicional al final. Solo una. Tiene que ser concreta y servir para seguir el diagnóstico.
+7. No hagas listas de muchas preguntas al final.
+8. No digas "necesito más datos" sin antes dar una explicación útil.
+9. Si falta marca/modelo, podés pedirlo, pero solo como una única pregunta final si realmente ayuda.
+10. Si preguntan cómo medir, probar o usar tester/multímetro, indicá:
    - dónde va el cable negro,
    - dónde va el cable rojo,
    - qué escala usar,
@@ -1705,30 +1726,27 @@ Reglas obligatorias:
    - qué valores esperar,
    - qué significa cada resultado,
    - cómo se relaciona con el calefón ionizado.
-5. Si pregunta por placa/módulo, explicá cómo diferenciar falla de placa de falla de pila, fuente, sensor, electrodo, conectores, humedad, cableado o display.
-6. Si pregunta por chispa/encendido, separá:
+11. Si preguntan por placa/módulo, diferenciá placa dañada de pila/fuente, sensor, electrodo, conectores, humedad, cableado o display.
+12. Si preguntan por chispa/encendido, diferenciá:
    - no hace nada,
    - chispa débil,
    - hace chispa pero no prende,
    - prende y se apaga.
-7. Si pregunta por ionización, explicá sensor/electrodo, cable, posición, suciedad, masa, conectores y señal hacia la placa.
-8. Si pregunta por display/código, pedí código, marca y modelo, pero igual explicá causas probables.
-9. Si no dice marca/modelo, respondé general y pedilo al final.
-10. Si dice marca/modelo, usalo para responder más específico.
-11. No uses etiquetas HTML.
-12. No hables de temas ajenos al curso.
-13. No desarrolles plomería ni trabajos de gas; enfocá la respuesta en diagnóstico eléctrico/electrónico y educativo.
-14. Siempre terminá con una pregunta concreta para seguir el diagnóstico.
+13. Si preguntan por ionización, explicá electrodo/sensor, cable, posición, suciedad, masa, conectores y señal hacia la placa.
+14. Si preguntan por display/código, explicá causas probables y pedí el código exacto solo si hace falta.
+15. No uses etiquetas HTML.
+16. No desarrolles plomería ni trabajos de gas. Enfocate en diagnóstico eléctrico/electrónico y educativo.
+17. Si hay riesgo o manipulación peligrosa, recomendá técnico/gasista matriculado, pero seguí explicando el diagnóstico eléctrico seguro.
+18. La respuesta debe cerrar con una sola pregunta final, no más.
 
-Estructura recomendada para cada respuesta:
-- Explicación directa.
-- Qué puede estar pasando.
-- Qué revisar primero.
-- Cómo probarlo.
-- Qué resultado esperaría.
+Estructura ideal:
+- Respuesta directa a la pregunta.
+- Explicación técnica simple.
+- Pasos concretos.
+- Valores o señales esperadas si aplica.
 - Qué significa cada resultado.
-- Próximo paso.
-- Pregunta final para continuar.
+- Próximo paso real.
+- Una sola pregunta final.
 
 ${especificidad}
 `;
@@ -1850,7 +1868,7 @@ Relación con el curso:
 
 Esto se conecta con la anatomía del calefón ionizado: alimentación, módulo electrónico, chispa, sensor de ionización, conectores y cableado. La idea es seguir la cadena eléctrica antes de cambiar piezas.
 
-Para seguir el diagnóstico: ¿qué pila usa tu calefón, una pila grande de 1,5 V, dos pilas, batería de 9 V o fuente eléctrica? ¿Y qué hace el calefón cuando abrís el agua: no hace nada, hace chispa débil o prende y se apaga?`;
+Para seguir el diagnóstico: ¿qué hace el calefón cuando abrís el agua: no hace nada, hace chispa débil o prende y se apaga?`;
     }
 
     
@@ -1946,7 +1964,7 @@ No compres una placa nueva sin confirmar alimentación, conectores, pila/fuente,
 
 ${marcaModelo ? "Como mencionaste marca/modelo o un dato específico, conviene cruzar el código de placa con ese equipo para no comprar una placa incorrecta." : "Si no aparece marca/modelo, la respuesta queda general. Para afinar, necesitás marca, modelo y síntoma exacto."}
 
-Para seguir: ¿la placa no hace nada, hace chispa y corta, marca código de error, o ves la placa quemada/sulfatada?`;
+Para seguir el diagnóstico: ¿qué hace exactamente el calefón: no hace nada, hace chispa y corta, marca error o ves la placa quemada/sulfatada?`;
     }
 
     if(t.includes("chispa") || t.includes("enciende") || t.includes("prende") || t.includes("apaga")){
@@ -2017,12 +2035,12 @@ Solución realista:
 
 Primero confirmá alimentación y conectores. Después diferenciá si el problema está antes de la chispa, durante la chispa o después del encendido. Si prende y corta, mirá ionización antes de culpar a la placa.
 
-Para seguir: cuando abrís el agua, ¿no hace nada, hace tac-tac de chispa, hace chispa débil, prende unos segundos y se apaga, o marca error?`;
+Para seguir el diagnóstico: cuando abrís el agua, ¿qué hace exactamente: no hace nada, hace chispa débil, prende y se apaga o marca error?`;
     }
 
     return `Guía virtual:
 
-Te respondo tomando la consulta como parte del diagnóstico eléctrico/electrónico de un calefón ionizado.
+Te respondo tomando tu consulta como parte del diagnóstico eléctrico/electrónico de un calefón ionizado. La idea es entender el síntoma, explicar qué puede estar pasando y avanzar con un solo paso siguiente.
 
 Para que la respuesta sea útil, siempre conviene ubicar el síntoma en una cadena de diagnóstico. Un calefón ionizado no se revisa cambiando piezas al azar: se sigue el recorrido eléctrico/electrónico hasta encontrar dónde se corta la señal.
 
@@ -2071,7 +2089,7 @@ Primero identificá síntoma, después alimentación, después conectores/cables
 
 ${marcaModelo ? "Como mencionaste un dato de marca/modelo, la respuesta puede hacerse más específica buscando ese equipo y el síntoma." : "Si me pasás marca y modelo, puedo orientar la respuesta con más precisión."}
 
-Para seguir: ¿qué hace exactamente el calefón y qué querés probar: pila/fuente, placa, chispa, sensor de ionización, display o cableado?`;
+Para seguir el diagnóstico: ¿qué componente querés revisar primero?`;
   }
 
   window.iaEnviar = async function(){
@@ -2135,7 +2153,7 @@ Para seguir: ¿qué hace exactamente el calefón y qué querés probar: pila/fue
     videoBox.innerHTML = `
       <div class="guia-panel">
         <div class="guia-head">
-          <img src="aspe-logo.jpeg" class="guia-head-logo" alt="ASPE">
+          <img src="saul.png" class="guia-head-logo" alt="ASPE">
           <div>
             <h2>Guía virtual en consultas de fallas</h2>
             <p>Pone la marca y modelo del calefón ionizado y pregunta con tus palabras qué hace, qué no hace o cuál sería la falla.</p>
