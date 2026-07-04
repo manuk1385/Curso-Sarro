@@ -1923,6 +1923,378 @@ Para seguir el diagnóstico: ${preguntaFinal}`;
     return "general";
   }
 
+
+  function guiaRespuestaSensorTemperatura(pregunta){
+    return `Guía virtual:
+
+Para probar un sensor de temperatura con el tester en un calefón ionizado, no se mide como una pila. En este caso normalmente se mide resistencia en ohms o continuidad, según el tipo de sensor.
+
+Primero hay que diferenciar dos posibilidades:
+
+1. Sensor NTC o termistor:
+   Es un sensor que cambia su resistencia según la temperatura.
+
+2. Termostato o sensor de seguridad:
+   Funciona como una llave térmica. Puede estar cerrado o abierto según la temperatura.
+
+Cómo preparar el tester:
+
+1. Poné el cable negro en COM.
+2. Poné el cable rojo en VΩ.
+3. Apagá el calefón.
+4. Desconectá el sensor de la placa o de la ficha.
+5. Poné el tester en Ω, Ohms o resistencia.
+6. Si tu tester no es automático, empezá en 20KΩ.
+
+Cómo medir un sensor NTC:
+
+1. Tocá una punta del tester en cada terminal del sensor.
+2. En resistencia no importa la polaridad.
+3. Mirá qué valor aparece en pantalla.
+4. A temperatura ambiente puede marcar valores como 5KΩ, 10KΩ, 50KΩ o 100KΩ, según el modelo.
+5. Calentá suavemente el sensor con la mano o con aire tibio.
+6. Si es NTC, normalmente al subir la temperatura baja la resistencia.
+
+Cómo interpretar:
+
+- Si marca un valor de resistencia y cambia al calentarlo, el sensor probablemente responde.
+- Si marca OL, 1 o infinito, puede estar abierto o cortado.
+- Si marca 0Ω o casi cero, puede estar en corto.
+- Si el valor salta al mover el cable, puede haber falso contacto.
+- Si el sensor mide bien, pero el calefón sigue fallando, revisá ficha, cableado, sulfato, humedad o placa.
+
+Si es termostato de seguridad:
+
+1. Poné el tester en continuidad o pitido.
+2. Medí entre los dos terminales.
+3. Si está cerrado, debe pitar o marcar cerca de 0Ω.
+4. Si está abierto, marca OL o no pita.
+5. Algunos termostatos abren cuando hay exceso de temperatura.
+
+En un calefón ionizado, un sensor de temperatura fallando puede hacer que el equipo no encienda, corte, marque error en display o apague por seguridad. Pero no conviene cambiar el sensor sin revisar primero conectores, cables y humedad.
+
+Para seguir el diagnóstico: ¿qué valor te marca el sensor en ohms cuando lo medís desconectado?`;
+  }
+
+  function guiaRespuestaPilaTester(pregunta){
+    return `Guía virtual:
+
+Para probar una pila con el tester en un calefón ionizado, tenés que medir voltaje continuo, porque la pila alimenta el módulo de encendido, la chispa y parte de la secuencia de arranque.
+
+Cómo preparar el tester:
+
+1. Poné el cable negro en COM.
+2. Poné el cable rojo en VΩ.
+3. Girá la perilla a voltaje continuo: V⎓, DCV o VDC.
+4. Si el tester no es automático:
+   - Para pila de 1,5 V, usá escala 2 V si existe.
+   - Si no tiene 2 V, usá 20 V.
+   - Para batería de 9 V, usá escala 20 V.
+   - Para portapilas de 3 V, usá escala 20 V.
+
+Cómo medir:
+
+1. Tocá con la punta roja el polo positivo + de la pila.
+2. Tocá con la punta negra el polo negativo -.
+3. Leé el valor que aparece en la pantalla.
+
+Valores orientativos para pila alcalina de 1,5 V:
+
+- 1,55 V a 1,65 V: nueva o casi nueva.
+- 1,40 V a 1,50 V: todavía usable.
+- 1,20 V a 1,30 V: bastante descargada.
+- Menos de 1,10 V: conviene reemplazarla.
+- 0 V o valor raro: pila agotada, mal contacto o tester mal configurado.
+
+Importante:
+
+Esa medición es sin carga. Una pila puede marcar 1,5 V afuera y caer cuando el módulo intenta hacer chispa. Por eso, si la pila mide bien pero el calefón no enciende, hace chispa débil o queda intermitente, revisá el portapilas.
+
+Qué revisar en el calefón:
+
+1. Polaridad correcta.
+2. Resortes del portapilas.
+3. Chapitas sulfatadas u oxidadas.
+4. Cables del portapilas al módulo.
+5. Fichas flojas.
+6. Humedad cerca del módulo.
+7. Caída de tensión cuando intenta encender.
+
+Cómo interpretar la falla:
+
+- No hace nada: pila agotada, portapilas sin contacto, cable cortado o módulo sin alimentación.
+- Chispa débil: pila baja, falso contacto o cable de chispa con fuga.
+- Hace chispa y corta: puede no ser pila; revisar ionización, electrodo o placa.
+- Prende y se apaga: revisar sensor de ionización y alimentación.
+
+Para seguir el diagnóstico: ¿qué valor te marcó la pila en el tester?`;
+  }
+
+  function guiaRespuestaChispa(pregunta){
+    return `Guía virtual:
+
+Si el problema es de chispa o encendido en un calefón ionizado, hay que separar la falla por etapas. No es lo mismo que no haga nada, que haga chispa débil, que haga chispa y no prenda, o que prenda y se apague.
+
+Cadena de encendido:
+
+1. Alimentación: pila, fuente o tensión correcta.
+2. Orden de arranque: micro switch o sensor de caudal.
+3. Módulo/placa: recibe la orden.
+4. Chispa: cable de alta y electrodo.
+5. Llama inicial.
+6. Ionización: sensor confirma llama.
+7. La placa mantiene o corta el funcionamiento.
+
+Si no hace nada:
+
+- Revisá pila o fuente.
+- Revisá portapilas.
+- Revisá cableado.
+- Revisá micro switch o sensor de caudal.
+- Revisá si el módulo recibe alimentación.
+
+Si hace chispa débil:
+
+- Pila baja.
+- Falso contacto.
+- Cable de chispa con fuga.
+- Electrodo sucio o fuera de posición.
+- Módulo debilitado.
+
+Si hace chispa pero no prende:
+
+- Electrodo mal ubicado.
+- Cable de alta con pérdida.
+- Módulo que genera chispa pero no completa secuencia.
+- Condición previa de sensor o placa.
+
+Si prende y se apaga:
+
+- Sensor/electrodo de ionización.
+- Cable de ionización flojo.
+- Electrodo sucio.
+- Mala masa.
+- Conectores sulfatados.
+- Placa que no lee señal.
+
+Prueba básica con tester:
+
+- Medí voltaje de pila/fuente.
+- Revisá continuidad de cables con equipo apagado.
+- Revisá falsos contactos en conectores.
+- No puentear sensores de seguridad.
+
+Para seguir el diagnóstico: ¿la chispa se escucha fuerte, débil o intermitente?`;
+  }
+
+  function guiaRespuestaPlaca(pregunta){
+    return `Guía virtual:
+
+Si sospechás de la placa o módulo del calefón ionizado, no conviene cambiarla de entrada. Muchas fallas parecen placa, pero son alimentación, conectores, sensor, electrodo, cableado o humedad.
+
+Qué hace la placa:
+
+La placa recibe señales, habilita la chispa, interpreta sensores y controla la secuencia de encendido. También puede leer la señal de ionización para confirmar que la llama quedó detectada.
+
+Qué puede estar pasando:
+
+1. No recibe alimentación correcta.
+2. Pila baja o fuente débil.
+3. Portapilas sulfatado.
+4. Conector flojo.
+5. Humedad en placa.
+6. Cable de chispa con fuga.
+7. Sensor de ionización sin señal.
+8. Micro switch o sensor de caudal sin orden.
+9. Placa realmente quemada.
+
+Qué revisar primero:
+
+1. Alimentación con tester.
+2. Estado del portapilas o fuente.
+3. Conectores de placa.
+4. Sulfato u óxido.
+5. Humedad.
+6. Cable de chispa.
+7. Cable de sensor de ionización.
+8. Si hay zonas negras o componentes quemados.
+
+Cómo probar:
+
+- Medí tensión de alimentación.
+- Revisá continuidad de cables con el equipo apagado.
+- Mové suavemente fichas para detectar falso contacto.
+- Si prende y corta, revisá ionización antes de culpar a la placa.
+- Si no hace nada y llega alimentación correcta, recién se sospecha más del módulo.
+
+Para seguir el diagnóstico: ¿ves humedad, sulfato o alguna zona quemada en la placa?`;
+  }
+
+  function guiaRespuestaIonizacion(pregunta){
+    return `Guía virtual:
+
+La ionización es la confirmación de llama del calefón ionizado. No alcanza con que haya chispa y prenda: la placa necesita detectar que la llama quedó encendida.
+
+Qué puede pasar si falla la ionización:
+
+- El calefón prende y se apaga a los pocos segundos.
+- Hace chispa, prende y corta.
+- La placa no detecta llama.
+- Puede parecer falla de placa, pero el problema está en el electrodo o cable.
+
+Qué revisar:
+
+1. Electrodo de ionización.
+2. Cable del electrodo a la placa.
+3. Conector del sensor.
+4. Suciedad en la varilla.
+5. Posición del electrodo.
+6. Humedad o sulfato.
+7. Mala masa.
+8. Alimentación baja.
+
+Cómo probar de forma básica:
+
+- Con el equipo apagado, revisar continuidad del cable si se identifica correctamente.
+- Revisar que la ficha esté firme.
+- Revisar que no haya sulfato.
+- Revisar que el electrodo no esté quebrado o fuera de lugar.
+- Si prende y corta, revisar ionización antes de cambiar placa.
+
+Para seguir el diagnóstico: ¿el calefón prende unos segundos y se apaga, o directamente no llega a prender?`;
+  }
+
+  function guiaRespuestaDisplay(pregunta){
+    return `Guía virtual:
+
+Si el calefón ionizado tiene display o marca código de error, ese dato sirve para ubicar la falla dentro de la secuencia eléctrica/electrónica.
+
+Qué puede indicar un error:
+
+1. Alimentación baja.
+2. Sensor de temperatura.
+3. Sensor de caudal.
+4. Falla de ionización.
+5. Problema de placa.
+6. Ficha floja.
+7. Humedad o sulfato.
+8. Display con falso contacto.
+
+Qué revisar primero:
+
+1. Si el display enciende normal.
+2. Si parpadea.
+3. Si aparece un código.
+4. En qué momento aparece: antes de chispa, durante encendido o después de prender.
+5. Pila/fuente.
+6. Conectores del display y placa.
+
+Cómo probar:
+
+- Medí alimentación.
+- Revisá fichas.
+- Revisá humedad.
+- Anotá el código exacto.
+- Cruzá código con marca/modelo.
+
+Para seguir el diagnóstico: ¿qué código aparece en el display y en qué momento aparece?`;
+  }
+
+  function guiaRespuestaCableado(pregunta){
+    return `Guía virtual:
+
+Un problema de cableado o conectores puede hacer que el calefón ionizado parezca tener placa quemada, sensor roto o módulo fallando. Por eso siempre conviene revisar conexiones antes de cambiar piezas.
+
+Qué puede estar pasando:
+
+1. Ficha floja.
+2. Cable cortado internamente.
+3. Terminal sulfatado.
+4. Humedad.
+5. Falso contacto.
+6. Cable de chispa con fuga.
+7. Cable de ionización desconectado.
+8. Portapilas con mal contacto.
+
+Cómo revisar:
+
+1. Apagá el equipo.
+2. Mirá conectores uno por uno.
+3. Buscá sulfato, óxido o humedad.
+4. Revisá que las fichas estén firmes.
+5. Usá tester en continuidad para cables.
+6. Mové suavemente el cable mientras medís para detectar falso contacto.
+
+Cómo interpretar:
+
+- Si no hay continuidad, cable cortado.
+- Si la continuidad aparece y desaparece, falso contacto.
+- Si hay sulfato, puede cortar señal.
+- Si el cable de chispa tiene fuga, puede hacer chispa débil o en lugar incorrecto.
+
+Para seguir el diagnóstico: ¿qué conector o cable estás revisando ahora?`;
+  }
+
+  function guiaRespuestaGeneralCalefon(pregunta){
+    return `Guía virtual:
+
+Tu consulta la tomo como diagnóstico de un calefón ionizado. Para responder bien, hay que seguir la anatomía eléctrica/electrónica del equipo y no cambiar piezas al azar.
+
+Cadena general de diagnóstico:
+
+1. Alimentación:
+   Pila, fuente, portapilas, tensión, polaridad y contactos.
+
+2. Orden de encendido:
+   Micro switch, sensor de caudal o señal que habilita el módulo.
+
+3. Módulo o placa:
+   Recibe la señal, habilita chispa y controla parte de la secuencia.
+
+4. Chispa:
+   Cable de alta, electrodo, distancia y fuga.
+
+5. Ionización:
+   Sensor/electrodo que confirma que la llama quedó detectada.
+
+6. Sensores:
+   Temperatura, sobretemperatura, caudal, display o señales de seguridad.
+
+7. Cableado:
+   Fichas, conectores, humedad, sulfato y falsos contactos.
+
+Cómo trabajar el diagnóstico:
+
+- Primero identificar qué hace y qué no hace.
+- Después medir alimentación.
+- Luego revisar conectores.
+- Después revisar chispa.
+- Si prende y corta, revisar ionización.
+- Si marca error, revisar código y sensor relacionado.
+- Si todo lo anterior está bien, recién sospechar placa/módulo.
+
+Para seguir el diagnóstico: ¿qué parte del calefón querés revisar ahora?`;
+  }
+
+  function guiaRespuestaLocalRobusta(pregunta){
+    const tema = typeof guiaTemaPregunta === "function" ? guiaTemaPregunta(pregunta) : "general";
+
+    if(tema === "sensor_temperatura") return guiaRespuestaSensorTemperatura(pregunta);
+    if(tema === "pila") return guiaRespuestaPilaTester(pregunta);
+    if(tema === "placa") return guiaRespuestaPlaca(pregunta);
+    if(tema === "chispa") return guiaRespuestaChispa(pregunta);
+    if(tema === "ionizacion") return guiaRespuestaIonizacion(pregunta);
+    if(tema === "display") return guiaRespuestaDisplay(pregunta);
+    if(tema === "cableado") return guiaRespuestaCableado(pregunta);
+
+    const t = String(pregunta || "").toLowerCase();
+    if(t.includes("tester") || t.includes("multimetro") || t.includes("multímetro") || t.includes("medir") || t.includes("probar")){
+      return guiaRespuestaGeneralCalefon(pregunta);
+    }
+
+    return guiaRespuestaGeneralCalefon(pregunta);
+  }
+
 function guiaRespuestaLocal(pregunta){
     const t = String(pregunta || "").toLowerCase();
     const tema = guiaTemaPregunta(pregunta);
@@ -2290,49 +2662,42 @@ Para seguir el diagnóstico: ${guiaPreguntaFinalContextual(pregunta)}`;
   window.iaEnviar = async function(){
     const inp = guiaInput();
     if(!inp) return;
+
     const pregunta = inp.value.trim();
     if(!pregunta) return;
 
     inp.value = "";
+
     guiaAdd("user", "Alumno: " + pregunta);
     guiaHistorial.push({rol:"Alumno", texto:pregunta});
 
     const loading = guiaAdd("bot", "Guía virtual:\nPreparando respuesta...", "guia-loading");
 
-    let respuesta = null;
-    const tema = typeof guiaTemaPregunta === "function" ? guiaTemaPregunta(pregunta) : "";
+    try{
+      /*
+        MODO SEGURO:
+        Responde siempre con inteligencia local del curso para que no se quede tildada.
+        La pregunta se interpreta como:
+        pregunta del alumno + " sobre calefones ionizados"
+      */
+      let respuesta = guiaRespuestaLocalRobusta(pregunta);
 
-    /*
-      Para evitar que quede cargando:
-      - Si es una pregunta muy concreta y ya tenemos respuesta local buena, responde local.
-      - Si usa Gemini, tiene límite de tiempo.
-      - Si Gemini falla, responde fallback local.
-    */
+      respuesta = guiaLimpiar(respuesta);
+      guiaActualizar(loading, respuesta);
+      if(loading) loading.classList.remove("guia-loading");
+      guiaHistorial.push({rol:"Guía virtual", texto:respuesta.slice(0,1800)});
+    }catch(e){
+      const emergencia = `Guía virtual:
 
-    const temasConRespuestaLocalFuerte = [
-      "pila",
-      "sensor_temperatura",
-      "placa",
-      "chispa",
-      "ionizacion",
-      "display",
-      "cableado"
-    ];
+Tu consulta corresponde al diagnóstico de calefones ionizados. Para avanzar, primero hay que ubicar el síntoma dentro de la cadena eléctrica/electrónica: alimentación, módulo/placa, chispa, sensores, ionización, display o cableado.
 
-    if(temasConRespuestaLocalFuerte.includes(tema)){
-      respuesta = guiaRespuestaLocal(pregunta);
-    }else if(guiaEsProbableCalefon(pregunta)){
-      respuesta = await guiaConTimeout(guiaGemini(pregunta), 9000);
+Como respuesta segura: revisá primero alimentación, conectores, sulfato, humedad y después el componente específico que querés probar con tester.
+
+Para seguir el diagnóstico: ¿qué componente querés revisar ahora?`;
+
+      guiaActualizar(loading, emergencia);
+      if(loading) loading.classList.remove("guia-loading");
     }
-
-    if(!respuesta){
-      respuesta = guiaRespuestaLocal(pregunta);
-    }
-
-    respuesta = guiaLimpiar(respuesta);
-    guiaActualizar(loading, respuesta);
-    if(loading) loading.classList.remove("guia-loading");
-    guiaHistorial.push({rol:"Guía virtual", texto:respuesta.slice(0,1800)});
   };
 
   window.iaNuevaConversacion = function(){
