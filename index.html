@@ -1673,7 +1673,8 @@ el.innerText = "👁";
     const claves = [
       "calefon","calefón","ionizado","ionización","ionizacion","chispa","prende","enciende","apaga",
       "pila","pilas","tester","multimetro","multímetro","placa","modulo","módulo","sensor","electrodo",
-      "display","cable","cableado","conector","conectores","fuente","bateria","batería","continuidad",
+      "temperatura","ntc","termistor","termostato","sobretemperatura","display","cable","cableado",
+      "conector","conectores","fuente","bateria","batería","continuidad","resistencia","ohm","ohms",
       "voltaje","tension","tensión","micro switch","microswitch","caudal","orbis","ecotermo","longvie",
       "rheem","volcan","volcán","eurotrend","bujia","bujía"
     ];
@@ -1693,8 +1694,9 @@ el.innerText = "👁";
 Sos la Guía virtual en consultas de fallas del curso ASPE sobre calefones ionizados.
 Tu estilo debe ser como ChatGPT: claro, inteligente, ordenado, detallado, coherente y práctico.
 
-La consulta SIEMPRE debe interpretarse agregando al final:
-"sobre calefones ionizados".
+La consulta SIEMPRE debe interpretarse como si se buscara en Gemini así:
+[pregunta del alumno] + " sobre calefones ionizados".
+Pero la respuesta debe respetar el componente exacto preguntado.
 
 Consulta preparada:
 ${consulta}
@@ -1710,6 +1712,7 @@ Entender perfectamente qué quiso preguntar el alumno/cliente, responder con pre
 
 Reglas obligatorias:
 1. No repitas siempre la misma respuesta. Adaptá la respuesta a la pregunta exacta del alumno y al contexto de la conversación.
+1.b. Identificá primero el componente principal de la consulta. Si dice "sensor de temperatura", respondé sobre sensor de temperatura, aunque también diga tester. Si dice "placa", respondé sobre placa. Si dice "pila", respondé sobre pila. No confundas componentes.
 2. No des respuestas genéricas. Respondé con información concreta, útil y aplicable.
 3. Explicá como ChatGPT: con pasos, ejemplos, valores orientativos, interpretación y próximos pasos.
 4. Si la pregunta es corta o incompleta, inferí el tema si está relacionado con calefones ionizados. Ejemplo: "pila", "tester", "chispa", "placa", "display", "sensor" o "cable" se interpretan dentro del calefón ionizado.
@@ -1838,7 +1841,7 @@ Para seguir el diagnóstico: ${preguntaFinal}`;
       return "¿ves humedad, sulfato o alguna zona quemada en la placa?";
     }
 
-    if(t.includes("ionizacion") || t.includes("ionización") || t.includes("electrodo") || t.includes("sensor")){
+    if(tema === "ionizacion"){
       return "¿el calefón prende unos segundos y se apaga, o directamente no llega a prender?";
     }
 
@@ -1857,11 +1860,131 @@ Para seguir el diagnóstico: ${preguntaFinal}`;
     return "¿qué parte del calefón querés revisar ahora para seguir el diagnóstico?";
   }
 
+
+  function guiaTemaPregunta(pregunta){
+    const t = String(pregunta || "").toLowerCase();
+
+    if(t.includes("sensor de temperatura") || t.includes("temperatura") || t.includes("ntc") || t.includes("termistor") || t.includes("termostato") || t.includes("sobretemperatura")){
+      return "sensor_temperatura";
+    }
+
+    if(t.includes("ionizacion") || t.includes("ionización") || t.includes("electrodo") || t.includes("sensor de llama") || t.includes("llama")){
+      return "ionizacion";
+    }
+
+    if(t.includes("display") || t.includes("codigo") || t.includes("código") || t.includes("error")){
+      return "display";
+    }
+
+    if(t.includes("placa") || t.includes("modulo") || t.includes("módulo")){
+      return "placa";
+    }
+
+    if(tema === "chispa"){
+      return "chispa";
+    }
+
+    if(tema === "cableado"){
+      return "cableado";
+    }
+
+    if(t.includes("pila") || t.includes("pilas") || t.includes("bateria") || t.includes("batería")){
+      return "pila";
+    }
+
+    if(t.includes("tester") || t.includes("multimetro") || t.includes("multímetro") || t.includes("medir") || t.includes("mido") || t.includes("probar")){
+      return "medicion_general";
+    }
+
+    return "general";
+  }
+
 function guiaRespuestaLocal(pregunta){
     const t = String(pregunta || "").toLowerCase();
+    const tema = guiaTemaPregunta(pregunta);
     const marcaModelo = guiaTieneMarcaModelo(pregunta);
 
-    if(t.includes("pila") || t.includes("pilas") || t.includes("bateria") || t.includes("batería") || t.includes("tester") || t.includes("multimetro") || t.includes("multímetro")){
+    
+    if(tema === "sensor_temperatura"){
+      return `Guía virtual:
+
+Para probar un sensor de temperatura con el tester en un calefón ionizado, primero hay que identificar si es un sensor tipo NTC/termistor o un termostato de seguridad. No se prueba igual que una pila: acá normalmente se mide resistencia o continuidad, no voltaje de pila.
+
+Respuesta directa:
+
+El sensor de temperatura se prueba con el tester en ohms/resistencia o en continuidad, con el calefón apagado y el sensor desconectado de la placa para que la medición no salga falsa.
+
+Cómo preparar el tester:
+
+1. Poné el cable negro en COM.
+2. Poné el cable rojo en VΩ.
+3. Girá la perilla a Ω, Ohms o resistencia.
+4. Si tu tester no es automático, empezá en escala 20KΩ.
+5. Si marca fuera de rango, probá una escala más alta, como 200KΩ.
+
+Cómo medir un sensor tipo NTC:
+
+1. Apagá el calefón.
+2. Desconectá el sensor de la placa o ficha.
+3. Tocá una punta del tester en cada terminal del sensor.
+4. En resistencia no importa la polaridad.
+5. Leé el valor que aparece en pantalla.
+
+Qué valores puede marcar:
+
+- Puede marcar 5KΩ, 10KΩ, 50KΩ o 100KΩ, según el modelo.
+- Lo importante es que marque una resistencia coherente y que cambie con la temperatura.
+- Si marca OL, 1 o infinito, el sensor puede estar abierto/cortado.
+- Si marca 0Ω o casi cero, puede estar en corto.
+- Si el valor salta o cambia al mover el cable, puede haber falso contacto.
+
+Prueba con calor suave:
+
+En un sensor NTC, cuando sube la temperatura, normalmente baja la resistencia.
+
+Ejemplo orientativo:
+
+- A temperatura ambiente puede marcar cerca de 10KΩ.
+- Al calentarlo suavemente con la mano o con calor moderado, puede bajar a 8KΩ, 6KΩ o menos.
+- Al enfriarse, la resistencia vuelve a subir.
+
+No hace falta que esos números sean exactos, porque dependen del sensor. Lo importante es que el valor cambie de manera progresiva.
+
+Si es un termostato de seguridad:
+
+Algunos sensores de temperatura trabajan como interruptor térmico. En ese caso se prueba en continuidad.
+
+1. Poné el tester en continuidad o pitido.
+2. Medí entre los dos terminales.
+3. Si está cerrado, debería pitar o marcar cerca de 0Ω.
+4. Si está abierto, marca OL o no pita.
+5. Algunos abren solo cuando hay exceso de temperatura.
+
+Qué revisar además del sensor:
+
+1. Ficha del sensor.
+2. Cables cortados o sulfatados.
+3. Humedad en conectores.
+4. Falso contacto.
+5. Si la placa recibe bien la señal.
+6. Si el display marca código de error.
+
+Cómo interpretar en el calefón ionizado:
+
+- Si el sensor está abierto, la placa puede cortar o no habilitar.
+- Si está en corto, puede marcar temperatura incorrecta.
+- Si cambia de valor con calor, probablemente el sensor responde.
+- Si el sensor mide bien pero el calefón falla, revisá cableado, ficha y placa.
+- Si el calefón prende y corta, puede confundirse con ionización, sensor de temperatura o placa, según el momento en que corta.
+
+Próximo paso real:
+
+Medí el sensor desconectado en Ω. Si marca un valor fijo y coherente, calentá suavemente el sensor y mirá si la resistencia cambia. Si no cambia nada, marca OL o marca 0Ω, el sensor o el cableado pueden estar fallando.
+
+Para seguir el diagnóstico: ¿qué valor te marca el sensor en ohms cuando lo medís desconectado?`;
+    }
+
+    if(tema === "pila" || (tema === "medicion_general" && (t.includes("pila") || t.includes("bateria") || t.includes("batería")))){
       return `Guía virtual:
 
 Sí, esa consulta corresponde al diagnóstico eléctrico/electrónico de un calefón ionizado, porque la pila o batería alimenta el módulo de encendido, la chispa y parte de la secuencia de arranque.
@@ -1920,7 +2043,7 @@ Para seguir el diagnóstico: ¿qué valor te marcó la pila en el tester?`;
     }
 
     
-    if(t.includes("ionizacion") || t.includes("ionización") || t.includes("electrodo") || t.includes("sensor")){
+    if(tema === "ionizacion"){
       return guiaFormatoDiagnostico(
         "ionización",
         "Tu consulta apunta a una parte clave del calefón ionizado: la detección de llama por ionización. En estos equipos, no alcanza con que haya chispa y que el calefón prenda; la placa o módulo necesita confirmar que la llama fue detectada. Si esa señal no llega bien, el calefón puede prender y apagarse a los pocos segundos.",
@@ -1933,7 +2056,7 @@ Para seguir el diagnóstico: ¿qué valor te marcó la pila en el tester?`;
       );
     }
 
-    if(t.includes("display") || t.includes("error") || t.includes("codigo") || t.includes("código")){
+    if(tema === "display"){
       return guiaFormatoDiagnostico(
         "display",
         "Si el calefón ionizado tiene display o muestra un código de error, ese dato es muy importante porque ayuda a ubicar la falla dentro de la secuencia eléctrica/electrónica.",
@@ -1946,7 +2069,7 @@ Para seguir el diagnóstico: ¿qué valor te marcó la pila en el tester?`;
       );
     }
 
-    if(t.includes("cable") || t.includes("conector") || t.includes("ficha") || t.includes("sulfato") || t.includes("humedad")){
+    if(tema === "cableado"){
       return guiaFormatoDiagnostico(
         "cableado",
         "Una falla de cableado o conectores en un calefón ionizado puede imitar una falla de placa, sensor o chispa. Por eso es una de las primeras cosas que conviene revisar.",
@@ -1959,7 +2082,7 @@ Para seguir el diagnóstico: ¿qué valor te marcó la pila en el tester?`;
       );
     }
 
-    if(t.includes("placa") || t.includes("módulo") || t.includes("modulo")){
+    if(tema === "placa"){
       return `Guía virtual:
 
 Si el problema parece estar en la placa electrónica o módulo del calefón ionizado, hay que diagnosticar antes de cambiarla. Muchas veces parece placa, pero el problema real está en alimentación, cableado, sensor, electrodo, humedad o conectores.
@@ -2015,7 +2138,7 @@ ${marcaModelo ? "Como mencionaste marca/modelo o un dato específico, conviene c
 Para seguir el diagnóstico: ¿al módulo le llega alimentación correcta o ves humedad/sulfato en la placa?`;
     }
 
-    if(t.includes("chispa") || t.includes("enciende") || t.includes("prende") || t.includes("apaga")){
+    if(tema === "chispa"){
       return `Guía virtual:
 
 Ese síntoma se diagnostica separando la secuencia de encendido del calefón ionizado. No es lo mismo que no haga nada, que haga chispa débil, que haga chispa y no prenda, o que prenda y se apague.
