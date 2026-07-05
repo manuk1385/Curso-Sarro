@@ -4,7 +4,7 @@
    Si lo dejás vacío, la guía responde igual con respuesta local.
 ========================= */
 
-window.GUIA_VIRTUAL_GEMINI_API_KEY = "AIzaSyDny5NRmRpDvHhbIKOqqbe0AM5JKQMHFzg";
+window.GUIA_VIRTUAL_GEMINI_API_KEY = "AIzaSyBLia3fb2N054UmUmf9w4Jno1GjPHfRNF0";
 
 /*
 La Guía virtual manda cada pregunta a Gemini agregando:
