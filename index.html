@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-LN6HBQEZBX"></script>
 <script>
@@ -666,37 +671,84 @@ font-size:18px;
 .ia-logo.ia-sarro-logo{font-size:13px!important;letter-spacing:.1px!important;line-height:1!important;text-align:center!important;}
 @media(max-width:768px){.ia-logo.ia-sarro-logo{font-size:11px!important;}}
 </style>
-<style>
-/* =========================
-   AJUSTE VIDEO CURSO - MÁS CHICO
-   Mantiene controles nativos: play, volumen y pantalla completa.
-========================= */
-.video:not(.guia-mode){
-  width:min(100%, 980px)!important;
-  height:420px!important;
-  margin:0 auto 20px auto!important;
-}
 
-.video:not(.guia-mode) video{
-  width:100%!important;
-  height:100%!important;
-  object-fit:contain!important;
-  border-radius:10px!important;
-}
+<script id="limpiezaCursoAspe">
+(async function(){
+  try{
+    /* Limpia únicamente los datos del origen actual del Curso ASPE. */
+    localStorage.clear();
+    sessionStorage.clear();
 
-@media(max-width:820px){
-  .video:not(.guia-mode){
-    width:100%!important;
-    height:280px!important;
+    if("caches" in window){
+      const nombres = await caches.keys();
+      await Promise.all(nombres.map(function(nombre){
+        return caches.delete(nombre);
+      }));
+    }
+
+    if("serviceWorker" in navigator){
+      const registros = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registros.map(function(registro){
+        return registro.unregister();
+      }));
+    }
+
+    if(window.indexedDB && indexedDB.databases){
+      const bases = await indexedDB.databases();
+      bases.forEach(function(base){
+        if(base && base.name){
+          try{ indexedDB.deleteDatabase(base.name); }catch(e){}
+        }
+      });
+    }
+  }catch(e){
+    console.warn("No se pudo limpiar todo el almacenamiento del curso:", e);
   }
-}
+})();
+</script>
 
-@media(max-width:430px){
-  .video:not(.guia-mode){
-    height:230px!important;
-  }
-}
-</style>
+
+<script id="configGuiaVirtualAspe">
+
+
+
+window.GUIA_VIRTUAL_COMPONENTES_ASPE = [
+  "Pilas, portapilas, fuente, alimentación, polaridad y caída de tensión",
+  "Módulo de encendido, controlador, placa electrónica y plaqueta",
+  "Micro switch, microswitch y microinterruptor",
+  "Sensor de caudal, flow switch, flujostato, flujómetro, turbina, sensor Hall y reed switch",
+  "Electrodo de encendido, bujía de chispa y cable de alta",
+  "Electrodo de ionización, sensor de llama, cable de ionización y masa",
+  "Sensor de temperatura, sonda NTC, termistor y vaina",
+  "Termostato límite, bimetálico, sobretemperatura y seguridad térmica",
+  "Display, pantalla, botonera y códigos de error",
+  "Cableado, fichas, conectores, terminales, sulfato, humedad y falso contacto",
+  "Válvula solenoide, electroválvula, bobina y válvula modulante",
+  "Cuerpo de gas, quemador y piloto",
+  "Serpentina e intercambiador",
+  "Venturi, cámara de agua, diafragma, membrana, eje, vástago, palanca, filtro, o-ring, junta y retén",
+  "Presostato, retorno de humos, forzador, extractor y mangueras de silicona",
+  "Regulador de caudal y tornillo de registro",
+  "Tester y multímetro: voltaje continuo, resistencia, continuidad, escalas, puntas y valores"
+];
+
+window.GUIA_VIRTUAL_TERMINOS_CURSO = [
+  "calefón ionizado","ionización","encendido electrónico","electrodo de encendido",
+  "electrodo de ionización","sensor de llama","chispa","cable de alta","masa",
+  "módulo de encendido","placa electrónica","pila","portapilas","fuente",
+  "tester","multímetro","continuidad","resistencia","ohms","DCV","VDC",
+  "micro switch","sensor de caudal","flow switch","flujostato","flujómetro",
+  "turbina","sensor Hall","reed switch","venturi","diafragma",
+  "sensor de temperatura","NTC","termistor","termostato","sobretemperatura",
+  "display","código de error","válvula solenoide","electroválvula","bobina",
+  "válvula modulante","quemador","serpentina","intercambiador","presostato",
+  "forzador","extractor","cableado","ficha","conector","sulfato","humedad",
+  "falso contacto","Orbis","Eurotrend","Escorial","Ecotermo","Longvie",
+  "Rheem","Señorial","Volcán","Saiar","Eskabe","Emege"
+];
+
+</script>
+
 </head>
 
 <body>
@@ -789,7 +841,7 @@ font-weight:bold;
 
 <div class="titulo-menu" onclick="togglePDF()">📄 PDF</div>
 <div class="material-lista" id="listaPDF"></div>
-<div class="titulo-menu" onclick="mostrarAIAspe()"><img src="aspe-logo.jpeg" class="aspe-menu-logo" alt="ASPE"> Guía virtual</div>
+<div class="titulo-menu" onclick="mostrarGuiaVirtual()"><img src="saul.png" class="aspe-menu-logo" alt="ASPE"> Guía virtual</div>
 
 </div>
 
@@ -1319,1516 +1371,486 @@ el.innerText = "👁";
 
 </script>
 
-<script src="ia-aspe-conocimiento.js"></script>
+
+
+
 
 <!-- =========================
-     GUÍA VIRTUAL - SOLO SECCIÓN IA NUEVA
-     Mantiene intacto Material, videos, PDF, Orbis y progreso.
+     GUÍA VIRTUAL RECREADA DESDE CERO
 ========================= -->
-<style id="guiaVirtualSarroFinalCSS">
+<style id="guiaVirtualNuevaCSS">
 .aspe-menu-logo{
-  width:26px!important;
-  height:26px!important;
-  object-fit:contain!important;
-  background:#fff!important;
-  border-radius:50%!important;
-  padding:2px!important;
-  flex:0 0 auto!important;
+  width:26px;
+  height:26px;
+  object-fit:contain;
+  background:#fff;
+  border-radius:50%;
+  padding:2px;
+  flex:0 0 auto;
 }
-
-.video.guia-mode{
+.video.guia-virtual-mode{
   background:transparent!important;
   height:auto!important;
   min-height:0!important;
   display:block!important;
   color:#0f172a!important;
-  align-items:initial!important;
-  justify-content:initial!important;
 }
-
-.guia-panel{
-  width:100%!important;
-  max-width:1100px!important;
-  margin:0 auto!important;
-  background:#fff!important;
-  border:1px solid #e2e8f0!important;
-  border-radius:18px!important;
-  padding:20px!important;
-  box-shadow:0 8px 25px rgba(15,23,42,.06)!important;
+.guia-nueva{
+  width:100%;
+  max-width:1100px;
+  margin:0 auto;
+  background:#fff;
+  border:1px solid #e2e8f0;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 8px 25px rgba(15,23,42,.07);
 }
-
-.guia-head{
-  display:flex!important;
-  align-items:flex-start!important;
-  gap:16px!important;
-  margin-bottom:18px!important;
+.guia-nueva-head{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-bottom:16px;
 }
-
-.guia-head-logo{
-  width:72px!important;
-  height:72px!important;
-  object-fit:contain!important;
-  background:#fff!important;
-  border:1px solid #e5e7eb!important;
-  border-radius:16px!important;
-  padding:5px!important;
-  flex:0 0 auto!important;
+.guia-nueva-head img{
+  width:68px;
+  height:68px;
+  object-fit:contain;
+  border:1px solid #e2e8f0;
+  border-radius:16px;
+  padding:5px;
+  background:#fff;
 }
-
-.guia-head h2{
-  margin:0 0 8px!important;
-  font-size:34px!important;
-  line-height:1.1!important;
-  color:#0f172a!important;
+.guia-nueva-head h2{
+  margin:0 0 6px;
+  font-size:34px;
+  color:#0f172a;
 }
-
-.guia-head p{
-  margin:0!important;
-  color:#64748b!important;
-  font-size:20px!important;
-  line-height:1.35!important;
+.guia-nueva-head p{
+  margin:0;
+  font-size:19px;
+  color:#64748b;
+  line-height:1.4;
 }
-
-.guia-chat{
-  height:430px!important;
-  max-height:58vh!important;
-  overflow-y:auto!important;
-  background:#f8fafc!important;
-  border:1px solid #e2e8f0!important;
-  border-radius:16px!important;
-  padding:16px!important;
-  scroll-behavior:auto!important;
-  overscroll-behavior:contain!important;
+.guia-chat-nuevo{
+  height:430px;
+  max-height:58vh;
+  overflow-y:auto;
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+  border-radius:16px;
+  padding:16px;
 }
-
-.guia-msg{
-  max-width:88%!important;
-  margin:12px 0!important;
-  padding:16px 18px!important;
-  border-radius:16px!important;
-  font-size:18px!important;
-  line-height:1.52!important;
-  white-space:pre-wrap!important;
-  word-break:break-word!important;
+.guia-mensaje{
+  max-width:88%;
+  margin:12px 0;
+  padding:15px 17px;
+  border-radius:16px;
+  font-size:18px;
+  line-height:1.55;
+  white-space:pre-wrap;
+  word-break:break-word;
 }
-
-.guia-bot{
-  background:#e8eef6!important;
-  color:#0f172a!important;
-  border:1px solid #dbe3ee!important;
-  margin-right:auto!important;
+.guia-mensaje-bot{
+  margin-right:auto;
+  background:#e8eef6;
+  color:#0f172a;
+  border:1px solid #dbe3ee;
 }
-
-.guia-user{
-  background:#2563eb!important;
-  color:#fff!important;
-  margin-left:auto!important;
+.guia-mensaje-user{
+  margin-left:auto;
+  background:#2563eb;
+  color:#fff;
 }
-
-.guia-input-row{
-  display:grid!important;
-  grid-template-columns:74px 1fr 150px!important;
-  gap:12px!important;
-  align-items:stretch!important;
-  margin-top:16px!important;
+.guia-controles{
+  display:grid;
+  grid-template-columns:74px 1fr 150px;
+  gap:12px;
+  margin-top:16px;
 }
-
-.guia-input{
-  width:100%!important;
-  min-height:68px!important;
-  max-height:160px!important;
-  resize:vertical!important;
-  border:1px solid #cbd5e1!important;
-  border-radius:14px!important;
-  padding:14px!important;
-  font-size:18px!important;
-  line-height:1.35!important;
-  font-family:Arial, Helvetica, sans-serif!important;
+.guia-texto{
+  min-height:70px;
+  max-height:170px;
+  resize:vertical;
+  border:1px solid #cbd5e1;
+  border-radius:14px;
+  padding:14px;
+  font-family:Arial, sans-serif;
+  font-size:18px;
+  line-height:1.4;
 }
-
-.guia-mic,
-.guia-send,
-.guia-new{
-  border:none!important;
-  color:white!important;
-  border-radius:14px!important;
-  cursor:pointer!important;
-  font-weight:700!important;
+.guia-audio,
+.guia-enviar,
+.guia-nueva-conversacion{
+  border:none;
+  color:#fff;
+  border-radius:14px;
+  font-weight:700;
+  cursor:pointer;
 }
-
-.guia-mic{
-  background:#ef4444!important;
-  font-size:30px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  min-height:68px!important;
+.guia-audio{
+  background:#ef4444;
+  font-size:28px;
 }
-
-.guia-mic .guia-dot{display:none!important;}
-.guia-mic.escuchando .guia-icon{display:none!important;}
-.guia-mic.escuchando .guia-dot{
-  display:block!important;
-  width:26px!important;
-  height:26px!important;
-  border-radius:50%!important;
-  background:#fff!important;
-  box-shadow:0 0 0 8px rgba(255,255,255,.20)!important;
+.guia-audio.escuchando{
+  background:#b91c1c;
+  box-shadow:0 0 0 5px rgba(239,68,68,.18);
 }
-
-.guia-send{
-  background:#2563eb!important;
-  font-size:20px!important;
+.guia-enviar{
+  background:#2563eb;
+  font-size:20px;
 }
-
-.guia-new{
-  margin-top:14px!important;
-  background:#0f8a78!important;
-  font-size:22px!important;
-  min-height:58px!important;
-  width:min(460px,100%)!important;
+.guia-nueva-conversacion{
+  width:min(460px,100%);
+  min-height:58px;
+  margin-top:14px;
+  background:#0f8a78;
+  font-size:21px;
 }
-
-.guia-note{
-  margin-top:10px!important;
-  color:#64748b!important;
-  font-size:16px!important;
-  line-height:1.35!important;
+.guia-estado{
+  margin-top:9px;
+  color:#64748b;
+  font-size:15px;
 }
-
-.guia-loading{
-  opacity:.92!important;
+.guia-esperando{
+  opacity:.85;
 }
-
 @media(max-width:820px){
-  .main{
-    padding:16px!important;
-  }
-  .video.guia-mode{
-    height:auto!important;
-  }
-  .guia-panel{
-    padding:14px!important;
-    border-radius:18px!important;
-  }
-  .guia-head{
-    gap:12px!important;
-  }
-  .guia-head-logo{
-    width:58px!important;
-    height:58px!important;
-    border-radius:14px!important;
-  }
-  .guia-head h2{
-    font-size:28px!important;
-  }
-  .guia-head p{
-    font-size:18px!important;
-  }
-  .guia-chat{
-    height:50vh!important;
-    min-height:360px!important;
-    max-height:560px!important;
-    padding:12px!important;
-  }
-  .guia-msg{
-    max-width:100%!important;
-    font-size:20px!important;
-    padding:15px!important;
-  }
-  .guia-input-row{
-    grid-template-columns:82px 1fr!important;
-    gap:10px!important;
-  }
-  .guia-input{
-    grid-column:1 / 3!important;
-    grid-row:1!important;
-    min-height:94px!important;
-    font-size:22px!important;
-  }
-  .guia-mic{
-    grid-column:1!important;
-    grid-row:2!important;
-    min-height:72px!important;
-  }
-  .guia-send{
-    grid-column:2!important;
-    grid-row:2!important;
-    min-height:72px!important;
-    font-size:24px!important;
-  }
-  .guia-new{
-    width:100%!important;
-    font-size:25px!important;
-    min-height:70px!important;
-  }
-  .guia-note{
-    font-size:18px!important;
-  }
-}
-
-@media(max-width:430px){
-  .guia-head h2{
-    font-size:25px!important;
-  }
-  .guia-head p{
-    font-size:17px!important;
-  }
-  .guia-chat{
-    min-height:330px!important;
-  }
-  .guia-msg{
-    font-size:19px!important;
-  }
-  .guia-input{
-    font-size:21px!important;
-  }
+  .guia-nueva{padding:14px}
+  .guia-nueva-head h2{font-size:27px}
+  .guia-nueva-head p{font-size:17px}
+  .guia-chat-nuevo{height:50vh;min-height:350px}
+  .guia-mensaje{max-width:100%;font-size:19px}
+  .guia-controles{grid-template-columns:82px 1fr}
+  .guia-texto{grid-column:1/3;grid-row:1;min-height:96px;font-size:21px}
+  .guia-audio{grid-column:1;grid-row:2;min-height:72px}
+  .guia-enviar{grid-column:2;grid-row:2;min-height:72px;font-size:23px}
+  .guia-nueva-conversacion{width:100%;min-height:68px;font-size:23px}
 }
 </style>
 
-<script id="guiaVirtualSarroFinalJS">
+<script id="guiaVirtualNuevaJS">
 (function(){
-  let guiaHistorial = [];
-  let guiaRecognition = null;
-  let guiaEscuchando = false;
-  let guiaTextoBase = "";
+  let historialGuia = [];
+  let reconocimiento = null;
+  let escuchando = false;
+  let permisoMicrofonoSolicitado = false;
 
-  function guiaEsc(s){
-    return String(s || "").replace(/[&<>"']/g, function(m){
-      return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m];
-    });
+  function chat(){
+    return document.getElementById("guiaChatNuevo");
   }
 
-  function guiaLimpiar(s){
-    return String(s || "")
+  function entrada(){
+    return document.getElementById("guiaTextoNuevo");
+  }
+
+  function estado(texto){
+    const el = document.getElementById("guiaEstadoNuevo");
+    if(el) el.textContent = texto;
+  }
+
+  function limpiarTexto(texto){
+    return String(texto || "")
       .replace(/<br\s*\/?>/gi, "\n")
-      .replace(/<\/?b>/gi, "")
-      .replace(/<\/?strong>/gi, "")
       .replace(/<\/?[^>]+>/g, "")
       .trim();
   }
 
-  function guiaChat(){
-    return document.getElementById("guiaChat");
-  }
+  function agregarMensaje(tipo, texto, extra){
+    const contenedor = chat();
+    if(!contenedor) return null;
 
-  function guiaInput(){
-    return document.getElementById("guiaPregunta");
-  }
-
-  function guiaEstado(txt){
-    const e = document.getElementById("guiaEstado");
-    if(e) e.innerText = txt;
-  }
-
-  function guiaAdd(tipo, texto, claseExtra){
-    const c = guiaChat();
-    if(!c) return null;
-    const keepTop = c.scrollTop;
     const div = document.createElement("div");
-    div.className = "guia-msg " + (tipo === "user" ? "guia-user" : "guia-bot") + (claseExtra ? " " + claseExtra : "");
+    div.className = "guia-mensaje " +
+      (tipo === "user" ? "guia-mensaje-user" : "guia-mensaje-bot") +
+      (extra ? " " + extra : "");
     div.textContent = texto;
-    c.appendChild(div);
-    c.scrollTop = keepTop;
+
+    contenedor.appendChild(div);
+    contenedor.scrollTop = contenedor.scrollHeight;
     return div;
   }
 
-  function guiaActualizar(div, texto){
-    if(div) div.textContent = texto;
+  function actualizarMensaje(div, texto){
+    if(div){
+      div.textContent = texto;
+      div.classList.remove("guia-esperando");
+    }
+    const contenedor = chat();
+    if(contenedor) contenedor.scrollTop = contenedor.scrollHeight;
   }
 
-  function guiaContexto(){
-    return guiaHistorial.slice(-10).map(function(m){
-      return m.rol + ": " + m.texto;
-    }).join("\n");
-  }
-
-  function guiaUltimoTema(){
-    if(!guiaHistorial.length) return "";
-    const ultimos = guiaHistorial.slice(-4).map(function(m){ return m.texto || ""; }).join(" ").toLowerCase();
-    if(ultimos.includes("pila") || ultimos.includes("tester") || ultimos.includes("multimetro") || ultimos.includes("multímetro")) return "pila/tester";
-    if(ultimos.includes("placa") || ultimos.includes("modulo") || ultimos.includes("módulo")) return "placa/módulo";
-    if(ultimos.includes("chispa") || ultimos.includes("enciende") || ultimos.includes("prende") || ultimos.includes("apaga")) return "chispa/encendido";
-    if(ultimos.includes("ionizacion") || ultimos.includes("ionización") || ultimos.includes("electrodo") || ultimos.includes("sensor")) return "ionización/sensor";
-    if(ultimos.includes("display") || ultimos.includes("codigo") || ultimos.includes("código") || ultimos.includes("error")) return "display/código";
-    if(ultimos.includes("cable") || ultimos.includes("conector") || ultimos.includes("ficha")) return "cableado/conectores";
-    return "";
-  }
-
-  function guiaTieneMarcaModelo(txt){
-    const t = String(txt || "").toLowerCase();
-    const marcas = ["orbis","ecotermo","longvie","rheem","volcan","volcán","señorial","senorial","escorial","peabody","universal","saiar","eskabe","eurotrend"];
-    const tieneMarca = marcas.some(function(m){ return t.includes(m); });
-    const tieneModelo = /\b(cl\s*\d+|r7|eurotrend|\d+\s*l|\d+\s*litros|modelo|mod\.|cod\.|código|codigo)\b/i.test(txt || "");
-    return tieneMarca || tieneModelo;
-  }
-
-  function guiaConsultaFinal(txt){
-    const base = String(txt || "").trim();
-    return base + " sobre calefones ionizados";
-  }
-
-  function guiaEsProbableCalefon(txt){
-    const t = String(txt || "").toLowerCase();
-    const claves = [
-      "calefon","calefón","ionizado","ionización","ionizacion","chispa","prende","enciende","apaga",
-      "pila","pilas","tester","multimetro","multímetro","placa","modulo","módulo","sensor","electrodo","temperatura","ntc","termistor","termostato","sobretemperatura","flujostato","flow switch","flujómetro","turbina","hall","reed","venturi","diafragma","solenoide","electroválvula",
-      "temperatura","ntc","termistor","termostato","sobretemperatura","display","cable","cableado",
-      "conector","conectores","fuente","bateria","batería","continuidad","resistencia","ohm","ohms",
-      "voltaje","tension","tensión","micro switch","microswitch","caudal","orbis","ecotermo","longvie",
-      "rheem","volcan","volcán","eurotrend","bujia","bujía"
-    ];
-    return claves.some(function(k){ return t.includes(k); });
-  }
-
-  
-  function guiaConTimeout(promesa, ms){
-    return new Promise(function(resolve){
-      let terminado = false;
-      const timer = setTimeout(function(){
-        if(terminado) return;
-        terminado = true;
-        resolve(null);
-      }, ms);
-
-      promesa.then(function(valor){
-        if(terminado) return;
-        terminado = true;
-        clearTimeout(timer);
-        resolve(valor);
-      }).catch(function(){
-        if(terminado) return;
-        terminado = true;
-        clearTimeout(timer);
-        resolve(null);
-      });
-    });
-  }
-
-
-  function guiaComponentesCurso(){
-    const lista = window.GUIA_VIRTUAL_COMPONENTES_ASPE || [];
-    return lista.length ? lista.map(function(x){ return "- " + x; }).join("\n") : "- Componentes eléctricos/electrónicos generales de calefones ionizados.";
-  }
-
-  function guiaConTimeout(promesa, ms){
-    return new Promise(function(resolve){
-      let done = false;
-      const timer = setTimeout(function(){
-        if(done) return;
-        done = true;
-        resolve(null);
-      }, ms);
-
-      promesa.then(function(valor){
-        if(done) return;
-        done = true;
-        clearTimeout(timer);
-        resolve(valor);
-      }).catch(function(){
-        if(done) return;
-        done = true;
-        clearTimeout(timer);
-        resolve(null);
-      });
-    });
-  }
-
-async function guiaGemini(pregunta){
-    const apiKey = (window.GUIA_VIRTUAL_GEMINI_API_KEY || window.IA_ASPE_GEMINI_API_KEY || "").trim();
-    if(!apiKey || apiKey.includes("PEG") || apiKey.includes("TU_API")) return null;
-
-    const consulta = guiaConsultaFinal(pregunta);
-    const especificidad = guiaTieneMarcaModelo(pregunta)
-      ? "El usuario dio marca/modelo o dato específico. Respondé con orientación más específica para esa marca/modelo si corresponde."
-      : "El usuario no dio marca/modelo. Respondé general sobre calefones ionizados y pedí marca/modelo al final.";
-
-    const prompt = `
-Sos la Guía virtual en consultas de fallas del curso ASPE.
-Respondé como ChatGPT: claro, detallado, coherente, específico, práctico y con instrucciones paso a paso.
-Tu tema es solamente calefones ionizados: anatomía, funcionamiento, componentes, diagnóstico, tester/multímetro y fallas eléctricas/electrónicas.
-
-La consulta SIEMPRE se debe interpretar así:
-"${consulta}"
-
-Eso significa que Gemini debe responder la pregunta del alumno + " sobre calefones ionizados".
-
-Contexto de conversación:
-${guiaContexto() || "Sin contexto previo."}
-
-Componentes del curso ASPE que podés usar para entender la pregunta:
-${guiaComponentesCurso()}
-
-Reglas:
-- Identificá primero el componente principal preguntado. Ejemplo: si dice "sensor de temperatura con tester", respondé sensor de temperatura, no pila.
-- Si dice "pila con tester", respondé pila.
-- Si dice "placa", respondé placa/módulo.
-- Si dice "chispa", respondé encendido, electrodo y cable de alta.
-- Si dice "ionización", respondé electrodo/sensor de llama.
-- Si dice "display", respondé códigos/display.
-- Si dice "cable/conector/sulfato", respondé cableado/conectores.
-- No repitas siempre lo mismo. Usá el contexto para seguir el mismo diagnóstico.
-- Da soluciones reales y pasos concretos, no solo teoría.
-- Cuando corresponda, indicá dónde poner el cable negro, dónde poner el cable rojo, qué escala usar, dónde apoyar las puntas, qué valores esperar y cómo interpretar.
-- Si faltan datos, respondé igual y hacé una sola pregunta final relacionada con el tema.
-- Hacé UNA sola pregunta al final, no varias.
-- No uses HTML.
-- No des instrucciones de plomería ni trabajos de gas. Si hay riesgo de gas, combustión, monóxido o manipulación peligrosa, recomendá técnico/gasista matriculado y seguí el diagnóstico eléctrico seguro.
-- ${especificidad}
-
-Estructura recomendada:
-1. Respuesta directa.
-2. Qué puede estar pasando.
-3. Cómo probarlo.
-4. Qué valores/señales esperar.
-5. Qué significa cada resultado.
-6. Próximo paso.
-7. Una sola pregunta final relacionada.
-`;
-
-    const modelos = ["gemini-1.5-flash", "gemini-1.5-flash-latest"];
-    for(const modelo of modelos){
-      const controller = new AbortController();
-      const timer = setTimeout(function(){ controller.abort(); }, 9000);
-      try{
-        const url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelo + ":generateContent?key=" + encodeURIComponent(apiKey);
-        const res = await fetch(url, {
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          signal:controller.signal,
-          body:JSON.stringify({
-            contents:[{role:"user", parts:[{text:prompt}]}],
-            generationConfig:{temperature:0.35, maxOutputTokens:1700}
-          })
-        });
-        clearTimeout(timer);
-        if(!res.ok) continue;
-        const data = await res.json();
-        const txt = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts
-          ? data.candidates[0].content.parts.map(function(p){ return p.text || ""; }).join("\n")
-          : "";
-        if(txt.trim()) return guiaLimpiar(txt);
-      }catch(e){
-        clearTimeout(timer);
-      }
-    }
-    return null;
-  }
-
-  
-  function guiaFormatoDiagnostico(titulo, intro, puede, revisar, probar, resultados, proximo, preguntaFinal){
-    return `Guía virtual:
-
-${intro}
-
-Qué puede estar pasando:
-
-${puede}
-
-Qué revisar primero:
-
-${revisar}
-
-Cómo probarlo:
-
-${probar}
-
-Qué significan los resultados:
-
-${resultados}
-
-Próximo paso recomendado:
-
-${proximo}
-
-Para seguir el diagnóstico: ${preguntaFinal}`;
-  }
-
-
-  function guiaPreguntaFinalContextual(pregunta){
-    const t = String(pregunta || "").toLowerCase();
-
-    if(t.includes("pila") || t.includes("bateria") || t.includes("batería")){
-      return "¿qué valor te marcó la pila cuando la mediste con el tester?";
-    }
-
-    if(t.includes("tester") || t.includes("multimetro") || t.includes("multímetro") || t.includes("medir") || t.includes("mido") || t.includes("probar")){
-      return "¿qué componente querés medir exactamente y qué valor te aparece en el tester?";
-    }
-
-    if(t.includes("chispa")){
-      return "¿la chispa se escucha fuerte, débil o intermitente?";
-    }
-
-    if(t.includes("placa") || t.includes("modulo") || t.includes("módulo")){
-      return "¿ves humedad, sulfato o alguna zona quemada en la placa?";
-    }
-
-    if(tema === "ionizacion"){
-      return "¿el calefón prende unos segundos y se apaga, o directamente no llega a prender?";
-    }
-
-    if(t.includes("display") || t.includes("codigo") || t.includes("código") || t.includes("error")){
-      return "¿qué código aparece en el display y en qué momento aparece?";
-    }
-
-    if(t.includes("cable") || t.includes("conector") || t.includes("ficha") || t.includes("sulfato")){
-      return "¿qué conector o cable estás revisando ahora?";
-    }
-
-    if(t.includes("enciende") || t.includes("prende") || t.includes("apaga")){
-      return "¿en qué momento corta: antes de prender, apenas prende o después de unos segundos?";
-    }
-
-    return "¿qué parte del calefón querés revisar ahora para seguir el diagnóstico?";
-  }
-
-
-  function guiaTemaPregunta(pregunta){
-    const t = String(pregunta || "").toLowerCase();
-
-    if(t.includes("sensor de temperatura") || t.includes("temperatura") || t.includes("ntc") || t.includes("termistor") || t.includes("termostato") || t.includes("sobretemperatura")){
-      return "sensor_temperatura";
-    }
-
-    if(t.includes("ionizacion") || t.includes("ionización") || t.includes("electrodo") || t.includes("sensor de llama") || t.includes("llama")){
-      return "ionizacion";
-    }
-
-    if(t.includes("display") || t.includes("codigo") || t.includes("código") || t.includes("error")){
-      return "display";
-    }
-
-    if(t.includes("placa") || t.includes("modulo") || t.includes("módulo")){
-      return "placa";
-    }
-
-    if(tema === "chispa"){
-      return "chispa";
-    }
-
-    if(tema === "cableado"){
-      return "cableado";
-    }
-
-    if(t.includes("pila") || t.includes("pilas") || t.includes("bateria") || t.includes("batería")){
-      return "pila";
-    }
-
-    if(t.includes("tester") || t.includes("multimetro") || t.includes("multímetro") || t.includes("medir") || t.includes("mido") || t.includes("probar")){
-      return "medicion_general";
-    }
-
-    return "general";
-  }
-
-
-  function guiaRespuestaSensorTemperatura(pregunta){
-    return `Guía virtual:
-
-Para probar un sensor de temperatura con el tester en un calefón ionizado, no se mide como una pila. En este caso normalmente se mide resistencia en ohms o continuidad, según el tipo de sensor.
-
-Primero hay que diferenciar dos posibilidades:
-
-1. Sensor NTC o termistor:
-   Es un sensor que cambia su resistencia según la temperatura.
-
-2. Termostato o sensor de seguridad:
-   Funciona como una llave térmica. Puede estar cerrado o abierto según la temperatura.
-
-Cómo preparar el tester:
-
-1. Poné el cable negro en COM.
-2. Poné el cable rojo en VΩ.
-3. Apagá el calefón.
-4. Desconectá el sensor de la placa o de la ficha.
-5. Poné el tester en Ω, Ohms o resistencia.
-6. Si tu tester no es automático, empezá en 20KΩ.
-
-Cómo medir un sensor NTC:
-
-1. Tocá una punta del tester en cada terminal del sensor.
-2. En resistencia no importa la polaridad.
-3. Mirá qué valor aparece en pantalla.
-4. A temperatura ambiente puede marcar valores como 5KΩ, 10KΩ, 50KΩ o 100KΩ, según el modelo.
-5. Calentá suavemente el sensor con la mano o con aire tibio.
-6. Si es NTC, normalmente al subir la temperatura baja la resistencia.
-
-Cómo interpretar:
-
-- Si marca un valor de resistencia y cambia al calentarlo, el sensor probablemente responde.
-- Si marca OL, 1 o infinito, puede estar abierto o cortado.
-- Si marca 0Ω o casi cero, puede estar en corto.
-- Si el valor salta al mover el cable, puede haber falso contacto.
-- Si el sensor mide bien, pero el calefón sigue fallando, revisá ficha, cableado, sulfato, humedad o placa.
-
-Si es termostato de seguridad:
-
-1. Poné el tester en continuidad o pitido.
-2. Medí entre los dos terminales.
-3. Si está cerrado, debe pitar o marcar cerca de 0Ω.
-4. Si está abierto, marca OL o no pita.
-5. Algunos termostatos abren cuando hay exceso de temperatura.
-
-En un calefón ionizado, un sensor de temperatura fallando puede hacer que el equipo no encienda, corte, marque error en display o apague por seguridad. Pero no conviene cambiar el sensor sin revisar primero conectores, cables y humedad.
-
-Para seguir el diagnóstico: ¿qué valor te marca el sensor en ohms cuando lo medís desconectado?`;
-  }
-
-  function guiaRespuestaPilaTester(pregunta){
-    return `Guía virtual:
-
-Para probar una pila con el tester en un calefón ionizado, tenés que medir voltaje continuo, porque la pila alimenta el módulo de encendido, la chispa y parte de la secuencia de arranque.
-
-Cómo preparar el tester:
-
-1. Poné el cable negro en COM.
-2. Poné el cable rojo en VΩ.
-3. Girá la perilla a voltaje continuo: V⎓, DCV o VDC.
-4. Si el tester no es automático:
-   - Para pila de 1,5 V, usá escala 2 V si existe.
-   - Si no tiene 2 V, usá 20 V.
-   - Para batería de 9 V, usá escala 20 V.
-   - Para portapilas de 3 V, usá escala 20 V.
-
-Cómo medir:
-
-1. Tocá con la punta roja el polo positivo + de la pila.
-2. Tocá con la punta negra el polo negativo -.
-3. Leé el valor que aparece en la pantalla.
-
-Valores orientativos para pila alcalina de 1,5 V:
-
-- 1,55 V a 1,65 V: nueva o casi nueva.
-- 1,40 V a 1,50 V: todavía usable.
-- 1,20 V a 1,30 V: bastante descargada.
-- Menos de 1,10 V: conviene reemplazarla.
-- 0 V o valor raro: pila agotada, mal contacto o tester mal configurado.
-
-Importante:
-
-Esa medición es sin carga. Una pila puede marcar 1,5 V afuera y caer cuando el módulo intenta hacer chispa. Por eso, si la pila mide bien pero el calefón no enciende, hace chispa débil o queda intermitente, revisá el portapilas.
-
-Qué revisar en el calefón:
-
-1. Polaridad correcta.
-2. Resortes del portapilas.
-3. Chapitas sulfatadas u oxidadas.
-4. Cables del portapilas al módulo.
-5. Fichas flojas.
-6. Humedad cerca del módulo.
-7. Caída de tensión cuando intenta encender.
-
-Cómo interpretar la falla:
-
-- No hace nada: pila agotada, portapilas sin contacto, cable cortado o módulo sin alimentación.
-- Chispa débil: pila baja, falso contacto o cable de chispa con fuga.
-- Hace chispa y corta: puede no ser pila; revisar ionización, electrodo o placa.
-- Prende y se apaga: revisar sensor de ionización y alimentación.
-
-Para seguir el diagnóstico: ¿qué valor te marcó la pila en el tester?`;
-  }
-
-  function guiaRespuestaChispa(pregunta){
-    return `Guía virtual:
-
-Si el problema es de chispa o encendido en un calefón ionizado, hay que separar la falla por etapas. No es lo mismo que no haga nada, que haga chispa débil, que haga chispa y no prenda, o que prenda y se apague.
-
-Cadena de encendido:
-
-1. Alimentación: pila, fuente o tensión correcta.
-2. Orden de arranque: micro switch o sensor de caudal.
-3. Módulo/placa: recibe la orden.
-4. Chispa: cable de alta y electrodo.
-5. Llama inicial.
-6. Ionización: sensor confirma llama.
-7. La placa mantiene o corta el funcionamiento.
-
-Si no hace nada:
-
-- Revisá pila o fuente.
-- Revisá portapilas.
-- Revisá cableado.
-- Revisá micro switch o sensor de caudal.
-- Revisá si el módulo recibe alimentación.
-
-Si hace chispa débil:
-
-- Pila baja.
-- Falso contacto.
-- Cable de chispa con fuga.
-- Electrodo sucio o fuera de posición.
-- Módulo debilitado.
-
-Si hace chispa pero no prende:
-
-- Electrodo mal ubicado.
-- Cable de alta con pérdida.
-- Módulo que genera chispa pero no completa secuencia.
-- Condición previa de sensor o placa.
-
-Si prende y se apaga:
-
-- Sensor/electrodo de ionización.
-- Cable de ionización flojo.
-- Electrodo sucio.
-- Mala masa.
-- Conectores sulfatados.
-- Placa que no lee señal.
-
-Prueba básica con tester:
-
-- Medí voltaje de pila/fuente.
-- Revisá continuidad de cables con equipo apagado.
-- Revisá falsos contactos en conectores.
-- No puentear sensores de seguridad.
-
-Para seguir el diagnóstico: ¿la chispa se escucha fuerte, débil o intermitente?`;
-  }
-
-  function guiaRespuestaPlaca(pregunta){
-    return `Guía virtual:
-
-Si sospechás de la placa o módulo del calefón ionizado, no conviene cambiarla de entrada. Muchas fallas parecen placa, pero son alimentación, conectores, sensor, electrodo, cableado o humedad.
-
-Qué hace la placa:
-
-La placa recibe señales, habilita la chispa, interpreta sensores y controla la secuencia de encendido. También puede leer la señal de ionización para confirmar que la llama quedó detectada.
-
-Qué puede estar pasando:
-
-1. No recibe alimentación correcta.
-2. Pila baja o fuente débil.
-3. Portapilas sulfatado.
-4. Conector flojo.
-5. Humedad en placa.
-6. Cable de chispa con fuga.
-7. Sensor de ionización sin señal.
-8. Micro switch o sensor de caudal sin orden.
-9. Placa realmente quemada.
-
-Qué revisar primero:
-
-1. Alimentación con tester.
-2. Estado del portapilas o fuente.
-3. Conectores de placa.
-4. Sulfato u óxido.
-5. Humedad.
-6. Cable de chispa.
-7. Cable de sensor de ionización.
-8. Si hay zonas negras o componentes quemados.
-
-Cómo probar:
-
-- Medí tensión de alimentación.
-- Revisá continuidad de cables con el equipo apagado.
-- Mové suavemente fichas para detectar falso contacto.
-- Si prende y corta, revisá ionización antes de culpar a la placa.
-- Si no hace nada y llega alimentación correcta, recién se sospecha más del módulo.
-
-Para seguir el diagnóstico: ¿ves humedad, sulfato o alguna zona quemada en la placa?`;
-  }
-
-  function guiaRespuestaIonizacion(pregunta){
-    return `Guía virtual:
-
-La ionización es la confirmación de llama del calefón ionizado. No alcanza con que haya chispa y prenda: la placa necesita detectar que la llama quedó encendida.
-
-Qué puede pasar si falla la ionización:
-
-- El calefón prende y se apaga a los pocos segundos.
-- Hace chispa, prende y corta.
-- La placa no detecta llama.
-- Puede parecer falla de placa, pero el problema está en el electrodo o cable.
-
-Qué revisar:
-
-1. Electrodo de ionización.
-2. Cable del electrodo a la placa.
-3. Conector del sensor.
-4. Suciedad en la varilla.
-5. Posición del electrodo.
-6. Humedad o sulfato.
-7. Mala masa.
-8. Alimentación baja.
-
-Cómo probar de forma básica:
-
-- Con el equipo apagado, revisar continuidad del cable si se identifica correctamente.
-- Revisar que la ficha esté firme.
-- Revisar que no haya sulfato.
-- Revisar que el electrodo no esté quebrado o fuera de lugar.
-- Si prende y corta, revisar ionización antes de cambiar placa.
-
-Para seguir el diagnóstico: ¿el calefón prende unos segundos y se apaga, o directamente no llega a prender?`;
-  }
-
-  function guiaRespuestaDisplay(pregunta){
-    return `Guía virtual:
-
-Si el calefón ionizado tiene display o marca código de error, ese dato sirve para ubicar la falla dentro de la secuencia eléctrica/electrónica.
-
-Qué puede indicar un error:
-
-1. Alimentación baja.
-2. Sensor de temperatura.
-3. Sensor de caudal.
-4. Falla de ionización.
-5. Problema de placa.
-6. Ficha floja.
-7. Humedad o sulfato.
-8. Display con falso contacto.
-
-Qué revisar primero:
-
-1. Si el display enciende normal.
-2. Si parpadea.
-3. Si aparece un código.
-4. En qué momento aparece: antes de chispa, durante encendido o después de prender.
-5. Pila/fuente.
-6. Conectores del display y placa.
-
-Cómo probar:
-
-- Medí alimentación.
-- Revisá fichas.
-- Revisá humedad.
-- Anotá el código exacto.
-- Cruzá código con marca/modelo.
-
-Para seguir el diagnóstico: ¿qué código aparece en el display y en qué momento aparece?`;
-  }
-
-  function guiaRespuestaCableado(pregunta){
-    return `Guía virtual:
-
-Un problema de cableado o conectores puede hacer que el calefón ionizado parezca tener placa quemada, sensor roto o módulo fallando. Por eso siempre conviene revisar conexiones antes de cambiar piezas.
-
-Qué puede estar pasando:
-
-1. Ficha floja.
-2. Cable cortado internamente.
-3. Terminal sulfatado.
-4. Humedad.
-5. Falso contacto.
-6. Cable de chispa con fuga.
-7. Cable de ionización desconectado.
-8. Portapilas con mal contacto.
-
-Cómo revisar:
-
-1. Apagá el equipo.
-2. Mirá conectores uno por uno.
-3. Buscá sulfato, óxido o humedad.
-4. Revisá que las fichas estén firmes.
-5. Usá tester en continuidad para cables.
-6. Mové suavemente el cable mientras medís para detectar falso contacto.
-
-Cómo interpretar:
-
-- Si no hay continuidad, cable cortado.
-- Si la continuidad aparece y desaparece, falso contacto.
-- Si hay sulfato, puede cortar señal.
-- Si el cable de chispa tiene fuga, puede hacer chispa débil o en lugar incorrecto.
-
-Para seguir el diagnóstico: ¿qué conector o cable estás revisando ahora?`;
-  }
-
-  function guiaRespuestaGeneralCalefon(pregunta){
-    return `Guía virtual:
-
-Tu consulta la tomo como diagnóstico de un calefón ionizado. Para responder bien, hay que seguir la anatomía eléctrica/electrónica del equipo y no cambiar piezas al azar.
-
-Cadena general de diagnóstico:
-
-1. Alimentación:
-   Pila, fuente, portapilas, tensión, polaridad y contactos.
-
-2. Orden de encendido:
-   Micro switch, sensor de caudal o señal que habilita el módulo.
-
-3. Módulo o placa:
-   Recibe la señal, habilita chispa y controla parte de la secuencia.
-
-4. Chispa:
-   Cable de alta, electrodo, distancia y fuga.
-
-5. Ionización:
-   Sensor/electrodo que confirma que la llama quedó detectada.
-
-6. Sensores:
-   Temperatura, sobretemperatura, caudal, display o señales de seguridad.
-
-7. Cableado:
-   Fichas, conectores, humedad, sulfato y falsos contactos.
-
-Cómo trabajar el diagnóstico:
-
-- Primero identificar qué hace y qué no hace.
-- Después medir alimentación.
-- Luego revisar conectores.
-- Después revisar chispa.
-- Si prende y corta, revisar ionización.
-- Si marca error, revisar código y sensor relacionado.
-- Si todo lo anterior está bien, recién sospechar placa/módulo.
-
-Para seguir el diagnóstico: ¿qué parte del calefón querés revisar ahora?`;
-  }
-
-  function guiaRespuestaLocalRobusta(pregunta){
-    const tema = typeof guiaTemaPregunta === "function" ? guiaTemaPregunta(pregunta) : "general";
-
-    if(tema === "sensor_temperatura") return guiaRespuestaSensorTemperatura(pregunta);
-    if(tema === "pila") return guiaRespuestaPilaTester(pregunta);
-    if(tema === "placa") return guiaRespuestaPlaca(pregunta);
-    if(tema === "chispa") return guiaRespuestaChispa(pregunta);
-    if(tema === "ionizacion") return guiaRespuestaIonizacion(pregunta);
-    if(tema === "display") return guiaRespuestaDisplay(pregunta);
-    if(tema === "cableado") return guiaRespuestaCableado(pregunta);
-
-    const t = String(pregunta || "").toLowerCase();
-    if(t.includes("tester") || t.includes("multimetro") || t.includes("multímetro") || t.includes("medir") || t.includes("probar")){
-      return guiaRespuestaGeneralCalefon(pregunta);
-    }
-
-    return guiaRespuestaGeneralCalefon(pregunta);
-  }
-
-function guiaRespuestaLocal(pregunta){
-    const t = String(pregunta || "").toLowerCase();
-    const tema = guiaTemaPregunta(pregunta);
-    const marcaModelo = guiaTieneMarcaModelo(pregunta);
-
-    
-    if(tema === "sensor_temperatura"){
-      return `Guía virtual:
-
-Para probar un sensor de temperatura con el tester en un calefón ionizado, primero hay que identificar si es un sensor tipo NTC/termistor o un termostato de seguridad. No se prueba igual que una pila: acá normalmente se mide resistencia o continuidad, no voltaje de pila.
-
-Respuesta directa:
-
-El sensor de temperatura se prueba con el tester en ohms/resistencia o en continuidad, con el calefón apagado y el sensor desconectado de la placa para que la medición no salga falsa.
-
-Cómo preparar el tester:
-
-1. Poné el cable negro en COM.
-2. Poné el cable rojo en VΩ.
-3. Girá la perilla a Ω, Ohms o resistencia.
-4. Si tu tester no es automático, empezá en escala 20KΩ.
-5. Si marca fuera de rango, probá una escala más alta, como 200KΩ.
-
-Cómo medir un sensor tipo NTC:
-
-1. Apagá el calefón.
-2. Desconectá el sensor de la placa o ficha.
-3. Tocá una punta del tester en cada terminal del sensor.
-4. En resistencia no importa la polaridad.
-5. Leé el valor que aparece en pantalla.
-
-Qué valores puede marcar:
-
-- Puede marcar 5KΩ, 10KΩ, 50KΩ o 100KΩ, según el modelo.
-- Lo importante es que marque una resistencia coherente y que cambie con la temperatura.
-- Si marca OL, 1 o infinito, el sensor puede estar abierto/cortado.
-- Si marca 0Ω o casi cero, puede estar en corto.
-- Si el valor salta o cambia al mover el cable, puede haber falso contacto.
-
-Prueba con calor suave:
-
-En un sensor NTC, cuando sube la temperatura, normalmente baja la resistencia.
-
-Ejemplo orientativo:
-
-- A temperatura ambiente puede marcar cerca de 10KΩ.
-- Al calentarlo suavemente con la mano o con calor moderado, puede bajar a 8KΩ, 6KΩ o menos.
-- Al enfriarse, la resistencia vuelve a subir.
-
-No hace falta que esos números sean exactos, porque dependen del sensor. Lo importante es que el valor cambie de manera progresiva.
-
-Si es un termostato de seguridad:
-
-Algunos sensores de temperatura trabajan como interruptor térmico. En ese caso se prueba en continuidad.
-
-1. Poné el tester en continuidad o pitido.
-2. Medí entre los dos terminales.
-3. Si está cerrado, debería pitar o marcar cerca de 0Ω.
-4. Si está abierto, marca OL o no pita.
-5. Algunos abren solo cuando hay exceso de temperatura.
-
-Qué revisar además del sensor:
-
-1. Ficha del sensor.
-2. Cables cortados o sulfatados.
-3. Humedad en conectores.
-4. Falso contacto.
-5. Si la placa recibe bien la señal.
-6. Si el display marca código de error.
-
-Cómo interpretar en el calefón ionizado:
-
-- Si el sensor está abierto, la placa puede cortar o no habilitar.
-- Si está en corto, puede marcar temperatura incorrecta.
-- Si cambia de valor con calor, probablemente el sensor responde.
-- Si el sensor mide bien pero el calefón falla, revisá cableado, ficha y placa.
-- Si el calefón prende y corta, puede confundirse con ionización, sensor de temperatura o placa, según el momento en que corta.
-
-Próximo paso real:
-
-Medí el sensor desconectado en Ω. Si marca un valor fijo y coherente, calentá suavemente el sensor y mirá si la resistencia cambia. Si no cambia nada, marca OL o marca 0Ω, el sensor o el cableado pueden estar fallando.
-
-Para seguir el diagnóstico: ¿qué valor te marca el sensor en ohms cuando lo medís desconectado?`;
-    }
-
-    if(tema === "pila" || (tema === "medicion_general" && (t.includes("pila") || t.includes("pilas") || t.includes("bateria") || t.includes("batería")))){
-      return `Guía virtual:
-
-Sí, esa consulta corresponde al diagnóstico eléctrico/electrónico de un calefón ionizado, porque la pila o batería alimenta el módulo de encendido, la chispa y parte de la secuencia de arranque.
-
-Cómo medir una pila con tester/multímetro:
-
-1. Colocá el cable negro en la entrada COM del tester.
-2. Colocá el cable rojo en la entrada VΩ, VΩmA o donde el tester marque medición de voltaje.
-3. Girá la perilla a voltaje continuo. Puede aparecer como V⎓, DCV, VDC o una V con una línea recta y una línea punteada.
-4. Si el tester no es automático, elegí una escala mayor al voltaje de la pila:
-   - Para pila de 1,5 V, usá escala 2 V si existe. Si no, usá 20 V.
-   - Para batería de 9 V, usá escala 20 V.
-   - Para portapilas de 3 V, usá escala 20 V.
-5. Tocá con la punta roja el polo positivo (+) de la pila.
-6. Tocá con la punta negra el polo negativo (-) de la pila.
-7. Leé el valor que aparece en pantalla.
-
-Valores orientativos para una pila alcalina de 1,5 V:
-
-- 1,55 V a 1,65 V: pila nueva o casi nueva.
-- 1,40 V a 1,50 V: pila todavía aceptable.
-- 1,20 V a 1,30 V: pila bastante descargada.
-- Menos de 1,10 V: conviene reemplazarla.
-- Si marca 0 V o un valor muy raro: puede estar agotada, mal apoyada la punta o el tester mal configurado.
-
-Valores orientativos para una batería de 9 V:
-
-- 9,0 V a 9,6 V: buena.
-- 8,0 V a 8,8 V: puede funcionar, pero ya está bajando.
-- Menos de 7,5 V: conviene reemplazarla.
-
-Importante en calefones ionizados:
-
-Medir la pila afuera del equipo sirve, pero no siempre alcanza. Una pila puede marcar 1,5 V sin carga y fallar cuando el calefón intenta hacer chispa. Por eso, si la pila mide bien pero el calefón hace chispa débil, intermitente o se apaga, también hay que revisar:
-
-1. Contactos del portapilas.
-2. Resortes flojos.
-3. Sulfato u óxido.
-4. Cableado del portapilas al módulo.
-5. Fichas flojas.
-6. Humedad cerca del módulo.
-7. Si la tensión cae cuando el calefón intenta encender.
-
-Cómo interpretar la falla en el calefón:
-
-- No hace nada: puede ser pila agotada, portapilas sin contacto, cable cortado o módulo sin alimentación.
-- Hace chispa débil: puede ser pila baja, falso contacto o cable de chispa con fuga.
-- Hace chispa y corta: puede no ser la pila; puede entrar sensor de ionización, electrodo, cableado o placa.
-- Prende y se apaga: suele relacionarse más con detección de llama por ionización, aunque una alimentación débil también puede confundir el diagnóstico.
-
-Relación con el curso:
-
-Esto se conecta con la anatomía del calefón ionizado: alimentación, módulo electrónico, chispa, sensor de ionización, conectores y cableado. La idea es seguir la cadena eléctrica antes de cambiar piezas.
-
-Para seguir el diagnóstico: ¿qué valor te marcó la pila en el tester?`;
-    }
-
-    
-    if(tema === "ionizacion"){
-      return guiaFormatoDiagnostico(
-        "ionización",
-        "Tu consulta apunta a una parte clave del calefón ionizado: la detección de llama por ionización. En estos equipos, no alcanza con que haya chispa y que el calefón prenda; la placa o módulo necesita confirmar que la llama fue detectada. Si esa señal no llega bien, el calefón puede prender y apagarse a los pocos segundos.",
-        "1. Electrodo de ionización sucio, sulfatado o fuera de posición.\n2. Cable del sensor flojo, cortado o con falso contacto.\n3. Mala masa o conexión deficiente.\n4. Conector sulfatado por humedad.\n5. La llama no toca correctamente el electrodo.\n6. Placa que no interpreta la señal de ionización.\n7. Alimentación baja que hace inestable la lectura.",
-        "1. Si el calefón prende y se apaga enseguida.\n2. Estado visual del electrodo o varilla de ionización.\n3. Cable que va desde el electrodo a la placa.\n4. Conectores flojos o sulfatados.\n5. Si hay humedad, óxido o suciedad.\n6. Si la chispa es fuerte o débil.\n7. Marca y modelo del calefón.",
-        "Con el equipo apagado, se puede revisar continuidad del cable del sensor si se sabe identificar correctamente. También se puede revisar visualmente que el electrodo esté firme, limpio y bien conectado. La medición de señal de ionización suele ser de microamperios y no todos los testers comunes la miden bien; por eso, para un diagnóstico básico, primero conviene confirmar cable, conector, posición, limpieza y alimentación.",
-        "Si prende y corta rápido, suele indicar que el módulo no está recibiendo o interpretando bien la señal de ionización. Si no hace chispa, el problema está antes: alimentación, módulo, micro switch o cable de chispa. Si hay chispa fuerte y prende, pero corta, mirá primero sensor de ionización antes de culpar a la placa.",
-        "No cambies la placa de entrada. Primero revisá alimentación, cable de ionización, electrodo, conector, humedad y masa. Después, si todo eso está correcto, recién se sospecha de módulo/placa.",
-        "¿tu calefón prende unos segundos y se apaga, o directamente no llega a encender?"
-      );
-    }
-
-    if(tema === "display"){
-      return guiaFormatoDiagnostico(
-        "display",
-        "Si el calefón ionizado tiene display o muestra un código de error, ese dato es muy importante porque ayuda a ubicar la falla dentro de la secuencia eléctrica/electrónica.",
-        "1. Falla de alimentación.\n2. Sensor de temperatura o sobretemperatura.\n3. Sensor de caudal o micro switch.\n4. Falla de ionización.\n5. Problema en placa/display.\n6. Conector flojo.\n7. Humedad o sulfato en terminales.",
-        "1. Código exacto que aparece.\n2. Marca y modelo.\n3. Si el error aparece al abrir el agua o al intentar encender.\n4. Si hace chispa.\n5. Si prende y corta.\n6. Si el display enciende normal o parpadea.\n7. Estado de pilas/fuente.",
-        "Primero verificá alimentación: pilas o fuente. Después mirá conectores del display y placa. Si el equipo responde pero muestra error, el código orienta. Si el display ni prende, puede ser alimentación, ficha, placa o display.",
-        "Display apagado suele apuntar a alimentación, cableado o placa. Display con error al encender puede apuntar a sensor, ionización, caudal o temperatura. Display intermitente puede indicar falso contacto o alimentación débil.",
-        "Anotá el código exacto y no cambies piezas sin cruzarlo con marca/modelo. Si no tenés manual, la guía puede orientar por síntoma.",
-        "¿qué código aparece en pantalla y en qué momento aparece: antes de hacer chispa, durante el encendido o después de prender?"
-      );
-    }
-
-    if(tema === "cableado"){
-      return guiaFormatoDiagnostico(
-        "cableado",
-        "Una falla de cableado o conectores en un calefón ionizado puede imitar una falla de placa, sensor o chispa. Por eso es una de las primeras cosas que conviene revisar.",
-        "1. Ficha floja.\n2. Terminal sulfatado.\n3. Cable cortado internamente.\n4. Humedad en conectores.\n5. Falso contacto que aparece solo cuando vibra o calienta.\n6. Cable de chispa con fuga.\n7. Cable de sensor de ionización mal conectado.",
-        "1. Conectores del portapilas o fuente.\n2. Conectores de placa/módulo.\n3. Cable del electrodo de chispa.\n4. Cable del sensor de ionización.\n5. Fichas del display.\n6. Micro switch o sensor de caudal.\n7. Presencia de sulfato, óxido o humedad.",
-        "Con el equipo apagado, se puede usar el tester en continuidad para revisar si un cable conduce de punta a punta. El tester suele pitar o marcar continuidad si el cable está bien. También se puede mover suavemente el cable mientras se mide para detectar falso contacto.",
-        "Si no hay continuidad, el cable puede estar cortado. Si la continuidad aparece y desaparece al moverlo, hay falso contacto. Si el conector está sulfatado, puede medir mal o cortar la señal aunque el componente esté sano.",
-        "Antes de cambiar placa o sensor, limpiá/revisá conectores, asegurá fichas y verificá continuidad básica. En muchos casos la falla está en una conexión.",
-        "¿qué parte querés revisar: portapilas, placa, sensor de ionización, electrodo de chispa o display?"
-      );
-    }
-
-    if(tema === "placa"){
-      return `Guía virtual:
-
-Si el problema parece estar en la placa electrónica o módulo del calefón ionizado, hay que diagnosticar antes de cambiarla. Muchas veces parece placa, pero el problema real está en alimentación, cableado, sensor, electrodo, humedad o conectores.
-
-Qué función cumple la placa o módulo:
-
-La placa recibe señales, habilita la chispa, interpreta sensores y controla parte de la secuencia de encendido. En los calefones ionizados también se relaciona con la confirmación de llama mediante ionización. Si una señal no llega, el equipo puede no encender, hacer chispa y cortar, prender unos segundos y apagarse o marcar código.
-
-Qué puede estar pasando:
-
-1. La placa no recibe alimentación correcta.
-2. Las pilas están bajas o el portapilas tiene sulfato.
-3. Hay un conector flojo o sulfatado.
-4. Hay humedad en la placa o en los terminales.
-5. El electrodo de ionización no confirma llama y parece falla de placa.
-6. El cable de chispa tiene fuga o está cortado.
-7. El micro switch o sensor de caudal no da la orden.
-8. La placa tiene pista quemada, componente reventado o zona negra.
-9. El display marca código, pero falta cruzarlo con marca/modelo.
-
-Qué revisar primero:
-
-1. Marca y modelo del calefón.
-2. Si usa pila, fuente o 220 V.
-3. Si hace chispa o no hace nada.
-4. Si se escucha el módulo trabajar.
-5. Si hay olor a quemado en placa.
-6. Si hay humedad, sulfato o insectos.
-7. Si los conectores están bien apretados.
-8. Si el cable del electrodo y sensor está conectado.
-
-Cómo probar con tester de forma orientativa:
-
-1. Primero confirmá alimentación: pila/fuente con voltaje correcto.
-2. Medí continuidad de cables dudosos con el equipo apagado.
-3. Revisá si llega tensión al módulo cuando se activa el equipo, solo si sabés dónde medir.
-4. Si hay pila buena pero no hay chispa ni señal, puede ser módulo, contacto, cableado o sensor que no habilita.
-5. Si hay chispa pero corta, no cambies placa de una: revisá ionización, electrodo, cable y conectores.
-
-Cómo interpretar:
-
-- No hace nada: alimentación, portapilas, cableado, micro switch o módulo.
-- Hace chispa débil: pila baja, falso contacto, cable de chispa, módulo cansado.
-- Hace chispa fuerte pero no mantiene: ionización, electrodo, cable del sensor, masa o placa que no lee señal.
-- Display con error: pedir código exacto y marca/modelo.
-
-Solución realista:
-
-No compres una placa nueva sin confirmar alimentación, conectores, pila/fuente, electrodo y sensor de ionización. Si la placa está quemada, sulfatada o mojada, puede requerir reparación electrónica o reemplazo por una compatible con el modelo exacto.
-
-${marcaModelo ? "Como mencionaste marca/modelo o un dato específico, conviene cruzar el código de placa con ese equipo para no comprar una placa incorrecta." : "Si no aparece marca/modelo, la respuesta queda general. Para afinar, necesitás marca, modelo y síntoma exacto."}
-
-Para seguir el diagnóstico: ¿al módulo le llega alimentación correcta o ves humedad/sulfato en la placa?`;
-    }
-
-    if(tema === "chispa"){
-      return `Guía virtual:
-
-Ese síntoma se diagnostica separando la secuencia de encendido del calefón ionizado. No es lo mismo que no haga nada, que haga chispa débil, que haga chispa y no prenda, o que prenda y se apague.
-
-Cadena básica de funcionamiento:
-
-1. Alimentación: pila, fuente o tensión correcta.
-2. Orden de arranque: micro switch, sensor de caudal o señal de apertura.
-3. Placa/módulo: recibe la orden y activa la chispa.
-4. Chispa: cable de alta y electrodo de encendido.
-5. Encendido inicial.
-6. Ionización: el sensor confirma que la llama quedó detectada.
-7. La placa mantiene o corta el funcionamiento según la señal.
-
-Según el síntoma:
-
-Si no hace nada:
-- Revisar pila/fuente.
-- Portapilas sulfatado.
-- Cable cortado.
-- Micro switch o sensor que no da orden.
-- Módulo sin alimentación.
-
-Si hace chispa débil:
-- Pila baja.
-- Contactos flojos.
-- Cable de chispa con fuga.
-- Electrodo sucio, quebrado o fuera de posición.
-- Módulo debilitado.
-
-Si hace chispa pero no prende:
-- Electrodo mal ubicado.
-- Cable de chispa con pérdida.
-- Sensor/orden incompleta.
-- Módulo que dispara chispa pero no completa secuencia.
-- En esta guía nos enfocamos en lo eléctrico/electrónico del diagnóstico.
-
-Si prende y se apaga:
-- Revisar sensor/electrodo de ionización.
-- Cable del sensor flojo o sulfatado.
-- Electrodo sucio o fuera de posición.
-- Mala masa o falso contacto.
-- Placa que no interpreta la señal de ionización.
-- Alimentación que cae al momento de trabajar.
-
-Qué revisar visualmente:
-
-1. Pila o fuente.
-2. Portapilas.
-3. Conectores.
-4. Cable de chispa.
-5. Electrodo visible.
-6. Sensor de ionización.
-7. Humedad o sulfato cerca del módulo.
-8. Display o código si tiene pantalla.
-
-Cómo usar tester en este diagnóstico:
-
-- Medí voltaje de pila/fuente.
-- Revisá continuidad de cables si el equipo está apagado.
-- Revisá caída de tensión si la pila mide bien pero al encender falla.
-- No puentear sensores ni modificar conexiones de seguridad.
-
-Solución realista:
-
-Primero confirmá alimentación y conectores. Después diferenciá si el problema está antes de la chispa, durante la chispa o después del encendido. Si prende y corta, mirá ionización antes de culpar a la placa.
-
-Para seguir el diagnóstico: ¿la chispa se escucha fuerte, débil o intermitente?`;
-    }
-
-    return `Guía virtual:
-
-Te respondo tomando tu consulta como parte del diagnóstico eléctrico/electrónico de un calefón ionizado. La idea es entender el síntoma, explicar qué puede estar pasando y avanzar con un solo paso siguiente.
-
-Para que la respuesta sea útil, siempre conviene ubicar el síntoma en una cadena de diagnóstico. Un calefón ionizado no se revisa cambiando piezas al azar: se sigue el recorrido eléctrico/electrónico hasta encontrar dónde se corta la señal.
-
-Cadena principal a revisar:
-
-1. Alimentación:
-   Pilas, fuente, tensión, portapilas, contactos y polaridad.
-
-2. Orden de encendido:
-   Micro switch, sensor de caudal o señal que le dice al módulo que debe arrancar.
-
-3. Placa o módulo:
-   Recibe alimentación, interpreta señales y manda orden de chispa.
-
-4. Chispa:
-   Cable de alta, electrodo de encendido, distancia, suciedad, fuga o electrodo dañado.
-
-5. Ionización:
-   Sensor/electrodo que confirma que la llama fue detectada. Si no confirma, el equipo puede prender y apagarse.
-
-6. Cableado y conectores:
-   Fichas flojas, sulfato, humedad, cables cortados o terminales sueltos.
-
-7. Display o código:
-   Si el modelo tiene pantalla, el código orienta la búsqueda.
-
-Qué revisar primero:
-
-- Qué hace exactamente: no enciende, hace chispa, prende y corta, marca error o queda intermitente.
-- Si usa pila, fuente o 220 V.
-- Si la chispa es fuerte o débil.
-- Si hay humedad o sulfato.
-- Si los conectores están firmes.
-- Si la marca/modelo permite buscar códigos o repuestos correctos.
-
-Cómo usar el tester en general:
-
-- Voltaje continuo para pilas/fuente.
-- Continuidad para cables, con el equipo apagado.
-- Revisión de caída de tensión si mide bien sin carga pero falla al trabajar.
-- No puentear sensores ni modificar seguridades.
-
-Solución realista:
-
-Primero identificá síntoma, después alimentación, después conectores/cables, después módulo/chispa y por último ionización o placa. Así se evita cambiar placa, sensor o módulo sin necesidad.
-
-${marcaModelo ? "Como mencionaste un dato de marca/modelo, la respuesta puede hacerse más específica buscando ese equipo y el síntoma." : "Si me pasás marca y modelo, puedo orientar la respuesta con más precisión."}
-
-Para seguir el diagnóstico: ${guiaPreguntaFinalContextual(pregunta)}`;
-  }
-
-  window.iaEnviar = async function(){
-    const inp = guiaInput();
-    if(!inp) return;
-    const pregunta = inp.value.trim();
-    if(!pregunta) return;
-
-    inp.value = "";
-    guiaAdd("user", "Alumno: " + pregunta);
-    guiaHistorial.push({rol:"Alumno", texto:pregunta});
-
-    const loading = guiaAdd("bot", "Guía virtual:\nConsultando Gemini...", "guia-loading");
-
-    let respuesta = null;
+  async function consultarGemini(pregunta){
+    const controlador = new AbortController();
+    const temporizador = setTimeout(function(){
+      controlador.abort();
+    }, 35000);
 
     try{
       /*
-        Primero responde Gemini.
-        La consulta que recibe Gemini ya se prepara como:
-        pregunta del alumno + " sobre calefones ionizados"
+        Enviamos solamente la pregunta y las últimas 6 intervenciones.
+        Esto reduce el tamaño de la solicitud y ayuda a que la IA responda
+        más rápido. La búsqueda web y las instrucciones técnicas quedan
+        dentro de la Edge Function rapid-task.
       */
-      if(guiaEsProbableCalefon(pregunta)){
-        respuesta = await guiaConTimeout(guiaGemini(pregunta), 11000);
+      const { data, error } = await supabaseClient.functions.invoke(
+        "rapid-task",
+        {
+          body: {
+            pregunta: String(pregunta || "").trim(),
+            historial: historialGuia.slice(-6),
+            buscarWeb: true,
+            modoRapido: true
+          },
+          signal: controlador.signal
+        }
+      );
+
+      if(error){
+        console.error("Error Edge Function:", error);
+
+        let mensaje = error.message || "No se pudo conectar con la Guía virtual.";
+
+        try{
+          if(error.context){
+            const detalle = await error.context.json();
+
+            if(detalle && (detalle.error || detalle.message)){
+              mensaje = detalle.error || detalle.message;
+            }
+          }
+        }catch(e){
+          console.warn("No se pudo leer el detalle del error.", e);
+        }
+
+        throw new Error(mensaje);
       }
 
-      /*
-        Si Gemini no conecta, no queda cargando:
-        responde con la base local del curso.
-      */
-      if(!respuesta || !String(respuesta).trim()){
-        respuesta = (typeof guiaRespuestaLocalRobusta === "function")
-          ? guiaRespuestaLocalRobusta(pregunta)
-          : guiaRespuestaLocal(pregunta);
+      if(!data || !data.respuesta || !String(data.respuesta).trim()){
+        throw new Error("La función rapid-task respondió sin texto.");
       }
 
-      respuesta = guiaLimpiar(respuesta);
-      guiaActualizar(loading, respuesta);
-      if(loading) loading.classList.remove("guia-loading");
-      guiaHistorial.push({rol:"Guía virtual", texto:respuesta.slice(0,1800)});
+      return limpiarTexto(data.respuesta);
+    }catch(error){
+      if(error && error.name === "AbortError"){
+        throw new Error(
+          "La IA tardó demasiado. Probá indicando marca, modelo y síntoma exacto."
+        );
+      }
+
+      throw error;
+    }finally{
+      clearTimeout(temporizador);
+    }
+  }
+
+  window.enviarGuiaVirtual = async function(){
+    const input = entrada();
+    if(!input) return;
+
+    const pregunta = input.value.trim();
+    if(!pregunta) return;
+
+    input.value = "";
+    agregarMensaje("user", "Alumno: " + pregunta);
+    historialGuia.push({rol:"Alumno", texto:pregunta});
+
+    const espera = agregarMensaje(
+      "bot",
+      "Guía virtual:\nBuscando información técnica y preparando una respuesta rápida...",
+      "guia-esperando"
+    );
+
+    try{
+      const respuesta = await consultarGemini(pregunta);
+      actualizarMensaje(espera, respuesta);
+      historialGuia.push({rol:"Guía virtual", texto:respuesta});
+    }catch(error){
+      actualizarMensaje(
+        espera,
+        "Guía virtual:\n\nNo pude obtener la respuesta de la Guía virtual.\n\nDetalle: " +
+        (error && error.message ? error.message : "Error desconocido.")
+      );
+    }
+  };
+
+  window.nuevaConversacionGuia = function(){
+    historialGuia = [];
+    sessionStorage.setItem(
+      "guia_conversacion_id",
+      String(Date.now()) + "-" + Math.random().toString(36).slice(2)
+    );
+
+    const contenedor = chat();
+    if(contenedor) contenedor.innerHTML = "";
+
+    agregarMensaje(
+      "bot",
+      "Guía virtual: Nueva conversación iniciada. Indicame la marca y modelo del calefón ionizado y contame con tus palabras qué hace, qué no hace o cuál sería la falla."
+    );
+
+    const input = entrada();
+    if(input) input.focus();
+  };
+
+  async function solicitarPermisoMicrofonoUnaVez(){
+    if(permisoMicrofonoSolicitado) return true;
+
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      return true;
+    }
+
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+      stream.getTracks().forEach(function(track){ track.stop(); });
+      permisoMicrofonoSolicitado = true;
+      localStorage.setItem("guia_microfono_autorizado", "1");
+      return true;
+    }catch(error){
+      estado("No se concedió permiso para usar el micrófono.");
+      return false;
+    }
+  }
+
+  window.audioGuiaVirtual = async function(){
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const input = entrada();
+    const boton = document.getElementById("guiaAudioNuevo");
+
+    if(!SR){
+      estado("Este navegador no soporta reconocimiento de voz. Podés escribir la consulta.");
+      return;
+    }
+
+    if(escuchando && reconocimiento){
+      try{ reconocimiento.stop(); }catch(e){}
+      return;
+    }
+
+    const autorizado = await solicitarPermisoMicrofonoUnaVez();
+    if(!autorizado) return;
+
+    reconocimiento = new SR();
+    reconocimiento.lang = "es-AR";
+    reconocimiento.continuous = false;
+    reconocimiento.interimResults = true;
+    reconocimiento.maxAlternatives = 1;
+
+    const textoAnterior = input ? input.value.trim() : "";
+
+    reconocimiento.onstart = function(){
+      escuchando = true;
+      if(boton) boton.classList.add("escuchando");
+      estado("Escuchando... hablá normalmente.");
+    };
+
+    reconocimiento.onresult = function(evento){
+      let definitivo = "";
+      let parcial = "";
+
+      for(let i = evento.resultIndex; i < evento.results.length; i++){
+        const frase = evento.results[i][0].transcript;
+        if(evento.results[i].isFinal){
+          definitivo += frase;
+        }else{
+          parcial += frase;
+        }
+      }
+
+      if(input){
+        input.value = [textoAnterior, definitivo || parcial]
+          .filter(Boolean)
+          .join(" ")
+          .trim();
+      }
+    };
+
+    reconocimiento.onerror = function(evento){
+      if(evento.error === "not-allowed"){
+        estado("El permiso del micrófono está bloqueado en Chrome.");
+      }else{
+        estado("No se pudo reconocer el audio. Probá nuevamente.");
+      }
+    };
+
+    reconocimiento.onend = function(){
+      escuchando = false;
+      if(boton) boton.classList.remove("escuchando");
+      estado("Audio escrito. Revisalo y apretá Enviar.");
+    };
+
+    try{
+      reconocimiento.start();
     }catch(e){
-      const fallback = (typeof guiaRespuestaLocalRobusta === "function")
-        ? guiaRespuestaLocalRobusta(pregunta)
-        : guiaRespuestaLocal(pregunta);
-
-      guiaActualizar(loading, guiaLimpiar(fallback));
-      if(loading) loading.classList.remove("guia-loading");
-      guiaHistorial.push({rol:"Guía virtual", texto:String(fallback).slice(0,1800)});
+      estado("El micrófono ya está activo.");
     }
   };
 
-  window.iaNuevaConversacion = function(){
-    guiaHistorial = [];
-    const c = guiaChat();
-    if(c){
-      c.innerHTML = "";
-      guiaAdd("bot", "Guía virtual: Nueva conversación iniciada. Pone la marca y modelo del calefón ionizado y preguntá con tus palabras qué hace, qué no hace o cuál sería la falla.");
-    }
-  };
-
-  window.mostrarAIAspe = function(){
+  window.mostrarGuiaVirtual = function(){
     if(typeof actual !== "undefined") actual = null;
 
-    const lm = document.getElementById("listaMaterial");
-    if(lm) lm.classList.remove("abierto");
+    const listaMaterial = document.getElementById("listaMaterial");
+    if(listaMaterial) listaMaterial.classList.remove("abierto");
 
-    const lp = document.getElementById("listaPDF");
-    if(lp) lp.classList.remove("abierto");
+    const listaPDF = document.getElementById("listaPDF");
+    if(listaPDF) listaPDF.classList.remove("abierto");
 
     const botones = document.querySelector(".botones");
     if(botones) botones.style.display = "none";
 
-    const videoBox = document.getElementById("video");
-    if(videoBox) videoBox.classList.add("guia-mode");
-
     const titulo = document.getElementById("titulo");
-    if(titulo) titulo.innerText = "Guía virtual";
+    if(titulo) titulo.textContent = "Guía virtual";
 
     const texto = document.getElementById("texto");
-    if(texto) texto.innerText = "";
+    if(texto) texto.textContent = "";
 
-    if(!videoBox) return;
+    const video = document.getElementById("video");
+    if(!video) return;
 
-    videoBox.innerHTML = `
-      <div class="guia-panel">
-        <div class="guia-head">
-          <img src="aspe-logo.jpeg" class="guia-head-logo" alt="ASPE">
+    video.classList.add("guia-virtual-mode");
+    video.innerHTML = `
+      <div class="guia-nueva">
+        <div class="guia-nueva-head">
+          <img src="saul.png" alt="ASPE">
           <div>
-            <h2>Guía virtual en consultas de fallas</h2>
-            <p>Pone la marca y modelo del calefón ionizado y pregunta con tus palabras qué hace, qué no hace o cuál sería la falla.</p>
+            <h2>Guía virtual</h2>
+            <p>Poné la marca y modelo del calefón ionizado y contá con tus palabras qué hace, qué no hace o cuál sería la falla.</p>
           </div>
         </div>
 
-        <div id="guiaChat" class="guia-chat">
-          <div class="guia-msg guia-bot">Guía virtual: Contame qué falla tiene el calefón ionizado. Puedo ayudarte con consultas del curso, tester/multímetro, pilas, placa, chispa, ionización, sensores, display, cableado, conectores y diagnóstico eléctrico/electrónico.</div>
+        <div id="guiaChatNuevo" class="guia-chat-nuevo">
+          <div class="guia-mensaje guia-mensaje-bot">Guía virtual ASPE: Indicame la marca y modelo del calefón ionizado y contame qué hace exactamente: no enciende, hace chispa, prende y se apaga, marca un código o presenta otra falla.</div>
         </div>
 
-        <div class="guia-input-row">
-          <button id="guiaMicBtn" class="guia-mic" onclick="iaMicrofono()" title="Hablar">
-            <span class="guia-icon">🎙️</span>
-            <span class="guia-dot"></span>
-          </button>
-          <textarea id="guiaPregunta" class="guia-input" placeholder="Ej: cómo pruebo con el tester la carga de la pila, mi calefón hace chispa y se apaga, Orbis Eurotrend no enciende..."></textarea>
-          <button class="guia-send" onclick="iaEnviar()">Enviar</button>
+        <div class="guia-controles">
+          <button id="guiaAudioNuevo" class="guia-audio" onclick="audioGuiaVirtual()" title="Hablar">🎙️</button>
+          <textarea id="guiaTextoNuevo" class="guia-texto" placeholder="Ejemplo: Orbis Eurotrend hace chispa, prende y se apaga..."></textarea>
+          <button class="guia-enviar" onclick="enviarGuiaVirtual()">Enviar</button>
         </div>
 
-        <button class="guia-new" onclick="iaNuevaConversacion()">Nueva conversación</button>
-        <div id="guiaEstado" class="guia-note">El micrófono escribe el texto. No se envía solo.</div>
+        <button class="guia-nueva-conversacion" onclick="nuevaConversacionGuia()">Nueva conversación</button>
+        <div id="guiaEstadoNuevo" class="guia-estado">Guía virtual lista. El permiso del micrófono se solicita una sola vez por navegador.</div>
       </div>
     `;
-  };
 
-  window.iaMicrofono = function(){
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const inp = guiaInput();
-    const btn = document.getElementById("guiaMicBtn");
-
-    if(!SR){
-      guiaEstado("Tu navegador no soporta dictado. Podés escribir la consulta.");
-      return;
+    const input = entrada();
+    if(input){
+      input.addEventListener("keydown", function(evento){
+        if(evento.key === "Enter" && !evento.shiftKey){
+          evento.preventDefault();
+          window.enviarGuiaVirtual();
+        }
+      });
     }
 
-    if(guiaEscuchando && guiaRecognition){
-      try{ guiaRecognition.stop(); }catch(e){}
-      return;
-    }
-
-    guiaTextoBase = inp ? inp.value.trim() : "";
-    guiaRecognition = new SR();
-    guiaRecognition.lang = "es-AR";
-    guiaRecognition.continuous = true;
-    guiaRecognition.interimResults = true;
-    guiaRecognition.maxAlternatives = 1;
-
-    guiaRecognition.onstart = function(){
-      guiaEscuchando = true;
-      if(btn) btn.classList.add("escuchando");
-      guiaEstado("Escuchando... tocá de nuevo el micrófono para cortar. No se envía solo.");
-    };
-
-    guiaRecognition.onresult = function(ev){
-      let finalTxt = "";
-      let interimTxt = "";
-      for(let i = ev.resultIndex; i < ev.results.length; i++){
-        const txt = ev.results[i][0].transcript || "";
-        if(ev.results[i].isFinal) finalTxt += txt + " ";
-        else interimTxt += txt;
-      }
-      if(inp){
-        inp.value = (guiaTextoBase + " " + finalTxt + interimTxt).replace(/\s+/g," ").trim();
-      }
-      guiaEstado("Texto detectado. Podés corregirlo y tocar Enviar.");
-    };
-
-    guiaRecognition.onerror = function(){
-      guiaEscuchando = false;
-      if(btn) btn.classList.remove("escuchando");
-      guiaEstado("No pude usar el micrófono. Revisá permisos o escribí la consulta.");
-    };
-
-    guiaRecognition.onend = function(){
-      guiaEscuchando = false;
-      if(btn) btn.classList.remove("escuchando");
-      guiaEstado("Escucha detenida. Podés editar el texto y tocar Enviar.");
-    };
-
-    try{
-      guiaRecognition.start();
-    }catch(e){
-      guiaEstado("No pude iniciar el micrófono. Probá otra vez o escribí la consulta.");
+    if(!sessionStorage.getItem("guia_conversacion_id")){
+      sessionStorage.setItem(
+        "guia_conversacion_id",
+        String(Date.now()) + "-" + Math.random().toString(36).slice(2)
+      );
     }
   };
 })();
 </script>
+
 </body>
 </html>
